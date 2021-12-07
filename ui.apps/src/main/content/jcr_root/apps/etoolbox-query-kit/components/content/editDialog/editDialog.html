@@ -1,0 +1,52 @@
+<coral-dialog class="foundation-toggleable" closable="on" backdrop="static">
+    <sly data-sly-use.model="com.exadel.etoolbox.query.core.model.SavedQueriesModel"></sly>
+
+    <coral-dialog-header>Edit saved queries</coral-dialog-header>
+    <coral-dialog-content>
+        <form action="/services/etoolbox-query-kit/edit" method="post"
+              class="coral-Form coral-Form--vertical foundation-layout-util-maximized-container foundation-form"
+              data-foundation-form-ajax="true" data-foundation-form-loadingmask="true">
+            <coral-select class="language-select" name="Select" placeholder="Choose an item">
+                <sly data-sly-list.language="${model.queries.keySet}">
+                    <coral-select-item selected="${languageList.first}">${language}</coral-select-item>
+                </sly>
+            </coral-select>
+            <div class="coral-FixedColumn">
+                <div class="coral-FixedColumn-column">
+                    <sly data-sly-list.language="${model.queries.entrySet}">
+                        <div class="coral-Form-fieldwrapper path-option-element-target queries-multifield" id="${language.key}-multifield">
+                            <label class="coral-Form-fieldlabel">${language.key} queries</label>
+                            <coral-multifield class="coral-Form-field cq-dialog-path-filter-option language-multifield"
+                                              aria-required="true"
+                                              data-granite-coral-multifield-name="${language.key}-queries"
+                                              data-granite-coral-multifield-composite>
+                                <sly data-sly-list.query="${language.value}">
+                                    <coral-multifield-item language="${language.key}">
+                                        <div style="display: block">
+                                            <div class="coral-Form-fieldwrapper">
+                                                <label class="coral-Form-fieldlabel">${language.key} Query *</label>
+                                                <textarea class="coral-Form-field foundation-layout-util-resizable-none coral3-Textfield coral3-Textfield--multiline" is="coral-textarea" placeholder="Enter ${language.key} query" name="field" rows="5">${query}</textarea>
+                                            </div>
+                                        </div>
+                                        <button is="coral-button" class="dialog-choose-query" size="M" variant="minimal" tracking="off" type="button" icon="emailLightning" iconsize="S" title="Execute query" tabindex="0" coral-close=""><coral-icon class="coral3-Icon coral3-Icon--emailLightning coral3-Icon--sizeS" icon="emailLightning" size="S" autoarialabel="on" role="img" aria-label="close"></coral-icon><coral-button-label>Execute query</coral-button-label></button>
+                                    </coral-multifield-item>
+                                </sly>
+                                <button type="button" is="coral-button" coral-multifield-add>Add</button>
+                                <template coral-multifield-template="">
+                                    <div class="coral-Form-fieldwrapper">
+                                        <label class="coral-Form-fieldlabel">${language.key} Query *</label>
+                                        <textarea class="coral-Form-field foundation-layout-util-resizable-none coral3-Textfield coral3-Textfield--multiline" is="coral-textarea" placeholder="Enter ${language.key} query" name="field" rows="5"></textarea>
+                                    </div>
+                                </template>
+                            </coral-multifield>
+                        </div>
+                    </sly>
+                    <button type="submit" autocomplete="off" is="coral-button" variant="primary"
+                            trackingelement="create" tracking="ON">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </form>
+    </coral-dialog-content>
+</coral-dialog>

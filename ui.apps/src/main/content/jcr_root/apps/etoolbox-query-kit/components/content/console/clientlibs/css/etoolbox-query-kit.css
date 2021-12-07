@@ -1,0 +1,22 @@
+textarea .coral3-Textfield {
+    width: auto;
+    margin: 20px;
+}
+
+#queristerContent {
+    margin: 20px;
+}
+
+#executeButton, #resultTable {
+    margin-bottom: 20px;
+}
+
+.CodeMirror {
+    width: auto;
+    margin: 20px;
+    resize: both;
+}
+
+.query-kit-pagination {
+    margin-right: 5px;
+}

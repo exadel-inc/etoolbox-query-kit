@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          jcr:primaryType="nt:unstructured">
+    <etoolbox jcr:primaryType="nt:unstructured"
+              jcr:title="EToolbox">
+        <query-kit jcr:primaryType="nt:unstructured"
+                    jcr:title="Exadel Query Kit for AEM"
+                    jcr:description="Create query"
+                    order="{Long}101"
+                    href="/etoolbox-query-kit.html"
+                    id="cq-etoolbox-query-kit"
+                    icon="fileData">
+        </query-kit>
+    </etoolbox>
+</jcr:root>

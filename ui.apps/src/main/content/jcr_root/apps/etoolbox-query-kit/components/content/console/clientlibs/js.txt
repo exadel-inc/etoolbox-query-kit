@@ -1,0 +1,10 @@
+#base=js
+
+etoolbox-query-kit.js
+codemirror.js
+sql.js
+sql-hint.js
+show-hint.js
+autocomplete.js
+query-kit-dialog.js
+selector.js

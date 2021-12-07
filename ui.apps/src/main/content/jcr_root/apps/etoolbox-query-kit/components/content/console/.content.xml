@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="cq:Page">
+    <jcr:content
+            jcr:mixinTypes="[sling:VanityPath]"
+            jcr:primaryType="nt:unstructured"
+            jcr:title="Exadel Query Kit for AEM"
+            sling:vanityPath="/etoolbox-query-kit"
+            consoleId="cq-etoolbox-query-kit"
+            sling:resourceType="granite/ui/components/shell/page">
+        <head jcr:primaryType="nt:unstructured">
+            <clientlibs
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/includeclientlibs"
+                    categories="[cq.common.wcm,cq.listview.coral.columns.personalization,cq.siteadmin.admin.page.row,cq.gui.coral.common.admin.references,cq.screens.dcc,etoolbox-query-kit]"/>
+        </head>
+        <title
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/text"
+                text="Query converter"/>
+        <actions jcr:primaryType="nt:unstructured">
+            <secondary jcr:primaryType="nt:unstructured">
+                <showsaved
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                    action="foundation.dialog.query"
+                    icon="servers"
+                    text="Queries"
+                    variant="actionBar">
+                    <data
+                        jcr:primaryType="nt:unstructured"
+                        nesting="hide"
+                        src.uritemplate="/apps/etoolbox-query-kit/components/content/console/editqueriesdialog.html"/>
+                </showsaved>
+                <save
+                        jcr:primaryType="nt:unstructured"
+                        granite:id="saveButton"
+                        sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                        icon="starStroke"
+                        text="Save"
+                        variant="actionBar"/>
+            </secondary>
+        </actions>
+        <content
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/container"
+                granite:id="queristerContent"
+                margin="{Boolean}true">
+            <items jcr:primaryType="nt:unstructured">
+                <form
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/foundation/form"
+                        autocomplete="{Boolean}true"
+                        method="post"
+                        action="/services/etoolbox-query-kit/execute"
+                        granite:id="queryForm"
+                        foundationForm="{Boolean}true">
+                    <items jcr:primaryType="nt:unstructured">
+                        <select
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                granite:id="languageSelect"
+                                fieldLabel="Language: "
+                                name="language">
+                            <items jcr:primaryType="nt:unstructured">
+                                <sql2
+                                        jcr:primaryType="nt:unstructured"
+                                        text="SQL2"
+                                        value="SQL2"/>
+                                <xpath
+                                        jcr:primaryType="nt:unstructured"
+                                        text="XPath"
+                                        value="XPath"/>
+                            </items>
+                        </select>
+                        <query
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textarea"
+                                granite:class="codemirror-textarea"
+                                granite:id="queryTextArea"
+                                fieldLabel="Query: "
+                                resize="both"
+                                autocomplete="on"
+                                name="query"/>
+                        <offset
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/foundation/form/hidden"
+                                name="offset"
+                                value="0"/>
+                        <limit
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/numberfield"
+                                granite:id="limitInput"
+                                name="limit"
+                                value="10"
+                                min="1"
+                                max="5000"/>
+                        <submit
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/foundation/button"
+                                granite:id="executeButton"
+                                type="submit"
+                                variant="primary"
+                                text="Execute"/>
+                    </items>
+                </form>
+            </items>
+        </content>
+    </jcr:content>
+    <editqueriesdialog
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="etoolbox-query-kit/components/content/editDialog">
+    </editqueriesdialog>
+</jcr:root>
