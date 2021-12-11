@@ -1,8 +1,7 @@
 "use strict"
 
 $(function () {
-    var $executeButton = $('#executeButton'),
-        $queryForm = $('#queryForm'),
+    var $queryForm = $('#queryForm'),
         $languageSelect = $('#languageSelect')[0],
         $saveButton = $('#saveButton'),
         $domain = 'crx/de/index.jsp#';
@@ -28,25 +27,35 @@ $(function () {
         }
     }));
 
-    $executeButton.click((function () {
-        $queryForm.submit(function (e) {
-            e.preventDefault();
-            var form = $(this);
-            var url = form.attr('action');
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: form.serialize(),
-                success: executeSuccess
-            })
-        });
-    }));
+    $queryForm.submit(function (e) {
+        e.preventDefault();
+        var form = $(this);
+        var url = form.attr('action');
+        var editor = document.querySelector('.CodeMirror').CodeMirror;
+        var query = editor.getValue();
+        var data = form.serialize().replace(/query=.+?&/, `query=${query}&`);
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: data,
+            success: executeSuccess,
+            error: function () {
+                var dialog = getPromptDialog('error', 'You executed incorrect query');
+                dialog.show();
+            }
+        })
+    });
 
     function executeSuccess(data) {
         $('.resultTable').remove();
         $('.query-kit-pagination').remove();
-        buildResultTable(data["data"]);
-        addPagination(data);
+        if (data["data"].length === 0) {
+            var dialog = getPromptDialog('warning', 'No results found');
+            dialog.show();
+        } else {
+            buildResultTable(data["data"]);
+            addPagination(data);
+        }
     }
 
     function buildResultTable(data) {
@@ -140,6 +149,11 @@ $(function () {
         buttonExportExcel.classList.add('query-kit-pagination');
         buttonExportExcel.setAttribute("id", "buttonExportExcel");
         buttonExportExcel.on("click" ,(function () {
+            var wait = new Coral.Wait().set({
+                size: "L",
+                centered: true
+            });
+            document.body.appendChild(wait);
             var xhr = new XMLHttpRequest();
             xhr.open('POST', '/services/etoolbox-query-kit/export', true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -153,6 +167,7 @@ $(function () {
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
+                document.body.removeChild(wait);
             };
             xhr.send(`language=${language}&query=${query}&format=XSLX`);
         }));
@@ -167,6 +182,11 @@ $(function () {
         buttonExportPdf.classList.add('query-kit-pagination');
         buttonExportPdf.setAttribute("id", "buttonExportPdf");
         buttonExportPdf.on("click" ,(function () {
+            var wait = new Coral.Wait().set({
+                size: "L",
+                centered: true
+            });
+            document.body.appendChild(wait);
             var xhrPdf = new XMLHttpRequest();
             xhrPdf.open('POST', '/services/etoolbox-query-kit/export', true);
             xhrPdf.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -180,6 +200,7 @@ $(function () {
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
+                document.body.removeChild(wait);
             };
             xhrPdf.send(`language=${language}&query=${query}&format=PDF`);
         }));
@@ -191,5 +212,20 @@ $(function () {
         var resultTable = $("#resultTable");
         resultTable.before(resultInfo);
         resultTable.after(buttonExportPdf).after(buttonExportExcel).after(pageSelect).after(buttonNextPage);
+    }
+
+    function getPromptDialog(variant, text) {
+        return new Coral.Dialog().set({
+            variant: variant,
+            header: {
+                innerHTML: variant.toUpperCase()
+            },
+            content: {
+                innerHTML: text
+            },
+            footer: {
+                innerHTML: "<button is=\"coral-button\" variant=\"primary\" coral-close=\"\">Ok</button>"
+            }
+        });
     }
 });
