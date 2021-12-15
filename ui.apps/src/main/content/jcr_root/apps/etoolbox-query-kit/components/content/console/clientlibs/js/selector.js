@@ -37,6 +37,12 @@
         }
     });
 
+    $(document).on("change", "#languageSelect", function() {
+         var select = $(this).context.selectedItem.innerText;
+         var editor = document.querySelector('.CodeMirror').CodeMirror;
+         editor.setValue(localStorage.getItem(select));
+    });
+
     $(document).on("change", ".language-select", function() {
         var select = $(this).context.selectedItem.innerText;
         var multifields = $('.queries-multifield');

@@ -39,6 +39,13 @@
                         icon="starStroke"
                         text="Save"
                         variant="actionBar"/>
+                <share
+                        jcr:primaryType="nt:unstructured"
+                        granite:id="shareButton"
+                        sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                        icon="fileShare"
+                        text="Share"
+                        variant="actionBar"/>
             </secondary>
         </actions>
         <content

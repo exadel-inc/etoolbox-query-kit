@@ -5,6 +5,8 @@ import com.exadel.etoolbox.query.core.services.PDFExporterService;
 import com.exadel.etoolbox.query.core.services.QueryConverterService;
 import com.exadel.etoolbox.query.core.services.XLSXExporterService;
 import com.exadel.etoolbox.query.core.servlets.model.QueryResultModel;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -28,6 +30,8 @@ public class ExportServlet extends SlingAllMethodsServlet {
 
     private static final String APPLICATION_EXCEL = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     private static final String APPLICATION_PDF = "application/pdf";
+    private static final String APPLICATION_JSON = "application/json";
+    private static final Gson GSON = new GsonBuilder().create();
 
     @Reference
     private QueryConverterService queryConverterService;
@@ -63,6 +67,16 @@ public class ExportServlet extends SlingAllMethodsServlet {
                 response.setStatus(200);
                 pdfExporterService.export(outputStream, queryResultModel.getHeaders().keySet(), queryResultModel.getData());
                 break;
+            }
+            case "JSON": {
+                response.setContentType(APPLICATION_JSON);
+                response.setHeader("Content-Disposition", "attachment; filename=users.json");
+                response.setStatus(200);
+                outputStream.print(GSON.toJson(queryResultModel.getData()));
+                break;
+            }
+            default: {
+                throw new ServletException();
             }
         }
         outputStream.flush();
