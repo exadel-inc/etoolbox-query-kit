@@ -6,7 +6,9 @@ $(function () {
         $languageSelect = $('#languageSelect')[0],
         $saveButton = $('#saveButton'),
         $domain = 'crx/de/index.jsp#',
-        timerId = null;
+        timerId = null,
+        editor = null,
+        editorLines = null;
 
     $saveButton.on('click', (function () {
         var language = $languageSelect.selectedItem.value;
@@ -38,9 +40,68 @@ $(function () {
                 url: url,
                 type: "POST",
                 data: form.serialize(),
-                success: executeSuccess
+                success: executeSuccess,
+                error(error) {
+                    if (error.status === 400){
+                        editorLines.style.textDecoration="underline red";
+                        editorLines.style.textDecorationStyle="dashed";
+                    }
+                    console.error(error.statusText);
+                  }
             })
         });
+    }));
+
+    var exportButtonsGroup = new Coral.ButtonGroup().set({
+          name: "export-buttons-group",
+          disabled: true
+    });
+
+    var buttonExportPdf = new Coral.Button().set({
+       label: {
+           innerHTML: 'PDF'
+       },
+       variant: "quiet",
+       icon: "filePDF",
+       iconSize: "M",
+    }).on("click", (function () {
+        doPostForExport('pdf', 'PDF');
+    }));
+
+    var buttonExportExcel = new Coral.Button().set({
+       label: {
+         innerHTML: "XSLX"
+       },
+       variant: "quiet",
+       icon: "fileXML",
+       iconSize: "M"
+    }).on("click", (function (){
+        doPostForExport('vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'XSLX');
+    }));
+
+    var buttonExportJSON = new Coral.Button().set({
+       label: {
+           innerHTML: 'JSON'
+       },
+       variant: "quiet",
+       icon: "fileJson",
+       iconSize: "M"
+    }).on("click", (function () {
+        doPostForExport('json', 'JSON');
+    }));
+
+    exportButtonsGroup.items.add(buttonExportPdf);
+    exportButtonsGroup.items.add(buttonExportExcel);
+    exportButtonsGroup.items.add(buttonExportJSON);
+
+    $executeButton.after(exportButtonsGroup);
+
+    $queryForm.on('keyup', (function (e) {
+        editorLines.style.textDecoration="none";
+        clearTimeout(timerId);
+        timerId = setTimeout(function(){
+            localStorage.setItem($languageSelect.selectedItem.value, editor.getValue());
+        }, 1000);
     }));
 
     function executeSuccess(data) {
@@ -76,54 +137,6 @@ $(function () {
         $queryForm.after(table);
     }
 
-    var exportButtonsGroup = new Coral.ButtonGroup().set({
-          name: "export-buttons-group",
-          disabled: true
-    });
-
-    var buttonExportPdf = new Coral.Button().set({
-       label: {
-           innerHTML: 'PDF'
-       },
-       variant: "quiet",
-       icon: "filePDF",
-       iconSize: "M"
-    });
-
-    var buttonExportExcel = new Coral.Button().set({
-       label: {
-         innerHTML: "XML"
-       },
-       variant: "quiet",
-       icon: "fileXML",
-       iconSize: "M"
-    });
-
-    var buttonExportJSON = new Coral.Button().set({
-       label: {
-           innerHTML: 'JSON'
-       },
-       variant: "quiet",
-       icon: "fileJson",
-       iconSize: "M"
-    });
-
-    exportButtonsGroup.items.add(buttonExportPdf);
-    exportButtonsGroup.items.add(buttonExportExcel);
-    exportButtonsGroup.items.add(buttonExportJSON);
-
-    $executeButton.after(exportButtonsGroup);
-
-    $queryForm.on('keyup', (function (e) {
-        var editor = document.querySelector('.CodeMirror').CodeMirror;
-        var editorLines = document.querySelector('.CodeMirror-lines');
-        var language = $languageSelect.selectedItem.value;
-        clearTimeout(timerId);
-        timerId = setTimeout(function(){
-            localStorage.setItem(language, editor.getValue());
-        }, 1000);
-    }));
-
     function addPagination(data) {
         var pagesCount = Math.ceil(data["resultCount"] / data["limit"]);
         var currentPage = Math.floor(data["offset"] / data["limit"]) + 1;
@@ -145,13 +158,7 @@ $(function () {
         buttonNextPage.classList.add('query-kit-pagination');
         buttonNextPage.setAttribute("id", "nextPageButton");
         buttonNextPage.on("click" ,(function () {
-            var url = $queryForm.attr('action');
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: {"language": language, "query": query, "offset": offset_next, "limit": limitInput[0].get('value')},
-                success: executeSuccess
-            })
+            doPostForPagination(language, query, offset_next, limitInput[0].get('value'));
         }));
 
         var buttonPreviousPage = new Coral.Button().set({
@@ -165,13 +172,7 @@ $(function () {
         buttonPreviousPage.classList.add('query-kit-pagination');
         buttonPreviousPage.setAttribute("id", "buttonPreviousPage");
         buttonPreviousPage.on("click" ,(function () {
-            var url = $queryForm.attr('action');
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: {"language": language, "query": query, "offset": offset_previous, "limit": limitInput[0].get('value')},
-                success: executeSuccess
-            })
+            doPostForPagination(language, query, offset_previous, limitInput[0].get('value'));
         }));
 
         var pageSelect = new Coral.Select().set({
@@ -191,29 +192,11 @@ $(function () {
             });
         }
         pageSelect.on("change",  function () {
-            var url = $queryForm.attr('action');
             var newOffset = (pageSelect.selectedItem.get('value') - 1) * limit;
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: {"language": language, "query": query, "offset": newOffset, "limit": limit},
-                success: executeSuccess
-            })
+            doPostForPagination(language, query, newOffset, limit);
         })
 
         exportButtonsGroup.set({ disabled: data.length > 0 })
-
-        buttonExportExcel.on("click", (function (){
-            doPostForExport('vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'XSLX', language, query);
-        }));
-
-        buttonExportPdf.on("click", (function () {
-            doPostForExport('pdf', 'PDF', language, query);
-        }));
-
-        buttonExportJSON.on("click", (function () {
-            doPostForExport('json', 'JSON', language, query);
-        }));
 
         $('#resultInfo').remove();
         var resultInfo = document.createElement("div");
@@ -224,7 +207,7 @@ $(function () {
         resultTable.after(pageSelect).after(buttonNextPage).after(buttonPreviousPage);
     }
 
-    function doPostForExport(type, format, language, query){
+    function doPostForExport(type, format){
        var xhrRequest = new XMLHttpRequest();
        xhrRequest.open('POST', '/services/etoolbox-query-kit/export', true);
        xhrRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -239,12 +222,21 @@ $(function () {
            a.click();
            document.body.removeChild(a);
        };
-       xhrRequest.send(`language=${language}&query=${query}&format=${format}`);
+       xhrRequest.send(`language=${$languageSelect.selectedItem.value}&query=${editor.getValue()}&format=${format}`);
+    }
+
+    function doPostForPagination(language, query, offset, limit){
+       $.ajax({
+           url: $queryForm.attr('action'),
+           type: "POST",
+           data: {"language": language, "query": query, "offset": offset, "limit": limit},
+           success: executeSuccess
+       })
     }
 
     setTimeout(function init(){
-        var editor = document.querySelector('.CodeMirror').CodeMirror;
-        var language = $languageSelect.selectedItem.value;
-        editor.setValue(localStorage.getItem(language));
+        editor = document.querySelector('.CodeMirror').CodeMirror;
+        editorLines = document.querySelector('.CodeMirror-lines');
+        editor.setValue(localStorage.getItem($languageSelect.selectedItem.value));
     }, 0)
 });

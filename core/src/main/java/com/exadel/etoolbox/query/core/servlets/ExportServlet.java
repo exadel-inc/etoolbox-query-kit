@@ -19,6 +19,8 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import java.io.IOException;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component(
         service = Servlet.class,
@@ -31,6 +33,7 @@ public class ExportServlet extends SlingAllMethodsServlet {
     private static final String APPLICATION_EXCEL = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     private static final String APPLICATION_PDF = "application/pdf";
     private static final String APPLICATION_JSON = "application/json";
+    private static final String CONTENT_DISPOSITION = "Content-Disposition";
     private static final Gson GSON = new GsonBuilder().create();
 
     @Reference
@@ -54,25 +57,31 @@ public class ExportServlet extends SlingAllMethodsServlet {
         QueryObjectModel queryObjectModel = queryConverterService.convertQueryToJQOM(resolver, queryResultModel);
         executeQueryService.executeJQOMQuery(queryObjectModel, queryResultModel);
         switch (format) {
-            case "XSLX" : {
+            case "XSLX": {
                 response.setContentType(APPLICATION_EXCEL);
-                response.setHeader("Content-Disposition", "attachment; filename=users.xlsx");
+                response.setHeader(CONTENT_DISPOSITION, "attachment; filename=result.xlsx");
                 response.setStatus(200);
                 xlsxExporterService.export(outputStream, "title", queryResultModel.getHeaders(), queryResultModel.getData());
                 break;
             }
-            case "PDF" : {
+            case "PDF": {
                 response.setContentType(APPLICATION_PDF);
-                response.setHeader("Content-Disposition", "attachment; filename=users.pdf");
+                response.setHeader(CONTENT_DISPOSITION, "attachment; filename=result.pdf");
                 response.setStatus(200);
                 pdfExporterService.export(outputStream, queryResultModel.getHeaders().keySet(), queryResultModel.getData());
                 break;
             }
             case "JSON": {
                 response.setContentType(APPLICATION_JSON);
-                response.setHeader("Content-Disposition", "attachment; filename=users.json");
+                response.setHeader(CONTENT_DISPOSITION, "attachment; filename=result.json");
                 response.setStatus(200);
-                outputStream.print(GSON.toJson(queryResultModel.getData()));
+                outputStream.print(GSON.toJson(queryResultModel.getData()
+                        .stream()
+                        .map(stringMap -> stringMap.values().stream().findFirst())
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList())
+                ));
                 break;
             }
             default: {

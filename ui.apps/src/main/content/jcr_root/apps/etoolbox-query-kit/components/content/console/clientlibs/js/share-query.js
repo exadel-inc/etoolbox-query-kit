@@ -6,15 +6,17 @@ $(document).ready(function () {
         $queryForm = $('#queryForm'),
         $languageSelect = $('#languageSelect')[0];
 
-    var alert = new Coral.Alert().set({
-      variant: "success",
-      header: {
-        innerHTML: "INFO"
-      },
+    var successTooltip = new Coral.Tooltip().set({
       content: {
-        innerHTML: "URL copied to clipboard."
-      }
+        innerHTML: 'URL copied to clipboard'
+      },
+      variant: 'success',
+      target: '#shareButton',
+      placement: 'bottom',
+      interaction: 'off'
     });
+
+    $shareButton.append(successTooltip);
 
     function updateQueryFromUrl(){
         var urlParams = decodeQueryUrlParams();
@@ -66,9 +68,13 @@ $(document).ready(function () {
         var editor = document.querySelector('.CodeMirror').CodeMirror;
         var language = $languageSelect.selectedItem.value;
         var query = editor.getValue();
+        successTooltip.open = true;
         if (query) {
             var urlWithoutParams = window.location.origin + window.location.pathname;
             navigator.clipboard.writeText(urlWithoutParams + '?language=' + language + "&query=" + encodeURIComponent(query));
+            setTimeout(function(){
+                successTooltip.open = false;
+            }, 2000)
         }
     }));
 
