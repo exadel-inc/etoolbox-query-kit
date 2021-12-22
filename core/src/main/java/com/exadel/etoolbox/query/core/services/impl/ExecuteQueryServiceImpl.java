@@ -10,7 +10,10 @@ import javax.jcr.RepositoryException;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Column;
 import javax.jcr.query.qom.QueryObjectModel;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @Component(service = ExecuteQueryService.class)
@@ -34,7 +37,10 @@ public class ExecuteQueryServiceImpl implements ExecuteQueryService {
                     if (columnsName.equals(PATH_COLUMN)) {
                         columnToValue.put(columnsName, node.getPath());
                     } else {
-                        columnToValue.put(columnsName, node.getProperty(columnsNameToProperty.get(columnsName)).getString());
+                        String property = columnsNameToProperty.get(columnsName);
+                        if (node.hasProperty(property)) {
+                            columnToValue.put(columnsName, node.getProperty(property).getString());
+                        }
                     }
                 }
                 queryResultModel.addData(columnToValue);
