@@ -43,6 +43,7 @@ $(function () {
     }));
 
     function executeSuccess(data) {
+        $("coral-alert").remove(".coral3-Alert, .coral3-Alert--info, .coral3-Alert--small");
         $('.resultTable').remove();
         $('.query-kit-pagination').remove();
         buildResultTable(data["data"]);
@@ -50,6 +51,18 @@ $(function () {
     }
 
     function buildResultTable(data) {
+        if(data.length == 1){
+            var alert = new Coral.Alert().set({
+                header: {
+                    innerHTML: "INFO:"
+                },
+                content: {
+                    innerHTML: "0 results were found"
+                }
+            });
+            $queryForm.after(alert);
+            return;
+        }
         var columns = Object.keys(data[0]);
         var table = new Coral.Table();
         table.classList.add('resultTable');

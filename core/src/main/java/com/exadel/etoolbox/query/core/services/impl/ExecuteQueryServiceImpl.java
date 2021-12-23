@@ -27,6 +27,9 @@ public class ExecuteQueryServiceImpl implements ExecuteQueryService {
                 queryResultModel.setHeaders(columnsNameToProperty.keySet());
             }
             NodeIterator nodes = result.getNodes();
+            if (nodes.getSize() == 0) {
+                queryResultModel.addData(Collections.EMPTY_MAP);
+            }
             while (nodes.hasNext()) {
                 Node node = nodes.nextNode();
                 Map<String, String> columnToValue = new TreeMap<>();
