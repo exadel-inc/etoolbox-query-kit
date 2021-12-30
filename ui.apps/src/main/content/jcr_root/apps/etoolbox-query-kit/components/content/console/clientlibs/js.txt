@@ -7,5 +7,7 @@ sql-hint.js
 show-hint.js
 autocomplete.js
 query-kit-dialog.js
-selector.js
+export-group.js
+//selector.js
 share-query.js
+save-query.js

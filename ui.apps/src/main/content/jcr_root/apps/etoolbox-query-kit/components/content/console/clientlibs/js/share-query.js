@@ -4,7 +4,8 @@ $(document).ready(function () {
 
     var $shareButton = $('#shareButton'),
         $queryForm = $('#queryForm'),
-        $languageSelect = $('#languageSelect')[0];
+        $languageSelect = $('#languageSelect')[0],
+        $executeButton = $('#executeButton');
 
     var successTooltip = new Coral.Tooltip().set({
       content: {
@@ -18,7 +19,7 @@ $(document).ready(function () {
 
     $shareButton.append(successTooltip);
 
-    function updateQueryFromUrl(){
+    function updateQueryFromUrlAndSubmit(){
         var urlParams = decodeQueryUrlParams();
         var editor = document.querySelector('.CodeMirror').CodeMirror;
         if (validateQueryLanguageParam(urlParams.language) && urlParams.query){
@@ -28,8 +29,9 @@ $(document).ready(function () {
              }
            });
            editor.setValue(urlParams.query);
+           $executeButton.trigger( "click" );
         } else {
-            console.info("URL params isn't valid.")
+           console.info("URL params isn't valid.")
         }
     }
 
@@ -71,7 +73,7 @@ $(document).ready(function () {
         successTooltip.open = true;
         if (query) {
             var urlWithoutParams = window.location.origin + window.location.pathname;
-            navigator.clipboard.writeText(urlWithoutParams + '?language=' + language + "&query=" + encodeURIComponent(query));
+            navigator.clipboard.writeText(urlWithoutParams + '?language=' + language + '&query=' + encodeURIComponent(query));
             setTimeout(function(){
                 successTooltip.open = false;
             }, 2000)
@@ -79,6 +81,6 @@ $(document).ready(function () {
     }));
 
     setTimeout(function() {
-      updateQueryFromUrl();
+      updateQueryFromUrlAndSubmit();
     }, 0);
 });

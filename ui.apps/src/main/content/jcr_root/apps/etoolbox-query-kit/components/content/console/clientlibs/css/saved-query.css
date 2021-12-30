@@ -1,0 +1,11 @@
+.saved-button-group{
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#savedQueriesTable,
+#latestQueriesTable {
+    min-width: 800px;
+    height: 400px;
+}

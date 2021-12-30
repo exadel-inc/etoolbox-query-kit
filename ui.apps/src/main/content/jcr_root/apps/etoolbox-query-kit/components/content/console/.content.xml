@@ -23,15 +23,10 @@
                 <showsaved
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="granite/ui/components/coral/foundation/collection/action"
-                    action="foundation.dialog.query"
+                    granite:id="savedQueriesButton"
                     icon="servers"
                     text="Queries"
-                    variant="actionBar">
-                    <data
-                        jcr:primaryType="nt:unstructured"
-                        nesting="hide"
-                        src.uritemplate="/apps/etoolbox-query-kit/components/content/console/editqueriesdialog.html"/>
-                </showsaved>
+                    variant="actionBar"/>
                 <save
                         jcr:primaryType="nt:unstructured"
                         granite:id="saveButton"
@@ -109,13 +104,15 @@
                                 type="submit"
                                 variant="primary"
                                 text="Execute"/>
+                        <exportbuttongroup
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="etoolbox-query-kit/components/content/exportButtonGroup"/>
                     </items>
                 </form>
+                <savedqueriesmodal
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="etoolbox-query-kit/components/content/savedQueriesModal"/>
             </items>
         </content>
     </jcr:content>
-    <editqueriesdialog
-            jcr:primaryType="nt:unstructured"
-            sling:resourceType="etoolbox-query-kit/components/content/editDialog">
-    </editqueriesdialog>
 </jcr:root>

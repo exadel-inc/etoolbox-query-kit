@@ -1,0 +1,40 @@
+<coral-dialog class="foundation-toggleable" closable="on" id="querySavedDialog">
+    <coral-dialog-header>Saved queries</coral-dialog-header>
+    <coral-dialog-content>
+        <div class="coral-Form coral-Form--vertical foundation-layout-util-maximized-container">
+            <coral-tabview>
+                <coral-tablist class="language-select" target="#savedTypeTabs">
+                    <coral-tab class="saved-type-tab">Saved</coral-tab>
+                    <coral-tab class="saved-type-tab">Latest Success</coral-tab>
+                </coral-tablist>
+                <coral-panelstack id="savedTypeTabs">
+                    <coral-panel>
+                        <table is="coral-table" id="savedQueriesTable" selectable>
+                            <thead is="coral-table-head" sticky>
+                            <tr is="coral-table-row">
+                                <th is="coral-table-headercell">Saved Queries &darr;</th>
+                            </tr>
+                            </thead>
+                            <tbody is="coral-table-body"></tbody>
+                        </table>
+                    </coral-panel>
+                    <coral-panel>
+                        <table is="coral-table"  id="latestQueriesTable" selectable>
+                            <thead is="coral-table-head" sticky>
+                            <tr is="coral-table-row">
+                                <th is="coral-table-headercell">Latest Success Queries &#8593; (max 10)</th>
+                            </tr>
+                            </thead>
+                            <tbody is="coral-table-body">
+                            </tbody>
+                        </table>
+                    </coral-panel>
+                </coral-panelstack>
+            </coral-tabview>
+            <div class="saved-button-group">
+                <button type="button" is="coral-button" variant="primary" id="executeSavedQueryButton" disabled>Open</button>
+                <button type="button" is="coral-button" variant="quiet" icon="delete" iconsize="M" id="deleteSavedQueryButton" disabled></button>
+            </div>
+        </div>
+    </coral-dialog-content>
+</coral-dialog>
