@@ -54,7 +54,7 @@
                 </executions>
                 <configuration>
                     <instructions>
-                        <Embed-Dependency>commons-lang3,itextpdf,pdfbox;scope=compile</Embed-Dependency>
+                        <Embed-Dependency>oak-jcr,oak-core,oak-blob,oak-commons,commons-lang3,itextpdf,pdfbox;scope=compile</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>
