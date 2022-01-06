@@ -56,27 +56,6 @@
                         granite:id="queryForm"
                         foundationForm="{Boolean}true">
                     <items jcr:primaryType="nt:unstructured">
-                        <select
-                                jcr:primaryType="nt:unstructured"
-                                sling:resourceType="granite/ui/components/coral/foundation/form/select"
-                                granite:id="languageSelect"
-                                fieldLabel="Language: "
-                                name="language">
-                            <items jcr:primaryType="nt:unstructured">
-                                <sql2
-                                        jcr:primaryType="nt:unstructured"
-                                        text="SQL2"
-                                        value="SQL2"/>
-                                <queryBuilder
-                                        jcr:primaryType="nt:unstructured"
-                                        text="Query Builder"
-                                        value="queryBuilder"/>
-                                <xpath
-                                        jcr:primaryType="nt:unstructured"
-                                        text="XPath"
-                                        value="XPath"/>
-                            </items>
-                        </select>
                         <query
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/form/textarea"

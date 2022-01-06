@@ -7,7 +7,6 @@ import java.util.*;
 
 public class QueryResultModel {
     private final static String QUERY_PARAMETER = "query";
-    private final static String LANGUAGE_PARAMETER = "language";
     private final static String OFFSET_PARAMETER = "offset";
     private final static String LIMIT_PARAMETER = "limit";
     private static final long DEFAULT_OFFSET = 0;
@@ -15,14 +14,12 @@ public class QueryResultModel {
 
     private final Map<String, String> headers = new TreeMap<>();
     private final List<Map<String, String>> data = new ArrayList<>();
-    private final String language;
     private final String query;
     private final long offset;
     private final long limit;
     private long resultCount;
 
     public QueryResultModel(SlingHttpServletRequest request) {
-        language = request.getParameter(LANGUAGE_PARAMETER);
         query = request.getParameter(QUERY_PARAMETER);
         offset = request.getParameter(OFFSET_PARAMETER) != null ? Long.parseLong(request.getParameter(OFFSET_PARAMETER)) : DEFAULT_OFFSET;
         limit = request.getParameter(LIMIT_PARAMETER) != null ? Long.parseLong(request.getParameter(LIMIT_PARAMETER)) : DEFAULT_LIMIT;
@@ -37,7 +34,7 @@ public class QueryResultModel {
     }
 
     public boolean isValid() {
-        return query != null && language != null && !query.equals(StringUtils.EMPTY);
+        return query != null && !query.equals(StringUtils.EMPTY);
     }
 
     public Map<String, String> getHeaders() {
@@ -46,10 +43,6 @@ public class QueryResultModel {
 
     public List<Map<String, String>> getData() {
         return Collections.unmodifiableList(data);
-    }
-
-    public String getLanguage() {
-        return language;
     }
 
     public String getQuery() {

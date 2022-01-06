@@ -31,8 +31,8 @@ public class QueryConverterServiceImpl implements QueryConverterService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryConverterServiceImpl.class);
 
-    private static final String X_PATH_LANGUAGE = "XPath";
-    private static final String QUERY_BUILDER_LANGUAGE = "queryBuilder";
+    private static final String X_PATH_LANGUAGE = "/";
+    private static final String QUERY_BUILDER_LANGUAGE = "path";
 
     @Reference
     private QueryBuilder queryBuilder;
@@ -46,9 +46,9 @@ public class QueryConverterServiceImpl implements QueryConverterService {
                 return null;
             }
 
-            if (queryResultModel.getLanguage().equals(X_PATH_LANGUAGE)) {
+            if (queryResultModel.getQuery().startsWith(X_PATH_LANGUAGE)) {
                 query = convertXPathToSql2Query(queryResultModel.getQuery());
-            } else if (queryResultModel.getLanguage().equals(QUERY_BUILDER_LANGUAGE)) {
+            } else if (queryResultModel.getQuery().startsWith(QUERY_BUILDER_LANGUAGE)) {
                 query = convertQueryBuilderQueryToSql2(queryResultModel.getQuery(), session);
             }
             QueryObjectModelFactory qomFactory = session.getWorkspace().getQueryManager().getQOMFactory();
