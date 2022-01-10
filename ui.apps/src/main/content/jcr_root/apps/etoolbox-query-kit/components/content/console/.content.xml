@@ -69,6 +69,10 @@
                                         jcr:primaryType="nt:unstructured"
                                         text="SQL2"
                                         value="SQL2"/>
+                                <queryBuilder
+                                        jcr:primaryType="nt:unstructured"
+                                        text="Query Builder"
+                                        value="queryBuilder"/>
                                 <xpath
                                         jcr:primaryType="nt:unstructured"
                                         text="XPath"

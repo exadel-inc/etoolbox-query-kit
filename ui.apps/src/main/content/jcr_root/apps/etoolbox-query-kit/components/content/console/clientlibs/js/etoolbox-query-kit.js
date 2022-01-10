@@ -12,26 +12,29 @@ $(function () {
         editor = null,
         editorLines = null;
 
-    $executeButton.click((function () {
-        $queryForm.submit(function (e) {
-            e.preventDefault();
-            var form = $(this);
-            var url = form.attr('action');
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: form.serialize(),
-                success: executeSuccess,
-                error(error) {
-                    if (error.status === 400){
-                        editorLines.style.textDecoration="underline red";
-                        editorLines.style.textDecorationStyle="dashed";
-                    }
-                    console.error(error.statusText);
-                  }
-            })
-        });
-    }));
+    $queryForm.submit(function (e) {
+        e.preventDefault();
+        var form = $(this);
+        var url = form.attr('action');
+        var editor = document.querySelector('.CodeMirror').CodeMirror;
+        var query = editor.getValue();
+        var data = form.serialize().replace(/query=.+?&/, `query=${query}&`);
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: data,
+            success: executeSuccess,
+            error: function (error) {
+                if (error.status === 400){
+                    editorLines.style.textDecoration="underline red";
+                    editorLines.style.textDecorationStyle="dashed";
+                }
+                  console.error(error.statusText);
+                var dialog = getPromptDialog('error', 'You executed incorrect query');
+                dialog.show();
+            }
+        })
+    });
 
     $queryForm.on('keyup', (function (e) {
         editorLines.style.textDecoration="none";
@@ -48,6 +51,14 @@ $(function () {
         updateUrlParams();
         buildResultTable(data["data"]);
         addPagination(data);
+
+        if (data["data"].length === 0) {
+            var dialog = getPromptDialog('warning', 'No results found');
+            dialog.show();
+        } else {
+            buildResultTable(data["data"]);
+            addPagination(data);
+        }
     }
 
     function updateUrlParams(){
@@ -165,9 +176,25 @@ $(function () {
        })
     }
 
-    setTimeout(function init(){
-        editor = document.querySelector('.CodeMirror').CodeMirror;
-        editorLines = document.querySelector('.CodeMirror-lines');
-        editor.setValue(localStorage.getItem(TYPED_QUERIES_KEY));
-    }, 0)
+    function getPromptDialog(variant, text) {
+        return new Coral.Dialog().set({
+            variant: variant,
+            header: {
+                innerHTML: variant.toUpperCase()
+            },
+            content: {
+                innerHTML: text
+            },
+            footer: {
+                innerHTML: "<button is=\"coral-button\" variant=\"primary\" coral-close=\"\">Ok</button>"
+            }
+        });
+    }
+
+   setTimeout(function init(){
+       editor = document.querySelector('.CodeMirror').CodeMirror;
+       editorLines = document.querySelector('.CodeMirror-lines');
+       editor.setValue(localStorage.getItem(TYPED_QUERIES_KEY));
+   }, 0)
+
 });
