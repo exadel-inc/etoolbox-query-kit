@@ -8,3 +8,4 @@ show-hint.js
 autocomplete.js
 query-kit-dialog.js
 selector.js
+query-constructor.js

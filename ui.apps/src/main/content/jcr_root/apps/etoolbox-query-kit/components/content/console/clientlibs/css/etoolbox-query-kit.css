@@ -20,3 +20,11 @@ textarea .coral3-Textfield {
 .query-kit-pagination {
     margin-right: 5px;
 }
+
+.in-row {
+    display: inline-flex;
+}
+
+#constructorWhere {
+    display: table-caption;
+}
