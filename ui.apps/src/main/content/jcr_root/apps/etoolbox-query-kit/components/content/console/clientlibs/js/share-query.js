@@ -4,7 +4,6 @@ $(document).ready(function () {
 
     var $shareButton = $('#shareButton'),
         $queryForm = $('#queryForm'),
-        $languageSelect = $('#languageSelect')[0],
         $executeButton = $('#executeButton');
 
     var successTooltip = new Coral.Tooltip().set({
@@ -19,33 +18,17 @@ $(document).ready(function () {
 
     $shareButton.append(successTooltip);
 
-    function updateQueryFromUrlAndSubmit(){
+    function updateQueryFromUrl() {
         var urlParams = decodeQueryUrlParams();
         var editor = document.querySelector('.CodeMirror').CodeMirror;
-        if (validateQueryLanguageParam(urlParams.language) && urlParams.query){
-           $languageSelect.items.getAll().forEach(function(item, idx){
-             if(item.value === urlParams.language){
-               item.selected = true;
-             }
-           });
+        if (urlParams.query && urlParams.query.trim().length > 0){
            editor.setValue(urlParams.query);
-           $executeButton.trigger( "click" );
-        } else {
-           console.info("URL params isn't valid.")
         }
-    }
-
-    function validateQueryLanguageParam(language) {
-        if (language === "XPath" || language === "SQL2") {
-            return language;
-        }
-        return null;
     }
 
    function decodeQueryUrlParams() {
        var urlParameters = getUrlParameters();
        return {
-            language: urlParameters["language"],
             query: urlParameters["query"]
        }
    };
@@ -68,12 +51,11 @@ $(document).ready(function () {
 
     $shareButton.on('click', (function () {
         var editor = document.querySelector('.CodeMirror').CodeMirror;
-        var language = $languageSelect.selectedItem.value;
         var query = editor.getValue();
-        successTooltip.open = true;
         if (query) {
+            successTooltip.open = true;
             var urlWithoutParams = window.location.origin + window.location.pathname;
-            navigator.clipboard.writeText(urlWithoutParams + '?language=' + language + '&query=' + encodeURIComponent(query));
+            navigator.clipboard.writeText(urlWithoutParams  + '?query=' + encodeURIComponent(query));
             setTimeout(function(){
                 successTooltip.open = false;
             }, 2000)
@@ -81,6 +63,6 @@ $(document).ready(function () {
     }));
 
     setTimeout(function() {
-      updateQueryFromUrlAndSubmit();
+      updateQueryFromUrl();
     }, 0);
 });

@@ -2,13 +2,9 @@
 
 $(function () {
 
-    const TYPED_QUERIES_KEY = 'typed_queries';
-
     var $executeButton = $('#executeButton'),
         $queryForm = $('#queryForm'),
-        $languageSelect = $('#languageSelect')[0],
         $domain = 'crx/de/index.jsp#',
-        timerId = null,
         editor = null,
         editorLines = null;
 
@@ -29,19 +25,16 @@ $(function () {
                     editorLines.style.textDecoration="underline red";
                     editorLines.style.textDecorationStyle="dashed";
                 }
-                  console.error(error.statusText);
-                var dialog = getPromptDialog('error', 'You executed incorrect query');
+                console.error(error.statusText);
+                var dialog = getPromptDialog('error', 'Query is incorrect');
                 dialog.show();
             }
         })
     });
 
-    $queryForm.on('keyup', (function (e) {
+    $queryForm.on('keyup', (function () {
         editorLines.style.textDecoration="none";
-        clearTimeout(timerId);
-        timerId = setTimeout(function(){
-            localStorage.setItem(TYPED_QUERIES_KEY, editor.getValue());
-        }, 1000);
+        updateUrlParams();
     }));
 
     function executeSuccess(data) {
@@ -49,10 +42,8 @@ $(function () {
         $('.query-kit-pagination').remove();
         $(document).trigger('query-kit:success-response', [data]);
         updateUrlParams();
-        buildResultTable(data["data"]);
-        addPagination(data);
 
-        if (data["data"].length === 0) {
+        if (data && data["data"].length === 0) {
             var dialog = getPromptDialog('warning', 'No results found');
             dialog.show();
         } else {
@@ -61,19 +52,16 @@ $(function () {
         }
     }
 
-    function updateUrlParams(){
+    function updateUrlParams() {
          var query = editor.getValue();
-         var language = $languageSelect.selectedItem.value;
-         if (query && history.pushState) {
+         if (query && query.trim().length > 0 && history.pushState) {
             var newUrl = window.location.origin + window.location.pathname +
-               '?language=' + language +
-               '&query=' + encodeURIComponent(query);
+               '?query=' + encodeURIComponent(query);
             window.history.pushState({path:newUrl},'',newUrl);
          }
     }
 
     function buildResultTable(data) {
-        //todo add check data
         var columns = Object.keys(data[0]);
         var table = new Coral.Table();
         table.classList.add('resultTable');
@@ -167,7 +155,7 @@ $(function () {
         resultTable.after(pageSelect).after(buttonNextPage).after(buttonPreviousPage);
     }
 
-    function doPostForPagination(language, query, offset, limit){
+    function doPostForPagination(language, query, offset, limit) {
        $.ajax({
            url: $queryForm.attr('action'),
            type: "POST",
@@ -191,10 +179,8 @@ $(function () {
         });
     }
 
-   setTimeout(function init(){
+   setTimeout(function init() {
        editor = document.querySelector('.CodeMirror').CodeMirror;
        editorLines = document.querySelector('.CodeMirror-lines');
-       editor.setValue(localStorage.getItem(TYPED_QUERIES_KEY));
    }, 0)
-
 });

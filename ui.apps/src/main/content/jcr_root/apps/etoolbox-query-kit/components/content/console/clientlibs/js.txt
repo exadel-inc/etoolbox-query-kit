@@ -1,13 +1,12 @@
 #base=js
 
-etoolbox-query-kit.js
 codemirror.js
 sql.js
 sql-hint.js
 show-hint.js
+etoolbox-query-kit.js
 autocomplete.js
 query-kit-dialog.js
 export-group.js
-//selector.js
 share-query.js
 save-query.js
