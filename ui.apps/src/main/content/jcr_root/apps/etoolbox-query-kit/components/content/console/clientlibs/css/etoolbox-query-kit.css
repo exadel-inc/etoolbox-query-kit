@@ -28,3 +28,7 @@ textarea .coral3-Textfield {
 #constructorWhere {
     display: table-caption;
 }
+
+#operatorWhere {
+    width: auto;
+}

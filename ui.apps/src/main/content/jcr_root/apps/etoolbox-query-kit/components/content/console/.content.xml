@@ -82,12 +82,12 @@
                                                             required="{Boolean}true"
                                                             emptyText="prop"
                                                             fieldLabel="property"
-                                                            name="property"/>
+                                                            name="propertyNameSelect"/>
                                                     <column-name
                                                             jcr:primaryType="nt:unstructured"
                                                             sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
                                                             fieldLabel="column name"
-                                                            name="columnName"/>
+                                                            name="columnNameSelect"/>
                                                 </items>
                                             </field>
                                         </items>
@@ -103,7 +103,7 @@
                                 <from-radiogroup jcr:primaryType="nt:unstructured"
                                                  sling:resourceType="granite/ui/components/coral/foundation/form/radiogroup"
                                                  granite:id="constructorFrom"
-                                                 name="from">
+                                                 name="fromType">
                                     <items
                                             jcr:primaryType="nt:unstructured">
                                         <selector
@@ -123,7 +123,7 @@
                                         jcr:primaryType="nt:unstructured"
                                         sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
                                         fieldLabel="node type name"
-                                        name="nodeTypeName"/>
+                                        name="nodeTypeNameFrom"/>
                             </items>
                         </from>
                         <where
@@ -145,70 +145,143 @@
                                                 <items jcr:primaryType="nt:unstructured">
                                                     <buttongroup
                                                             jcr:primaryType="nt:unstructured"
-                                                            name="buttongroup"
+                                                            name="constraintsConnectors"
                                                             required="{Boolean}true"
                                                             selectionMode="single"
                                                             sling:resourceType="granite/ui/components/coral/foundation/form/buttongroup">
                                                         <items jcr:primaryType="nt:unstructured">
                                                             <and
                                                                     jcr:primaryType="nt:unstructured"
-                                                                    name="and"
                                                                     text="AND"
                                                                     value="and"/>
                                                             <or
                                                                     jcr:primaryType="nt:unstructured"
-                                                                    name="or"
                                                                     text="OR"
                                                                     value="or"/>
                                                         </items>
                                                     </buttongroup>
                                                     <constraint
                                                             jcr:primaryType="nt:unstructured"
-                                                            sling:resourceType="granite/ui/components/coral/foundation/form/select"
-                                                            name="constraint">
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/buttongroup"
+                                                            granite:id="constraintWhere"
+                                                            fieldLabel="Constraints"
+                                                            required="{Boolean}true"
+                                                            name="constraint"
+                                                            selectionMode="single">
                                                         <items jcr:primaryType="nt:unstructured">
-                                                            <textfield
+                                                            <simplesearch
                                                                     jcr:primaryType="nt:unstructured"
-                                                                    text="TEXT FIELD"
-                                                                    value="textfield"/>
+                                                                    text="Simple Search"
+                                                                    value="simpleSearch"
+                                                                    checked="{Boolean}true"/>
                                                             <contains
                                                                     jcr:primaryType="nt:unstructured"
                                                                     text="CONTAINS"
-                                                                    value="contains"/>
+                                                                    value="fullTextSearch"/>
                                                             <issamenode
                                                                     jcr:primaryType="nt:unstructured"
                                                                     text="ISSAMENODE"
-                                                                    value="issamenode"/>
+                                                                    value="sameNode"/>
                                                             <ischildnode
                                                                     jcr:primaryType="nt:unstructured"
                                                                     text="ISCHILDNODE"
-                                                                    value="ischildnode"/>
+                                                                    value="childNode"/>
                                                             <isdescendantnode
                                                                     jcr:primaryType="nt:unstructured"
                                                                     text="ISDESCENDANTNODE"
-                                                                    value="isdescendantnode"/>
-                                                            <similar
+                                                                    value="descendantNode"/>
+                                                            <name
                                                                     jcr:primaryType="nt:unstructured"
-                                                                    text="SIMILAR"
-                                                                    value="similar"/>
-                                                            <native
+                                                                    text="NAME"
+                                                                    value="name"/>
+                                                            <local-name
                                                                     jcr:primaryType="nt:unstructured"
-                                                                    text="NATIVE"
-                                                                    value="native"/>
-                                                            <spellcheck
+                                                                    text="LOCALNAME"
+                                                                    value="localName"/>
+                                                            <length
                                                                     jcr:primaryType="nt:unstructured"
-                                                                    text="SPELLCHECK"
-                                                                    value="spellcheck"/>
-                                                            <suggest
-                                                                    jcr:primaryType="nt:unstructured"
-                                                                    text="SUGGEST"
-                                                                    value="suggest"/>
+                                                                    text="LENGTH"
+                                                                    value="length"/>
+<!--                                                            <similar-->
+<!--                                                                    jcr:primaryType="nt:unstructured"-->
+<!--                                                                    text="SIMILAR"-->
+<!--                                                                    value="hz"/>-->
+<!--                                                            <native-->
+<!--                                                                    jcr:primaryType="nt:unstructured"-->
+<!--                                                                    text="NATIVE"-->
+<!--                                                                    value="hz"/>-->
+<!--                                                            <spellcheck-->
+<!--                                                                    jcr:primaryType="nt:unstructured"-->
+<!--                                                                    text="SPELLCHECK"-->
+<!--                                                                    value="hz"/>-->
+<!--                                                            <suggest-->
+<!--                                                                    jcr:primaryType="nt:unstructured"-->
+<!--                                                                    text="SUGGEST"-->
+<!--                                                                    value="hz"/>-->
                                                         </items>
                                                     </constraint>
-                                                    <textfield
+                                                    <field
                                                             jcr:primaryType="nt:unstructured"
-                                                            sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
-                                                            name="textField"/>
+                                                            sling:resourceType = "granite/ui/components/coral/foundation/container"
+                                                            granite:class="in-row">
+                                                        <items jcr:primaryType="nt:unstructured">
+                                                            <property
+                                                                    jcr:primaryType="nt:unstructured"
+                                                                    sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
+                                                                    granite:id="propertyNameWhere"
+                                                                    name="propertyNameWhere"/>
+                                                            <operator
+                                                                    jcr:primaryType="nt:unstructured"
+                                                                    sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                                    granite:id="operatorWhere"
+                                                                    name="operatorWhere">
+                                                                <items jcr:primaryType="nt:unstructured">
+                                                                    <equal
+                                                                            jcr:primaryType="nt:unstructured"
+                                                                            text="="
+                                                                            value="jcr.operator.equal.to"/>
+                                                                    <not-equal
+                                                                            jcr:primaryType="nt:unstructured"
+                                                                            text="&lt;&gt;"
+                                                                            value="jcr.operator.not.equal.to"/>
+                                                                    <less-than
+                                                                            jcr:primaryType="nt:unstructured"
+                                                                            text="&lt;"
+                                                                            value="jcr.operator.less.than"/>
+                                                                    <less-than-or-equal
+                                                                            jcr:primaryType="nt:unstructured"
+                                                                            text="&lt;="
+                                                                            value="jcr.operator.less.than.or.equal.to"/>
+                                                                    <greater-than
+                                                                            jcr:primaryType="nt:unstructured"
+                                                                            text="&gt;"
+                                                                            value="jcr.operator.greater.than"/>
+                                                                    <greater-than-or-equal
+                                                                            jcr:primaryType="nt:unstructured"
+                                                                            text="&gt;="
+                                                                            value="jcr.operator.greater.than.or.equal.to"/>
+                                                                    <like
+                                                                            jcr:primaryType="nt:unstructured"
+                                                                            text="LIKE"
+                                                                            value="jcr.operator.like"/>
+                                                                    <null
+                                                                            jcr:primaryType="nt:unstructured"
+                                                                            text="IS NULL"
+                                                                            value="null"/>
+                                                                    <not-null
+                                                                            jcr:primaryType="nt:unstructured"
+                                                                            text="IS NOT NULL"
+                                                                            value="notNull"/>
+                                                                </items>
+                                                            </operator>
+                                                            <expression
+                                                                    jcr:primaryType="nt:unstructured"
+                                                                    sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
+                                                                    granite:id="expressionWhere"
+                                                                    name="expressionWhere"/>
+                                                        </items>
+                                                    </field>
+
                                                 </items>
                                             </field>
                                         </items>
@@ -216,6 +289,13 @@
                                 </where-option>
                             </items>
                         </where>
+                        <ordering
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/fieldset"
+                                jcr:title="ORDER: ">
+                            <items jcr:primaryType="nt:unstructured">
+                            </items>
+                        </ordering>
                         <submit
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/foundation/button"

@@ -6,9 +6,7 @@ import com.day.cq.search.Query;
 import com.day.cq.search.QueryBuilder;
 import com.day.text.Text;
 import com.exadel.etoolbox.query.core.services.QueryConverterService;
-import com.exadel.etoolbox.query.core.servlets.model.QueryConstructorModel;
 import com.exadel.etoolbox.query.core.servlets.model.QueryResultModel;
-import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.commons.query.sql2.Parser;
 import org.apache.jackrabbit.oak.query.xpath.XPathToSQL2Converter;
@@ -18,18 +16,13 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.ValueFactory;
-import javax.jcr.query.InvalidQueryException;
-import javax.jcr.query.qom.*;
+import javax.jcr.query.qom.QueryObjectModel;
+import javax.jcr.query.qom.QueryObjectModelFactory;
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Map;
 import java.util.Properties;
 
 @Component(service = QueryConverterService.class)
@@ -72,26 +65,6 @@ public class QueryConverterServiceImpl implements QueryConverterService {
         } catch (Exception e) {
             LOGGER.warn("Cannot create queryObjectModel", e);
         }
-        return null;
-    }
-
-    public String convertConstructorToSql2Query(ResourceResolver resourceResolver, QueryConstructorModel queryConstructorModel) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, RepositoryException {
-
-        Session session = resourceResolver.adaptTo(Session.class);
-        QueryObjectModelFactory qomFactory = session.getWorkspace().getQueryManager().getQOMFactory();
-
-        Selector source = qomFactory.selector(queryConstructorModel.getNodeTypeName(), "s");
-
-        Column[] columns = queryConstructorModel.getPropertyToColumn().entrySet().stream().map(entry -> {
-            try {
-                return qomFactory.column(entry.getKey(), entry.getValue(), "s");
-            } catch (RepositoryException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }).toArray(Column[]::new);
-        qomFactory.comparison(DynamicOperand)
-
         return null;
     }
 

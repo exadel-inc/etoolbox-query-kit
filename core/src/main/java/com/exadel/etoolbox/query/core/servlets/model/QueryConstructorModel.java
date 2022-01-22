@@ -1,54 +1,99 @@
 package com.exadel.etoolbox.query.core.servlets.model;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class QueryConstructorModel {
-    private Map<String, String> propertyToColumn;
-    private Map<String, String> constraintToField;
-    private String from;
-    private String nodeTypeName;
-    private String[] buttongroup;
+    private final Map<String, String> propertyToColumn;
+    private final String fromType;
+    private final String nodeTypeName;
+    private final List<QueryConstructorConstraint> queryConstructorConstraints;
 
     public QueryConstructorModel(Map<String, String[]> parameterMap) {
-        String[] properties = parameterMap.get("property");
-        String[] columnName = parameterMap.get("columnName");
-        propertyToColumn  = IntStream.range(0, properties.length)
-                .filter(index -> properties[index] != null && columnName[index] != null)
+        String[] propertyNames = parameterMap.get("propertyNameSelect");
+        String[] columnNames = parameterMap.get("columnNameSelect");
+        propertyToColumn = propertyNames == null ? null : IntStream.range(0, propertyNames.length)
+                .filter(index -> propertyNames[index] != null && columnNames[index] != null)
                 .boxed()
-                .collect(Collectors.toMap(index -> properties[index], index -> columnName[index], (o1, o2) -> o1, LinkedHashMap::new));
+                .collect(Collectors.toMap(index -> propertyNames[index], index -> columnNames[index], (o1, o2) -> o1, LinkedHashMap::new));
 
-        from = parameterMap.get("from")[0];
-        nodeTypeName = parameterMap.get("nodeTypeName")[0];
-        buttongroup = parameterMap.get("buttongroup");
-        String[] constraint = parameterMap.get("constraint");
-        String[] field = parameterMap.get("field");
-        constraintToField = IntStream.range(0, constraint.length)
-                .filter(index -> constraint[index] != null && field[index] != null)
-                .boxed()
-                .collect(Collectors.toMap(index -> constraint[index], index -> field[index], (o1, o2) -> o1, LinkedHashMap::new));
+        fromType = parameterMap.get("fromType")[0];
+        nodeTypeName = parameterMap.get("nodeTypeNameFrom")[0];
 
+        String[] constraintsConnectors = parameterMap.get("constraintsConnectors");
+        String[] constraintsNames = parameterMap.get("constraint");
+        String[] propertyNamesWhere = parameterMap.get("propertyNameWhere");
+        String[] expressions = parameterMap.get("expressionWhere");
+        String[] operators = parameterMap.get("operatorWhere");
+        queryConstructorConstraints = IntStream.range(0, constraintsNames.length)
+                .filter(index -> constraintsNames[index] != null && propertyNamesWhere[index] != null)
+                .mapToObj(index -> new QueryConstructorConstraint(constraintsNames[index], propertyNamesWhere[index], expressions.length > index ? expressions[index] : null, constraintsConnectors.length > index ? constraintsConnectors[index] : null, operators[index]))
+                .collect(Collectors.toList());
+
+    }
+
+    public static class QueryConstructorConstraint {
+        private String constraintName;
+        private final String propertyName;
+        private final String expression;
+        private final String connector;
+        private final String operator;
+
+        public QueryConstructorConstraint(String constraintName, String propertyName, String expression, String connector, String operator) {
+            if (operator.equals("null")) {
+                this.constraintName = "not";
+            } else if (operator.equals("notNull")) {
+                this.constraintName = "propertyExistence";
+            } else {
+                this.constraintName = constraintName;
+            }
+            this.propertyName = propertyName;
+            this.expression = expression;
+            this.connector = connector;
+            this.operator = operator;
+        }
+
+        public void setConstraintName(String constraintName) {
+            this.constraintName = constraintName;
+        }
+
+        public String getConstraintName() {
+            return constraintName;
+        }
+
+        public String getPropertyName() {
+            return propertyName;
+        }
+
+        public String getExpression() {
+            return expression;
+        }
+
+        public String getConnector() {
+            return connector;
+        }
+
+        public String getOperator() {
+            return operator;
+        }
     }
 
     public Map<String, String> getPropertyToColumn() {
         return propertyToColumn;
     }
 
-    public Map<String, String> getConstraintToField() {
-        return constraintToField;
-    }
-
-    public String getFrom() {
-        return from;
+    public String getFromType() {
+        return fromType;
     }
 
     public String getNodeTypeName() {
         return nodeTypeName;
     }
 
-    public String[] getButtongroup() {
-        return buttongroup;
+    public List<QueryConstructorConstraint> getConstraints() {
+        return queryConstructorConstraints;
     }
 }
