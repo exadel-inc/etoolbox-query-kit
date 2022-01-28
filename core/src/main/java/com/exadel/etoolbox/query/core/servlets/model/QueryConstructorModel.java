@@ -1,5 +1,6 @@
 package com.exadel.etoolbox.query.core.servlets.model;
 
+import javax.jcr.query.qom.QueryObjectModelConstants;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ public class QueryConstructorModel {
     private final String fromType;
     private final String nodeTypeName;
     private final List<QueryConstructorConstraint> queryConstructorConstraints;
+    private final Map<String, String> propertyToOrderType;
 
     public QueryConstructorModel(Map<String, String[]> parameterMap) {
         String[] propertyNames = parameterMap.get("propertyNameSelect");
@@ -33,6 +35,11 @@ public class QueryConstructorModel {
                 .mapToObj(index -> new QueryConstructorConstraint(constraintsNames[index], propertyNamesWhere[index], expressions.length > index ? expressions[index] : null, constraintsConnectors.length > index ? constraintsConnectors[index] : null, operators[index]))
                 .collect(Collectors.toList());
 
+        String[] orderType = parameterMap.entrySet().stream().filter(entry -> entry.getKey().endsWith("orderType")).map(entry -> entry.getValue()[0]).toArray(String[]::new);
+        String[] propertyNameOrder = parameterMap.entrySet().stream().filter(entry -> entry.getKey().endsWith("propertyNameOrder")).map(entry -> entry.getValue()[0]).toArray(String[]::new);
+        propertyToOrderType = IntStream.range(0, orderType.length)
+                .boxed()
+                .collect(Collectors.toMap(index -> propertyNameOrder[index], index -> orderType[index], (o1, o2) -> o1, LinkedHashMap::new));
     }
 
     public static class QueryConstructorConstraint {
@@ -43,12 +50,18 @@ public class QueryConstructorModel {
         private final String operator;
 
         public QueryConstructorConstraint(String constraintName, String propertyName, String expression, String connector, String operator) {
-            if (operator.equals("null")) {
-                this.constraintName = "not";
-            } else if (operator.equals("notNull")) {
-                this.constraintName = "propertyExistence";
-            } else {
-                this.constraintName = constraintName;
+            switch (operator) {
+                case "null":
+                    this.constraintName = "not";
+                    break;
+                case "notNull":
+                    this.constraintName = "propertyExistence";
+                    break;
+                case "notEmpty":
+                    operator = QueryObjectModelConstants.JCR_OPERATOR_NOT_EQUAL_TO;
+                default:
+                    this.constraintName = constraintName;
+                    break;
             }
             this.propertyName = propertyName;
             this.expression = expression;
@@ -95,5 +108,9 @@ public class QueryConstructorModel {
 
     public List<QueryConstructorConstraint> getConstraints() {
         return queryConstructorConstraints;
+    }
+
+    public Map<String, String> getPropertyToOrderType() {
+        return propertyToOrderType;
     }
 }

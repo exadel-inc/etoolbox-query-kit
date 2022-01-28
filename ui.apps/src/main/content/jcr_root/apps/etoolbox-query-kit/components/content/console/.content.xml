@@ -80,14 +80,31 @@
                                                             jcr:primaryType="nt:unstructured"
                                                             sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
                                                             required="{Boolean}true"
-                                                            emptyText="prop"
-                                                            fieldLabel="property"
+                                                            emptyText="property"
                                                             name="propertyNameSelect"/>
                                                     <column-name
                                                             jcr:primaryType="nt:unstructured"
                                                             sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
-                                                            fieldLabel="column name"
+                                                            emptyText="column name"
                                                             name="columnNameSelect"/>
+                                                    <selector
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                            granite:class="selectorSelect"
+                                                            name="selectorSelect">
+                                                        <items jcr:primaryType="nt:unstructured">
+                                                            <left-selector
+                                                                    jcr:primaryType="nt:unstructured"
+                                                                    text="left source selector"
+                                                                    value="left source selector"
+                                                                    name="left"/>
+                                                            <right-selector
+                                                                    jcr:primaryType="nt:unstructured"
+                                                                    text="right source selector"
+                                                                    value="right source selector"
+                                                                    name="right"/>
+                                                        </items>
+                                                    </selector>
                                                 </items>
                                             </field>
                                         </items>
@@ -115,15 +132,230 @@
                                                 jcr:primaryType="nt:unstructured"
                                                 text="Join"
                                                 value="join"
-                                                disabled="{Boolean}true"
                                                 checked="{Boolean}false"/>
                                     </items>
                                 </from-radiogroup>
-                                <node-type-name
+                                <selector
                                         jcr:primaryType="nt:unstructured"
-                                        sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
-                                        fieldLabel="node type name"
-                                        name="nodeTypeNameFrom"/>
+                                        sling:resourceType = "granite/ui/components/coral/foundation/container"
+                                        granite:id="selectorFrom">
+                                    <items jcr:primaryType="nt:unstructured">
+                                        <node-type-name
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
+                                                required="{Boolean}true"
+                                                emptyText="node type name"
+                                                name="nodeTypeNameFrom"/>
+                                    </items>
+                                </selector>
+                                <join
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType = "granite/ui/components/coral/foundation/container"
+                                        granite:id="joinFrom">
+                                    <items jcr:primaryType="nt:unstructured">
+                                        <node-type-name-left-source
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
+                                                required="{Boolean}true"
+                                                emptyText="left source node type name"
+                                                name="nodeTypeNameLeftSource"/>
+                                        <selector-left-source
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
+                                                granite:class="selector-name"
+                                                required="{Boolean}true"
+                                                value="left source selector"
+                                                emptyText="left source selector"
+                                                name="selectorLeftSource"/>
+                                        <node-type-name-right-source
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
+                                                required="{Boolean}true"
+                                                emptyText="right source node type name"
+                                                name="nodeTypeNameRightSource"/>
+                                        <selector-right-source
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
+                                                granite:class="selector-name"
+                                                required="{Boolean}true"
+                                                value="right source selector"
+                                                emptyText="right source selector"
+                                                name="selectorRightSource"/>
+                                        <join-type jcr:primaryType="nt:unstructured"
+                                                   sling:resourceType="granite/ui/components/coral/foundation/form/radiogroup"
+                                                   granite:id="joinType"
+                                                   fieldLabel="Join type"
+                                                   name="joinType">
+                                            <items
+                                                    jcr:primaryType="nt:unstructured">
+                                                <inner
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="INNER JOIN"
+                                                        value="jcr.join.type.inner"
+                                                        checked="{Boolean}true"/>
+                                                <left-outer
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="LEFT OUTER JOIN"
+                                                        value="jcr.join.type.left.outer"
+                                                        checked="{Boolean}false"/>
+                                                <right-outer
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="RIGHT OUTER JOIN"
+                                                        value="jcr.join.type.right.outer"
+                                                        checked="{Boolean}false"/>
+                                            </items>
+                                        </join-type>
+                                        <join-condition jcr:primaryType="nt:unstructured"
+                                                        sling:resourceType="granite/ui/components/coral/foundation/form/radiogroup"
+                                                        granite:id="joinCondition"
+                                                        fieldLabel="Join condition"
+                                                        name="joinCondition">
+                                            <items
+                                                    jcr:primaryType="nt:unstructured">
+                                                <child-node
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="CHILD NODE"
+                                                        value="childNodeJoinCondition"
+                                                        checked="{Boolean}true"/>
+                                                <descendant-node
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="DESCENDANT NODE"
+                                                        value="descendantNodeJoinCondition"
+                                                        checked="{Boolean}false"/>
+                                                <equi
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="EQUI"
+                                                        value="equiJoinCondition"
+                                                        checked="{Boolean}false"/>
+                                                <same-node
+                                                        jcr:primaryType="nt:unstructured"
+                                                        text="SAME NODE"
+                                                        value="sameNodeJoinCondition"
+                                                        checked="{Boolean}false"/>
+                                            </items>
+                                        </join-condition>
+                                        <join-condition-fields
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/container"
+                                                margin="{Boolean}true">
+                                            <items jcr:primaryType="nt:unstructured">
+<!--                                                <child-selector-->
+<!--                                                        jcr:primaryType="nt:unstructured"-->
+<!--                                                        sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"-->
+<!--                                                        granite:class="childNodeJoinCondition joinConditionFields"-->
+<!--                                                        required="{Boolean}true"-->
+<!--                                                        emptyText="child selector name"-->
+<!--                                                        name="childSelectorName"/>-->
+                                                <child-selector
+                                                        jcr:primaryType="nt:unstructured"
+                                                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                        granite:class="selectorSelect"
+                                                        name="childSelectorName">
+                                                    <items jcr:primaryType="nt:unstructured">
+                                                        <left-selector
+                                                                jcr:primaryType="nt:unstructured"
+                                                                text="left source selector"
+                                                                value="left source selector"
+                                                                name="left"/>
+                                                        <right-selector
+                                                                jcr:primaryType="nt:unstructured"
+                                                                text="right source selector"
+                                                                value="right source selector"
+                                                                name="right"/>
+                                                    </items>
+                                                </child-selector>
+<!--                                                <parent-selector-->
+<!--                                                        jcr:primaryType="nt:unstructured"-->
+<!--                                                        sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"-->
+<!--                                                        granite:class="childNodeJoinCondition joinConditionFields"-->
+<!--                                                        required="{Boolean}true"-->
+<!--                                                        emptyText="parent selector name"-->
+<!--                                                        name="parentSelectorName"/>-->
+                                                <parent-selector
+                                                        jcr:primaryType="nt:unstructured"
+                                                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                        granite:class="selectorSelect"
+                                                        name="parentSelectorName">
+                                                    <items jcr:primaryType="nt:unstructured">
+                                                        <left-selector
+                                                                jcr:primaryType="nt:unstructured"
+                                                                text="left source selector"
+                                                                value="left source selector"
+                                                                name="left"/>
+                                                        <right-selector
+                                                                jcr:primaryType="nt:unstructured"
+                                                                text="right source selector"
+                                                                value="right source selector"
+                                                                name="right"/>
+                                                    </items>
+                                                </parent-selector>
+<!--                                                <descendant-selector-->
+<!--                                                        jcr:primaryType="nt:unstructured"-->
+<!--                                                        sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"-->
+<!--                                                        granite:class="descendantNodeJoinCondition joinConditionFields"-->
+<!--                                                        required="{Boolean}true"-->
+<!--                                                        emptyText="descendant selector name"-->
+<!--                                                        name="descendantSelectorName"/>-->
+<!--                                                <ancestor-selector-->
+<!--                                                        jcr:primaryType="nt:unstructured"-->
+<!--                                                        sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"-->
+<!--                                                        granite:class="descendantNodeJoinCondition joinConditionFields"-->
+<!--                                                        required="{Boolean}true"-->
+<!--                                                        emptyText="ancestor selector name"-->
+<!--                                                        name="ancestorSelectorName"/>-->
+<!--                                                <equi-selector1-name-->
+<!--                                                        jcr:primaryType="nt:unstructured"-->
+<!--                                                        sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"-->
+<!--                                                        granite:class="equiJoinCondition joinConditionFields"-->
+<!--                                                        required="{Boolean}true"-->
+<!--                                                        emptyText="selector 1 name"-->
+<!--                                                        name="equiSelector1Name"/>-->
+                                                <equi-property1-name
+                                                        jcr:primaryType="nt:unstructured"
+                                                        sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
+                                                        granite:class="equiJoinCondition joinConditionFields"
+                                                        required="{Boolean}true"
+                                                        emptyText="property 1 name"
+                                                        name="equiProperty1Name"/>
+<!--                                                <equi-selector2-name-->
+<!--                                                        jcr:primaryType="nt:unstructured"-->
+<!--                                                        sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"-->
+<!--                                                        granite:class="equiJoinCondition joinConditionFields"-->
+<!--                                                        required="{Boolean}true"-->
+<!--                                                        emptyText="selector 2 name"-->
+<!--                                                        name="equiSelector2Name"/>-->
+                                                <equi-property2-name
+                                                        jcr:primaryType="nt:unstructured"
+                                                        sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
+                                                        granite:class="equiJoinCondition joinConditionFields"
+                                                        required="{Boolean}true"
+                                                        emptyText="property 2 name"
+                                                        name="equiProperty2Name"/>
+<!--                                                <same-selector1-name-->
+<!--                                                        jcr:primaryType="nt:unstructured"-->
+<!--                                                        sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"-->
+<!--                                                        granite:class="sameNodeJoinCondition joinConditionFields"-->
+<!--                                                        required="{Boolean}true"-->
+<!--                                                        emptyText="selector 1 name"-->
+<!--                                                        name="sameSelector1Name"/>-->
+<!--                                                <same-selector2-name-->
+<!--                                                        jcr:primaryType="nt:unstructured"-->
+<!--                                                        sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"-->
+<!--                                                        granite:class="sameNodeJoinCondition joinConditionFields"-->
+<!--                                                        required="{Boolean}true"-->
+<!--                                                        emptyText="selector 2 name"-->
+<!--                                                        name="sameSelector2Name"/>-->
+                                                <same-selector2-path
+                                                        jcr:primaryType="nt:unstructured"
+                                                        sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
+                                                        granite:class="sameNodeJoinCondition joinConditionFields"
+                                                        required="{Boolean}true"
+                                                        emptyText="selector 2 path"
+                                                        name="sameSelector2Path"/>
+                                            </items>
+                                        </join-condition-fields>
+                                    </items>
+                                </join>
                             </items>
                         </from>
                         <where
@@ -160,11 +392,15 @@
                                                                     value="or"/>
                                                         </items>
                                                     </buttongroup>
+                                                    <not
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType = "granite/ui/components/coral/foundation/form/checkbox"
+                                                            text="NOT"
+                                                            name="notWhere"/>
                                                     <constraint
                                                             jcr:primaryType="nt:unstructured"
                                                             sling:resourceType="granite/ui/components/coral/foundation/form/buttongroup"
-                                                            granite:id="constraintWhere"
-                                                            fieldLabel="Constraints"
+                                                            granite:class="constraintWhere"
                                                             required="{Boolean}true"
                                                             name="constraint"
                                                             selectionMode="single">
@@ -229,6 +465,7 @@
                                                                     jcr:primaryType="nt:unstructured"
                                                                     sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
                                                                     granite:id="propertyNameWhere"
+                                                                    emptyText="property"
                                                                     name="propertyNameWhere"/>
                                                             <operator
                                                                     jcr:primaryType="nt:unstructured"
@@ -268,20 +505,46 @@
                                                                             jcr:primaryType="nt:unstructured"
                                                                             text="IS NULL"
                                                                             value="null"/>
+                                                                    <null-empty
+                                                                            jcr:primaryType="nt:unstructured"
+                                                                            text="IS NULL OR EMPTY"
+                                                                            value="nullEmpty"/>
                                                                     <not-null
                                                                             jcr:primaryType="nt:unstructured"
                                                                             text="IS NOT NULL"
                                                                             value="notNull"/>
+                                                                    <not-empty
+                                                                            jcr:primaryType="nt:unstructured"
+                                                                            text="IS NOT EMPTY"
+                                                                            value="notEmpty"/>
                                                                 </items>
                                                             </operator>
                                                             <expression
                                                                     jcr:primaryType="nt:unstructured"
                                                                     sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
                                                                     granite:id="expressionWhere"
+                                                                    emptyText="expression"
                                                                     name="expressionWhere"/>
+                                                            <selector
+                                                                    jcr:primaryType="nt:unstructured"
+                                                                    sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                                    granite:class="selectorSelect"
+                                                                    name="selectorWhere">
+                                                                <items jcr:primaryType="nt:unstructured">
+                                                                    <left-selector
+                                                                            jcr:primaryType="nt:unstructured"
+                                                                            text="left source selector"
+                                                                            value="left source selector"
+                                                                            name="left"/>
+                                                                    <right-selector
+                                                                            jcr:primaryType="nt:unstructured"
+                                                                            text="right source selector"
+                                                                            value="right source selector"
+                                                                            name="right"/>
+                                                                </items>
+                                                            </selector>
                                                         </items>
                                                     </field>
-
                                                 </items>
                                             </field>
                                         </items>
@@ -294,6 +557,49 @@
                                 sling:resourceType="granite/ui/components/coral/foundation/form/fieldset"
                                 jcr:title="ORDER: ">
                             <items jcr:primaryType="nt:unstructured">
+                                <orders
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                        granite:id="constructorOrder"
+                                        composite="{Boolean}true">
+                                    <field
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType = "granite/ui/components/coral/foundation/container"
+                                            name="orders">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <field
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType = "granite/ui/components/coral/foundation/container"
+                                                    granite:class="in-row">
+                                                <items jcr:primaryType="nt:unstructured">
+                                                    <order-radiogroup jcr:primaryType="nt:unstructured"
+                                                                     sling:resourceType="granite/ui/components/coral/foundation/form/radiogroup"
+                                                                     name="orderType">
+                                                        <items
+                                                                jcr:primaryType="nt:unstructured">
+                                                            <asc
+                                                                    jcr:primaryType="nt:unstructured"
+                                                                    text="Ascending"
+                                                                    value="asc"
+                                                                    checked="{Boolean}true"/>
+                                                            <desc
+                                                                    jcr:primaryType="nt:unstructured"
+                                                                    text="Descending"
+                                                                    value="desc"
+                                                                    checked="{Boolean}false"/>
+                                                        </items>
+                                                    </order-radiogroup>
+                                                    <property
+                                                            jcr:primaryType="nt:unstructured"
+                                                            sling:resourceType = "granite/ui/components/coral/foundation/form/textfield"
+                                                            required="{Boolean}true"
+                                                            emptyText="property"
+                                                            name="propertyNameOrder"/>
+                                                </items>
+                                            </field>
+                                        </items>
+                                    </field>
+                                </orders>
                             </items>
                         </ordering>
                         <submit

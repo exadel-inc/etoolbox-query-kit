@@ -26,12 +26,14 @@ public class QueryConstructorServiceImpl implements QueryConstructorService {
 
         try {
             QueryObjectModelFactory qomFactory = session.getWorkspace().getQueryManager().getQOMFactory();
-            Selector source = qomFactory.selector(queryConstructorModel.getNodeTypeName(), DEFAULT_SELECTOR_NAME);
+            Source source = getSource(qomFactory, queryConstructorModel);
             Column[] columns = queryConstructorModel.getPropertyToColumn() == null ? null : getColumns(queryConstructorModel, qomFactory);
 
             Constraint constraint = buildConstraint(qomFactory, queryConstructorModel.getConstraints());
 
-            QueryObjectModel query = qomFactory.createQuery(source, constraint, null, columns);
+            Ordering[] orderings = queryConstructorModel.getPropertyToOrderType() == null ? null : getOrderings(queryConstructorModel, qomFactory);
+
+            QueryObjectModel query = qomFactory.createQuery(source, constraint, orderings, columns);
             return query.getStatement();
         } catch (RepositoryException e) {
             e.printStackTrace();
@@ -40,10 +42,14 @@ public class QueryConstructorServiceImpl implements QueryConstructorService {
         return null;
     }
 
+    private Source getSource(QueryObjectModelFactory qomFactory, QueryConstructorModel queryConstructorModel) throws RepositoryException {
+         return qomFactory.selector(queryConstructorModel.getNodeTypeName(), DEFAULT_SELECTOR_NAME);
+    }
+
     private Column[] getColumns(QueryConstructorModel queryConstructorModel, QueryObjectModelFactory qomFactory) {
         return queryConstructorModel.getPropertyToColumn().entrySet().stream().map(entry -> {
             try {
-                return qomFactory.column(entry.getKey(), entry.getValue(), DEFAULT_SELECTOR_NAME);
+                return qomFactory.column(DEFAULT_SELECTOR_NAME, entry.getKey(), entry.getValue());
             } catch (RepositoryException e) {
                 e.printStackTrace();
             }
@@ -80,7 +86,7 @@ public class QueryConstructorServiceImpl implements QueryConstructorService {
             case "localName":
             case "length":
             case "simpleSearch": {
-                DynamicOperand dynamicOperand = getDynamicOperand(qomFactory, queryConstructorConstraint);
+                DynamicOperand dynamicOperand = getDynamicOperand(qomFactory, queryConstructorConstraint.getConstraintName(), queryConstructorConstraint.getPropertyName());
                 StaticOperand staticOperand = qomFactory.literal(session.getValueFactory().createValue(queryConstructorConstraint.getExpression()));
                 return qomFactory.comparison(dynamicOperand, queryConstructorConstraint.getOperator(), staticOperand);
             }
@@ -92,13 +98,28 @@ public class QueryConstructorServiceImpl implements QueryConstructorService {
         }
     }
 
-    private DynamicOperand getDynamicOperand(QueryObjectModelFactory qomFactory, QueryConstructorModel.QueryConstructorConstraint queryConstructorConstraint) throws RepositoryException {
-        switch (queryConstructorConstraint.getConstraintName()) {
+    private DynamicOperand getDynamicOperand(QueryObjectModelFactory qomFactory, String constraintName, String propertyName) throws RepositoryException {
+        switch (constraintName) {
             case "name": return qomFactory.nodeName(DEFAULT_SELECTOR_NAME);
             case "localName": return qomFactory.nodeLocalName(DEFAULT_SELECTOR_NAME);
-            case "simpleSearch": return qomFactory.propertyValue(DEFAULT_SELECTOR_NAME, queryConstructorConstraint.getPropertyName());
-            case "length": return qomFactory.length(qomFactory.propertyValue(DEFAULT_SELECTOR_NAME, queryConstructorConstraint.getPropertyName()));
+            case "simpleSearch": return qomFactory.propertyValue(DEFAULT_SELECTOR_NAME, propertyName);
+            case "length": return qomFactory.length(qomFactory.propertyValue(DEFAULT_SELECTOR_NAME, propertyName));
             default: return null;
         }
+    }
+
+    private Ordering[] getOrderings(QueryConstructorModel queryConstructorModel, QueryObjectModelFactory qomFactory) {
+        return queryConstructorModel.getPropertyToOrderType().entrySet().stream().map(entry -> {
+            try {
+                return entry
+                        .getValue()
+                        .equals("asc") ? qomFactory.ascending(getDynamicOperand(qomFactory, "simpleSearch", entry.getKey())) : qomFactory.descending(getDynamicOperand(qomFactory, "simpleSearch", entry.getKey()));
+            } catch (RepositoryException e) {
+                e.printStackTrace();
+            }
+            return null;
+        })
+                .filter(Objects::nonNull)
+                .toArray(Ordering[]::new);
     }
 }

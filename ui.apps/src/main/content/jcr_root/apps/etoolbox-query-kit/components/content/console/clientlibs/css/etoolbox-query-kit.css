@@ -26,9 +26,13 @@ textarea .coral3-Textfield {
 }
 
 #constructorWhere {
-    display: table-caption;
+    display: contents;
 }
 
 #operatorWhere {
     width: auto;
+}
+
+.coral3-Button--minimal:not(:disabled):not(.is-disabled).is-selected {
+    color: #326ec8;
 }

@@ -1,7 +1,21 @@
 "use strict"
 
 $(function () {
-    $('#constructorSelect button[coral-multifield-add]')[0].innerText = 'Add column';
+    $('#constructorSelect button[coral-multifield-add]')[0].innerText = 'New column';
+    $(document).on("click", "#constructorSelect button[coral-multifield-add]", function () {
+        var selectorType = $('#constructorFrom coral-radio[checked]')[0].getAttribute('value');
+        if (selectorType === 'join') {
+            return;
+        }
+        $('.selectorSelect').hide();
+    });
+    setTimeout(function () {
+        $('.selectorSelect').hide();
+    }, 25);
+
+
+    $('#joinFrom').hide();
+
 
     var andButton = $('#constructorWhere button[coral-multifield-add]')[0];
     andButton.innerText = 'AND';
@@ -22,7 +36,6 @@ $(function () {
             url: url,
             data: form.serialize(),
             success: function(data) {
-                console.log(data);
                 var editor = document.querySelector('.CodeMirror').CodeMirror;
                 editor.setValue(data);
             }
@@ -35,9 +48,6 @@ $(function () {
         $('#constructorWhere button[coral-multifield-add]')[0].click();
         setTimeout(function () {
             $('coral-buttongroup')[0].hide();
-            // $('#constraintWhere')[0].items.getAll().forEach(function (item, idx) {
-            //     item.setAttribute('variant', 'minimal')
-            // });
         }, 50);
     });
 })($, $(document));
@@ -63,7 +73,7 @@ $(function () {
         }, 100);
     });
 
-    $(document).on("change", "#constraintWhere", function() {
+    $(document).on("change", ".constraintWhere", function() {
         var multifieldItem = this.closest('coral-multifield-item');
         var propertyNameWhere = multifieldItem.querySelector('#propertyNameWhere');
         propertyNameWhere.show();
@@ -83,4 +93,66 @@ $(function () {
             expressionWhere.hide();
         }
     });
+
+    $(document).on("change", "#constructorWhere", function () {
+        setTimeout(function () {
+            $('.constraintWhere').each(function (idx, item) {
+                item.items.getAll().forEach(function (button, ind) {
+                    button.setAttribute('variant', 'minimal')
+                });
+            })
+        }, 25);
+    });
+
+    $(document).on("change", "#operatorWhere", function () {
+        var multifieldItem = this.closest('coral-multifield-item');
+        var expressionWhere = multifieldItem.querySelector('#expressionWhere');
+        expressionWhere.show();
+        var selectedValue = $(this).context.selectedItem.value;
+        if (selectedValue === 'null' || selectedValue === 'nullEmpty' || selectedValue === 'notNull' || selectedValue === 'notEmpty') {
+            expressionWhere.hide();
+        }
+    });
+
+    $(document).on("change", "#constructorFrom", function () {
+        var value = this.querySelector('coral-radio[checked]').getAttribute('value');
+        var join = $('#joinFrom');
+        var selector = $('#selectorFrom');
+        var selectorsSelects = $('.selectorSelect');
+        if (value === 'selector') {
+            join.hide();
+            selector.show();
+            selectorsSelects.hide();
+        } else {
+            join.show();
+            selector.hide();
+            $('.joinConditionFields').hide();
+            $(`.childNodeJoinCondition`).show();
+            selectorsSelects.show();
+        }
+    });
+
+    $(document).on("change", "#joinCondition", function () {
+        var value = this.querySelector('coral-radio[checked]').getAttribute('value');
+        $('.joinConditionFields').hide();
+        $(`.${value}`).show();
+    });
+
+    $(document).on("change", ".selector-name", function () {
+        var selectors = [];
+        $('.selector-name').each(function (idx, item) {
+            selectors.push(item.value)
+        })
+        var selectSelectors = $('.selectorSelect');
+        selectSelectors.each(function (idx, item) {
+            item.items.clear();
+            selectors.forEach(function (selector, idx) {
+                var selectItem = new Coral.Select.Item();
+                selectItem.innerHTML = selector;
+                selectItem.value = selector;
+                item.items.add(selectItem);
+            })
+        });
+    });
+
 })(document,Granite.$);
