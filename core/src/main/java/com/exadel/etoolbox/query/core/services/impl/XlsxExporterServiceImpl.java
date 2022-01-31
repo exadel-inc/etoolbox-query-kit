@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 @Component(service = XLSXExporterService.class)
-public class XLSXExporterServiceImpl implements XLSXExporterService{
-    private static final Logger LOGGER = LoggerFactory.getLogger(XLSXExporterServiceImpl.class);
+public class XlsxExporterServiceImpl implements XLSXExporterService{
+    private static final Logger LOGGER = LoggerFactory.getLogger(XlsxExporterServiceImpl.class);
 
     // ISO8601Long
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss X";
@@ -38,11 +38,11 @@ public class XLSXExporterServiceImpl implements XLSXExporterService{
     private CellStyle stringStyleOdd;
 
 
-    public XLSXExporterServiceImpl() {
+    public XlsxExporterServiceImpl() {
         this(DEFAULT_DATE_FORMAT);
     }
 
-    public XLSXExporterServiceImpl(String dateFormatPattern) {
+    public XlsxExporterServiceImpl(String dateFormatPattern) {
         simpleDateFormat = new SimpleDateFormat(dateFormatPattern);
     }
 

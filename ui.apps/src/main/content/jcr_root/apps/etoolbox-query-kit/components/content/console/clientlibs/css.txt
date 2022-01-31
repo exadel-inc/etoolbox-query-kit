@@ -1,5 +1,6 @@
 #base=css
 
 etoolbox-query-kit.css
+saved-query.css
 codemirror.css
 show-hint.css

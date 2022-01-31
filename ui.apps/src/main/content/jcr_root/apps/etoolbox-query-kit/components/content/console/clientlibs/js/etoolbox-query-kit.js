@@ -1,31 +1,12 @@
 "use strict"
 
 $(function () {
-    var $queryForm = $('#queryForm'),
-        $languageSelect = $('#languageSelect')[0],
-        $saveButton = $('#saveButton'),
-        $domain = 'crx/de/index.jsp#';
 
-    $saveButton.on('click', (function () {
-        var language = $languageSelect.selectedItem.value;
-        var editor = document.querySelector('.CodeMirror').CodeMirror;
-        var query = editor.getValue();
-        if (query) {
-            var url = '/services/etoolbox-query-kit/save';
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: {"language": language, "query": query},
-                success() {
-                    $('#saveButton')[0].setAttribute('icon', 'starFill');
-                    var coralIcon =  $('#saveButton coral-icon')[0];
-                    coralIcon.setAttribute('icon', 'starFill');
-                    coralIcon.classList.add('coral3-Icon--starFill');
-                    coralIcon.classList.remove('coral3-Icon--starStroke');
-                }
-            });
-        }
-    }));
+    var $executeButton = $('#executeButton'),
+        $queryForm = $('#queryForm'),
+        $domain = 'crx/de/index.jsp#',
+        editor = null,
+        editorLines = null;
 
     $queryForm.submit(function (e) {
         e.preventDefault();
@@ -39,23 +20,45 @@ $(function () {
             type: "POST",
             data: data,
             success: executeSuccess,
-            error: function () {
-                var dialog = getPromptDialog('error', 'You executed incorrect query');
+            error: function (error) {
+                if (error.status === 400){
+                    editorLines.style.textDecoration="underline red";
+                    editorLines.style.textDecorationStyle="dashed";
+                }
+                console.error(error.statusText);
+                var dialog = getPromptDialog('error', 'Query is incorrect');
                 dialog.show();
             }
         })
     });
 
+    $queryForm.on('keyup', (function () {
+        editorLines.style.textDecoration="none";
+        updateUrlParams();
+    }));
+
     function executeSuccess(data) {
         $('.resultTable').remove();
         $('.query-kit-pagination').remove();
-        if (data["data"].length === 0) {
+        $(document).trigger('query-kit:success-response', [data]);
+        updateUrlParams();
+
+        if (data && data["data"].length === 0) {
             var dialog = getPromptDialog('warning', 'No results found');
             dialog.show();
         } else {
             buildResultTable(data["data"]);
             addPagination(data);
         }
+    }
+
+    function updateUrlParams() {
+         var query = editor.getValue();
+         if (query && query.trim().length > 0 && history.pushState) {
+            var newUrl = window.location.origin + window.location.pathname +
+               '?query=' + encodeURIComponent(query);
+            window.history.pushState({path:newUrl},'',newUrl);
+         }
     }
 
     function buildResultTable(data) {
@@ -89,7 +92,8 @@ $(function () {
         var currentPage = Math.floor(data["offset"] / data["limit"]) + 1;
         var language = data["language"];
         var query = data["query"];
-        var offset = data["offset"] + data["data"].length;
+        var offset_next = data["offset"] + data["data"].length;
+        var offset_previous = data["offset"] - data["data"].length;
         var limit = data["limit"];
         var limitInput = $('#limitInput');
 
@@ -104,18 +108,27 @@ $(function () {
         buttonNextPage.classList.add('query-kit-pagination');
         buttonNextPage.setAttribute("id", "nextPageButton");
         buttonNextPage.on("click" ,(function () {
-            var url = $queryForm.attr('action');
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: {"language": language, "query": query, "offset": offset, "limit": limitInput[0].get('value')},
-                success: executeSuccess
-            })
+            doPostForPagination(language, query, offset_next, limitInput[0].get('value'));
+        }));
+
+        var buttonPreviousPage = new Coral.Button().set({
+            label: {
+                innerHTML: 'Previous'
+            },
+            variant: "cta",
+            iconSize: "M",
+            disabled: currentPage === 1
+        });
+        buttonPreviousPage.classList.add('query-kit-pagination');
+        buttonPreviousPage.setAttribute("id", "buttonPreviousPage");
+        buttonPreviousPage.on("click" ,(function () {
+            doPostForPagination(language, query, offset_previous, limitInput[0].get('value'));
         }));
 
         var pageSelect = new Coral.Select().set({
             name: "Select",
-            placeholder: "Choose a page"
+            placeholder: "Choose a page",
+            disabled: data['resultCount'] === -1
         });
         pageSelect.classList.add('query-kit-pagination');
         for (let i = 1; i <= pagesCount; i++) {
@@ -129,81 +142,9 @@ $(function () {
             });
         }
         pageSelect.on("change",  function () {
-            var url = $queryForm.attr('action');
             var newOffset = (pageSelect.selectedItem.get('value') - 1) * limit;
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: {"language": language, "query": query, "offset": newOffset, "limit": limit},
-                success: executeSuccess
-            })
+            doPostForPagination(language, query, newOffset, limit);
         })
-
-        var buttonExportExcel = new Coral.Button().set({
-            label: {
-                innerHTML: 'Export to XSLX'
-            },
-            variant: "cta",
-            iconSize: "M"
-        });
-        buttonExportExcel.classList.add('query-kit-pagination');
-        buttonExportExcel.setAttribute("id", "buttonExportExcel");
-        buttonExportExcel.on("click" ,(function () {
-            var wait = new Coral.Wait().set({
-                size: "L",
-                centered: true
-            });
-            document.body.appendChild(wait);
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/services/etoolbox-query-kit/export', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.responseType = 'arraybuffer';
-            xhr.onload = function (e) {
-                var blob = new Blob([this.response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-                var downloadUrl = URL.createObjectURL(blob);
-                var a = document.createElement("a");
-                a.href = downloadUrl;
-                a.download = "table.xlsx";
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                document.body.removeChild(wait);
-            };
-            xhr.send(`language=${language}&query=${query}&format=XSLX`);
-        }));
-
-        var buttonExportPdf = new Coral.Button().set({
-            label: {
-                innerHTML: 'Export to PDF'
-            },
-            variant: "cta",
-            iconSize: "M"
-        });
-        buttonExportPdf.classList.add('query-kit-pagination');
-        buttonExportPdf.setAttribute("id", "buttonExportPdf");
-        buttonExportPdf.on("click" ,(function () {
-            var wait = new Coral.Wait().set({
-                size: "L",
-                centered: true
-            });
-            document.body.appendChild(wait);
-            var xhrPdf = new XMLHttpRequest();
-            xhrPdf.open('POST', '/services/etoolbox-query-kit/export', true);
-            xhrPdf.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhrPdf.responseType = 'arraybuffer';
-            xhrPdf.onload = function (e) {
-                var blob = new Blob([this.response], { type: 'application/pdf' });
-                var downloadUrl = URL.createObjectURL(blob);
-                var a = document.createElement("a");
-                a.href = downloadUrl;
-                a.download = "table.pdf";
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                document.body.removeChild(wait);
-            };
-            xhrPdf.send(`language=${language}&query=${query}&format=PDF`);
-        }));
 
         $('#resultInfo').remove();
         var resultInfo = document.createElement("div");
@@ -211,7 +152,16 @@ $(function () {
         resultInfo.innerText = `${data['offset'] + 1} - ${data['offset'] + data["data"].length} rows of ${data['resultCount'] !== -1 ? data['resultCount'] : 'unknown'}`;
         var resultTable = $("#resultTable");
         resultTable.before(resultInfo);
-        resultTable.after(buttonExportPdf).after(buttonExportExcel).after(pageSelect).after(buttonNextPage);
+        resultTable.after(pageSelect).after(buttonNextPage).after(buttonPreviousPage);
+    }
+
+    function doPostForPagination(language, query, offset, limit) {
+       $.ajax({
+           url: $queryForm.attr('action'),
+           type: "POST",
+           data: {"language": language, "query": query, "offset": offset, "limit": limit},
+           success: executeSuccess
+       })
     }
 
     function getPromptDialog(variant, text) {
@@ -228,4 +178,9 @@ $(function () {
             }
         });
     }
+
+   setTimeout(function init() {
+       editor = document.querySelector('.CodeMirror').CodeMirror;
+       editorLines = document.querySelector('.CodeMirror-lines');
+   }, 0)
 });
