@@ -3,6 +3,7 @@
 $(function () {
 
     var $executeButton = $('#executeButton'),
+        $resultContainer = $('#resultContainer'),
         $queryForm = $('#queryForm'),
         $domain = 'crx/de/index.jsp#',
         editor = null,
@@ -10,6 +11,7 @@ $(function () {
 
     $queryForm.submit(function (e) {
         e.preventDefault();
+        updateLimit();
         var form = $(this);
         var url = form.attr('action');
         var editor = document.querySelector('.CodeMirror').CodeMirror;
@@ -40,9 +42,9 @@ $(function () {
     function executeSuccess(data) {
         $('.resultTable').remove();
         $('.query-kit-pagination').remove();
+        $('#resultInfo').remove();
         $(document).trigger('query-kit:success-response', [data]);
         updateUrlParams();
-
         if (data && data["data"].length === 0) {
             var dialog = getPromptDialog('warning', 'No results found');
             dialog.show();
@@ -62,10 +64,10 @@ $(function () {
     }
 
     function buildResultTable(data) {
-        var columns = Object.keys(data[0]);
         var table = new Coral.Table();
         table.classList.add('resultTable');
         table.setAttribute("id", "resultTable");
+        var columns = Object.keys(data[0]);
         columns.forEach(() => {
             table.appendChild(new Coral.Table.Column());
         });
@@ -84,7 +86,7 @@ $(function () {
                 row.appendChild(cell);
             })
         });
-        $queryForm.after(table);
+        $resultContainer.append(table);
     }
 
     function addPagination(data) {
@@ -108,7 +110,7 @@ $(function () {
         buttonNextPage.classList.add('query-kit-pagination');
         buttonNextPage.setAttribute("id", "nextPageButton");
         buttonNextPage.on("click" ,(function () {
-            doPostForPagination(language, query, offset_next, limitInput[0].get('value'));
+            doPostForPagination(language, query, offset_next, limitInput[0].getAttribute('value'));
         }));
 
         var buttonPreviousPage = new Coral.Button().set({
@@ -122,7 +124,7 @@ $(function () {
         buttonPreviousPage.classList.add('query-kit-pagination');
         buttonPreviousPage.setAttribute("id", "buttonPreviousPage");
         buttonPreviousPage.on("click" ,(function () {
-            doPostForPagination(language, query, offset_previous, limitInput[0].get('value'));
+            doPostForPagination(language, query, offset_previous, limitInput[0].getAttribute('value'));
         }));
 
         var pageSelect = new Coral.Select().set({
@@ -146,7 +148,6 @@ $(function () {
             doPostForPagination(language, query, newOffset, limit);
         })
 
-        $('#resultInfo').remove();
         var resultInfo = document.createElement("div");
         resultInfo.setAttribute('id', 'resultInfo');
         resultInfo.innerText = `${data['offset'] + 1} - ${data['offset'] + data["data"].length} rows of ${data['resultCount'] !== -1 ? data['resultCount'] : 'unknown'}`;
@@ -183,4 +184,9 @@ $(function () {
        editor = document.querySelector('.CodeMirror').CodeMirror;
        editorLines = document.querySelector('.CodeMirror-lines');
    }, 0)
+    
+    function updateLimit() {
+        var limitFromSettings = JSON.parse(localStorage.getItem('resultNumberField'));
+        $('#limitInput')[0].setAttribute('value', limitFromSettings);
+    }
 });

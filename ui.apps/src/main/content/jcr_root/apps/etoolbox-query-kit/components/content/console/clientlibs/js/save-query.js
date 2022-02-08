@@ -13,7 +13,6 @@
         if (queryValue && queryValue.trim().length > 0) {
             savedQueries.push(queryValue);
             saveQueriesToLocalStorage(SAVED_QUERIES_KEY, savedQueries);
-            animateSaveIcon();
         }
     }
 
@@ -41,7 +40,8 @@
         var queries = getQueriesFromLocalStorage(key);
         queries.length > 0 && queries.splice(index, 1);
         saveQueriesToLocalStorage(key, queries);
-        populateTables();
+        var table = key === 'saved_queries' ? $("#savedQueriesTable tbody") : $("#latestQueriesTable tbody");
+        populateTableValues(queries, table, key);
     }
 
     function getQueryValue() {
@@ -59,13 +59,14 @@
     }
 
     function executeCallBack(selectedItem) {
+        var dialogId = selectedItem.closest('coral-dialog').id;
         return function(){
             var $children = $(selectedItem).children();
             if (!$children) return;
             var editor = document.querySelector('.CodeMirror').CodeMirror;
             var value = $children.clone().children().remove().end().text();
             editor.setValue(value);
-            closeDialog();
+            closeDialog(`#${dialogId}`);
         }
     }
 
@@ -83,43 +84,24 @@
         table && table.empty();
     }
 
-    function closeDialog() {
-        var dialog = document.querySelector('#querySavedDialog');
+    function closeDialog(selector) {
+        var dialog = document.querySelector(selector);
         dialog && dialog.hide();
     }
 
     function toggleActionButtonsState(value) {
-       $("#deleteSavedQueryButton").prop('disabled', value);
-       $("#executeSavedQueryButton").prop('disabled', value);
-    }
-
-    function animateSaveIcon() {
-       var coralIcon = $('#saveButton coral-icon')[0],
-           saveButton = $('#saveButton')[0];
-
-       saveButton.setAttribute('icon', 'starFill');
-       coralIcon.setAttribute('icon', 'starFill');
-       coralIcon.classList.add('coral3-Icon--starFill');
-       coralIcon.classList.remove('coral3-Icon--starStroke');
-
-       setTimeout(function(){
-            saveButton.setAttribute('icon', 'starStroke');
-            coralIcon.setAttribute('icon', 'starStroke');
-            coralIcon.classList.add('coral3-Icon--starStroke');
-            coralIcon.classList.remove('coral3-Icon--starFill');
-       }, 2000);
-    }
-
-    function populateTables() {
-      var savedQueries = getQueriesFromLocalStorage(SAVED_QUERIES_KEY),
-          latestQueries = getQueriesFromLocalStorage(LATEST_QUERIES_KEY);
-
-      populateTableValues(savedQueries, $("#savedQueriesTable tbody"), SAVED_QUERIES_KEY);
-      populateTableValues(latestQueries, $("#latestQueriesTable tbody"), LATEST_QUERIES_KEY);
+       $(".deleteQueryButton").prop('disabled', value);
+       $(".executeQueryButton").prop('disabled', value);
     }
 
     $(document).on("coral-overlay:beforeopen", "#querySavedDialog", function() {
-        populateTables();
+        var savedQueries = getQueriesFromLocalStorage(SAVED_QUERIES_KEY);
+        populateTableValues(savedQueries, $("#savedQueriesTable tbody"), SAVED_QUERIES_KEY);
+    });
+
+    $(document).on("coral-overlay:beforeopen", "#querySuccessfulDialog", function() {
+        var latestQueries = getQueriesFromLocalStorage(LATEST_QUERIES_KEY);
+        populateTableValues(latestQueries, $("#latestQueriesTable tbody"), LATEST_QUERIES_KEY);
     });
 
     $(document).on("coral-table:change ", function(e) {
@@ -133,7 +115,7 @@
         }
     });
 
-    $(document).on("coral-overlay:close", "#querySavedDialog", function() {
+    $(document).on("coral-overlay:close", "#querySavedDialog, #querySuccessfulDialog", function() {
         clearTable($("#savedQueriesTable tbody"));
         clearTable($("#latestQueriesTable tbody"));
         executeAction = null;
@@ -149,21 +131,25 @@
         saveSavedQueriesToLocalStorage();
     });
 
-    $(document).on("click", "#savedQueriesButton", function() {
-        var dialog = document.querySelector('#querySavedDialog');
+    $(document).on("click", "#openSavedQueriesButton", function() {
+        openDialog('#querySavedDialog')
+    });
+
+    $(document).on("click", "#openLatestSuccessfulQueriesButton", function() {
+        openDialog('#querySuccessfulDialog')
+    });
+
+    function openDialog(dialogSelector) {
+        var dialog = document.querySelector(dialogSelector);
         dialog.center();
         dialog.show();
-    });
+    }
 
-    $(document).on("click", ".saved-type-tab", function() {
-        $('#savedTypeTabs').find(":selected").trigger("click");
-    });
-
-    $(document).on("click", "#executeSavedQueryButton", function() {
+    $(document).on("click", ".executeQueryButton", function() {
         executeAction && executeAction();
     });
 
-    $(document).on("click", "#deleteSavedQueryButton", function() {
+    $(document).on("click", ".deleteQueryButton", function() {
         deleteAction && deleteAction();
     });
 

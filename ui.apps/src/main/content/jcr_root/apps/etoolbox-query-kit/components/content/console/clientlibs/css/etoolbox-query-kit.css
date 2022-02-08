@@ -1,22 +1,23 @@
-textarea .coral3-Textfield {
-    width: auto;
-    margin: 20px;
-}
-
-#queristerContent {
-    margin: 20px;
-}
-
-#executeButton, #resultTable {
-    margin-bottom: 20px;
-}
-
 .CodeMirror {
     width: auto;
-    margin: 20px;
-    resize: both;
+    resize: vertical;
 }
 
-.query-kit-pagination {
-    margin-right: 5px;
+.in-row {
+    display: inline-block;
+    width: 48%;
+}
+
+.content-columns {
+    display: inline;
+}
+
+.buttons-query-editor {
+    text-align: right;
+}
+
+.coral3-SelectList {
+    max-height: 600px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }

@@ -1,9 +1,10 @@
-<coral-dialog class="foundation-toggleable" closable="on" id="querySavedDialog">
-    <coral-dialog-header>Saved queries</coral-dialog-header>
+<coral-dialog class="foundation-toggleable" closable="on" id="querySuccessfulDialog">
+    <coral-dialog-header>Latest 10 Successful Queries</coral-dialog-header>
     <coral-dialog-content>
         <div class="coral-Form coral-Form--vertical foundation-layout-util-maximized-container">
-            <table is="coral-table" id="savedQueriesTable" selectable>
-                <tbody is="coral-table-body"></tbody>
+            <table is="coral-table"  id="latestQueriesTable" selectable>
+                <tbody is="coral-table-body">
+                </tbody>
             </table>
             <div class="saved-button-group">
                 <button class="executeQueryButton" type="button" is="coral-button" variant="primary" disabled>Open</button>
