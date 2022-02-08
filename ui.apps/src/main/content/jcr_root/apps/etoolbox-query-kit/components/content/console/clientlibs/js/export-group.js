@@ -18,10 +18,8 @@
     });
 
     function doPostForExport(type, format) {
-       var $languageSelect = $('#languageSelect')[0],
-           editor = document.querySelector('.CodeMirror').CodeMirror,
-           value = editor.getValue(),
-           language = $languageSelect.selectedItem.value;
+       var editor = document.querySelector('.CodeMirror').CodeMirror,
+           value = editor.getValue()
 
        var xhrRequest = new XMLHttpRequest();
        xhrRequest.open('POST', '/services/etoolbox-query-kit/export', true);
@@ -32,12 +30,12 @@
            var downloadUrl = URL.createObjectURL(blob);
            var a = document.createElement("a");
            a.href = downloadUrl;
-           a.download = `table.${type.toLowerCase()}`;
+           a.download = `table.${format.toLowerCase()}`;
            document.body.appendChild(a);
            a.click();
            document.body.removeChild(a);
        };
-       xhrRequest.send(`language=${language}&query=${value}&format=${format}`);
+       xhrRequest.send(`query=${value}&format=${format}`);
     }
 
 })(document, Granite.$);

@@ -10,7 +10,7 @@ public class QueryResultModel {
     private final static String OFFSET_PARAMETER = "offset";
     private final static String LIMIT_PARAMETER = "limit";
     private static final long DEFAULT_OFFSET = 0;
-    private static final long DEFAULT_LIMIT = 100000;
+    private static final long DEFAULT_LIMIT = 1000;
 
     private final Map<String, String> headers = new TreeMap<>();
     private final List<Map<String, String>> data = new ArrayList<>();

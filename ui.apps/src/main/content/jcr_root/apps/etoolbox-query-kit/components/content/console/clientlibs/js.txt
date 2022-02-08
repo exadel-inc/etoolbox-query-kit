@@ -10,3 +10,4 @@ query-kit-dialog.js
 export-group.js
 share-query.js
 save-query.js
+settings.js
