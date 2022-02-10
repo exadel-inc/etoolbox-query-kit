@@ -6,7 +6,7 @@ import com.day.cq.search.Query;
 import com.day.cq.search.QueryBuilder;
 import com.day.text.Text;
 import com.exadel.etoolbox.query.core.services.QueryConverterService;
-import com.exadel.etoolbox.query.core.servlets.model.QueryResultModel;
+import com.exadel.etoolbox.query.core.models.QueryResultModel;
 import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.commons.query.sql2.Parser;
@@ -38,7 +38,7 @@ public class QueryConverterServiceImpl implements QueryConverterService {
     private QueryBuilder queryBuilder;
 
     @Override
-    public QueryObjectModel convertQueryToJQOM(ResourceResolver resourceResolver, QueryResultModel queryResultModel) {
+    public QueryObjectModel convertQueryToJqom(ResourceResolver resourceResolver, QueryResultModel queryResultModel) {
         String query = queryResultModel.getQuery();
         try {
             Session session = resourceResolver.adaptTo(Session.class);

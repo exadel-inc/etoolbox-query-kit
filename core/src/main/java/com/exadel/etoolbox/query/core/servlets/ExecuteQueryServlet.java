@@ -1,8 +1,8 @@
 package com.exadel.etoolbox.query.core.servlets;
 
-import com.exadel.etoolbox.query.core.services.ExecuteQueryService;
 import com.exadel.etoolbox.query.core.services.QueryConverterService;
-import com.exadel.etoolbox.query.core.servlets.model.QueryResultModel;
+import com.exadel.etoolbox.query.core.services.QueryExecutorService;
+import com.exadel.etoolbox.query.core.models.QueryResultModel;
 import com.google.gson.Gson;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -13,7 +13,6 @@ import org.osgi.service.component.annotations.Reference;
 
 import javax.jcr.query.qom.QueryObjectModel;
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -25,29 +24,30 @@ import java.io.IOException;
         })
 public class ExecuteQueryServlet extends SlingAllMethodsServlet {
 
-    private static final String APPLICATION_JSON = "application/json";
+    private static final String CONTENT_TYPE_JSON = "application/json";
+    private static final Gson GSON = new Gson();
 
     @Reference
-    private QueryConverterService queryConverterService;
+    private transient QueryConverterService queryConverterService;
 
     @Reference
-    private ExecuteQueryService executeQueryService;
+    private transient QueryExecutorService queryExecutorService;
 
     @Override
-    protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
         ResourceResolver resolver = request.getResourceResolver();
         QueryResultModel queryResultModel = new QueryResultModel(request);
-        if (queryResultModel.isValid()) {
-            QueryObjectModel queryObjectModel = queryConverterService.convertQueryToJQOM(resolver, queryResultModel);
-            if (queryObjectModel != null) {
-                executeQueryService.executeJQOMQuery(queryObjectModel, queryResultModel);
-                String s = new Gson().toJson(queryResultModel);
-                response.setStatus(HttpServletResponse.SC_OK);
-                response.setContentType(APPLICATION_JSON);
-                response.getWriter().write(s);
-            } else {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            }
+        if (!queryResultModel.isValid()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+        QueryObjectModel queryObjectModel = queryConverterService.convertQueryToJqom(resolver, queryResultModel);
+        if (queryObjectModel != null) {
+            queryExecutorService.executeJqomQuery(queryObjectModel, queryResultModel);
+            String s = GSON.toJson(queryResultModel);
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType(CONTENT_TYPE_JSON);
+            response.getWriter().write(s);
         } else {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }

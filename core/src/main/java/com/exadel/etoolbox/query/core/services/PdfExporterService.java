@@ -5,6 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public interface PDFExporterService {
+public interface PdfExporterService {
     void export(OutputStream out, Set<String> headers, List<Map<String, String>> data);
 }
