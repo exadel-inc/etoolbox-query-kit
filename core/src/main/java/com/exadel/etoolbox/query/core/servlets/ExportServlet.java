@@ -1,10 +1,10 @@
 package com.exadel.etoolbox.query.core.servlets;
 
-import com.exadel.etoolbox.query.core.services.ExecuteQueryService;
-import com.exadel.etoolbox.query.core.services.PDFExporterService;
+import com.exadel.etoolbox.query.core.services.PdfExporterService;
 import com.exadel.etoolbox.query.core.services.QueryConverterService;
-import com.exadel.etoolbox.query.core.services.XLSXExporterService;
-import com.exadel.etoolbox.query.core.servlets.model.QueryResultModel;
+import com.exadel.etoolbox.query.core.services.QueryExecutorService;
+import com.exadel.etoolbox.query.core.services.XlsxExporterService;
+import com.exadel.etoolbox.query.core.models.QueryResultModel;
 import com.google.gson.Gson;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -36,16 +36,16 @@ public class ExportServlet extends SlingAllMethodsServlet {
     private static final Gson GSON = new Gson();
 
     @Reference
-    private QueryConverterService queryConverterService;
+    private transient QueryConverterService queryConverterService;
 
     @Reference
-    private ExecuteQueryService executeQueryService;
+    private transient QueryExecutorService queryExecutorService;
 
     @Reference
-    private XLSXExporterService xlsxExporterService;
+    private transient XlsxExporterService xlsxExporterService;
 
     @Reference
-    private PDFExporterService pdfExporterService;
+    private transient PdfExporterService pdfExporterService;
 
     @Override
     protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
@@ -53,28 +53,25 @@ public class ExportServlet extends SlingAllMethodsServlet {
         String format = request.getParameter("format");
         ResourceResolver resolver = request.getResourceResolver();
         QueryResultModel queryResultModel = new QueryResultModel(request);
-        QueryObjectModel queryObjectModel = queryConverterService.convertQueryToJQOM(resolver, queryResultModel);
-        executeQueryService.executeJQOMQuery(queryObjectModel, queryResultModel);
+        QueryObjectModel queryObjectModel = queryConverterService.convertQueryToJqom(resolver, queryResultModel);
+        queryExecutorService.executeJqomQuery(queryObjectModel, queryResultModel);
         //TODO little service for the end-user and think of giving files more descriptive names (instead result)
         switch (format) {
             case "XSLX": {
                 response.setContentType(CONTENT_TYPE_EXCEL);
                 response.setHeader(HEADER_CONTENT_DISPOSITION, "attachment; filename=result.xlsx");
-                response.setStatus(200);
-                xlsxExporterService.export(outputStream, "title", queryResultModel.getHeaders(), queryResultModel.getData());
+                xlsxExporterService.export(outputStream, queryResultModel.getColumns(), queryResultModel.getData());
                 break;
             }
             case "PDF": {
                 response.setContentType(CONTENT_TYPE_PDF);
                 response.setHeader(HEADER_CONTENT_DISPOSITION, "attachment; filename=result.pdf");
-                response.setStatus(200);
-                pdfExporterService.export(outputStream, queryResultModel.getHeaders().keySet(), queryResultModel.getData());
+                pdfExporterService.export(outputStream, queryResultModel.getColumns().keySet(), queryResultModel.getData());
                 break;
             }
             case "JSON": {
                 response.setContentType(CONTENT_TYPE_JSON);
                 response.setHeader(HEADER_CONTENT_DISPOSITION, "attachment; filename=result.json");
-                response.setStatus(200);
                 outputStream.print(GSON.toJson(queryResultModel.getData()
                         .stream()
                         .map(stringMap -> stringMap.values().stream().findFirst())

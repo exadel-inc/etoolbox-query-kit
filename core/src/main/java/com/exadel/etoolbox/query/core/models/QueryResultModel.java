@@ -1,4 +1,4 @@
-package com.exadel.etoolbox.query.core.servlets.model;
+package com.exadel.etoolbox.query.core.models;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -6,13 +6,14 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import java.util.*;
 
 public class QueryResultModel {
-    private final static String QUERY_PARAMETER = "query";
-    private final static String OFFSET_PARAMETER = "offset";
-    private final static String LIMIT_PARAMETER = "limit";
+
+    private static final String PARAMETER_QUERY = "query";
+    private static final String PARAMETER_OFFSET = "offset";
+    private static final String PARAMETER_LIMIT = "limit";
     private static final long DEFAULT_OFFSET = 0;
     private static final long DEFAULT_LIMIT = 1000;
 
-    private final Map<String, String> headers = new TreeMap<>();
+    private final Map<String, String> columns = new LinkedHashMap<>();
     private final List<Map<String, String>> data = new ArrayList<>();
     private final String query;
     private final long offset;
@@ -20,29 +21,29 @@ public class QueryResultModel {
     private long resultCount;
 
     public QueryResultModel(SlingHttpServletRequest request) {
-        query = request.getParameter(QUERY_PARAMETER);
-        offset = request.getParameter(OFFSET_PARAMETER) != null ? Long.parseLong(request.getParameter(OFFSET_PARAMETER)) : DEFAULT_OFFSET;
-        limit = request.getParameter(LIMIT_PARAMETER) != null ? Long.parseLong(request.getParameter(LIMIT_PARAMETER)) : DEFAULT_LIMIT;
+        query = request.getParameter(PARAMETER_QUERY);
+        offset = getNumericValue(request.getParameter(PARAMETER_OFFSET), DEFAULT_OFFSET);
+        limit = getNumericValue(request.getParameter(PARAMETER_LIMIT), DEFAULT_LIMIT);
     }
 
     public void addData(Map<String, String> columnToValue) {
         data.add(columnToValue);
     }
 
-    public void setHeaders(Set<String> columns) {
-        columns.forEach(column -> headers.put(column, column));
+    public void setColumns(Set<String> columns) {
+        columns.forEach(column -> this.columns.put(column, column));
     }
 
     public boolean isValid() {
-        return query != null && !query.equals(StringUtils.EMPTY);
+        return StringUtils.isNotBlank(query);
     }
 
-    public Map<String, String> getHeaders() {
-        return Collections.unmodifiableMap(headers);
+    public Map<String, String> getColumns() {
+        return columns;
     }
 
     public List<Map<String, String>> getData() {
-        return Collections.unmodifiableList(data);
+        return data;
     }
 
     public String getQuery() {
@@ -63,5 +64,11 @@ public class QueryResultModel {
 
     public void setResultCount(long resultCount) {
         this.resultCount = resultCount;
+    }
+
+    private static long getNumericValue(String value, long defaultValue) {
+        return StringUtils.isNumeric(value)
+                ? Long.parseLong(value)
+                : defaultValue;
     }
 }

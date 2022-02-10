@@ -1,7 +1,7 @@
 package com.exadel.etoolbox.query.core.services.impl;
 
-import com.exadel.etoolbox.query.core.services.ExecuteQueryService;
-import com.exadel.etoolbox.query.core.servlets.model.QueryResultModel;
+import com.exadel.etoolbox.query.core.services.QueryExecutorService;
+import com.exadel.etoolbox.query.core.models.QueryResultModel;
 import org.osgi.service.component.annotations.Component;
 
 import javax.jcr.Node;
@@ -16,18 +16,18 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-@Component(service = ExecuteQueryService.class)
-public class ExecuteQueryServiceImpl implements ExecuteQueryService {
+@Component(service = QueryExecutorService.class)
+public class QueryExecutorServiceImpl implements QueryExecutorService {
 
     private static final String PATH_COLUMN = "path";
 
     @Override
-    public void executeJQOMQuery(QueryObjectModel queryObjectModel, QueryResultModel queryResultModel) {
+    public void executeJqomQuery(QueryObjectModel queryObjectModel, QueryResultModel queryResultModel) {
         try {
             QueryResult result = queryObjectModel.execute();
             Map<String, String> columnsNameToProperty = getColumnsNamesAndProperties(queryObjectModel);
-            if (queryResultModel.getHeaders().isEmpty()) {
-                queryResultModel.setHeaders(columnsNameToProperty.keySet());
+            if (queryResultModel.getColumns().isEmpty()) {
+                queryResultModel.setColumns(columnsNameToProperty.keySet());
             }
             NodeIterator nodes = result.getNodes();
             while (nodes.hasNext()) {

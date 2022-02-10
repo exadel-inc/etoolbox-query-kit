@@ -1,6 +1,6 @@
 package com.exadel.etoolbox.query.core.services.impl;
 
-import com.exadel.etoolbox.query.core.services.PDFExporterService;
+import com.exadel.etoolbox.query.core.services.PdfExporterService;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Component(service = PDFExporterService.class)
-public class PDFExporterServiceImpl implements PDFExporterService {
+@Component(service = PdfExporterService.class)
+public class PdfExporterServiceImpl implements PdfExporterService {
 
     @Override
     public void export(OutputStream out, Set<String> headers, List<Map<String, String>> data) {

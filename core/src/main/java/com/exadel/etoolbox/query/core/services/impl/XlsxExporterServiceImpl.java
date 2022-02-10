@@ -1,13 +1,12 @@
 package com.exadel.etoolbox.query.core.services.impl;
 
-import com.exadel.etoolbox.query.core.services.XLSXExporterService;
+import com.exadel.etoolbox.query.core.services.XlsxExporterService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -22,8 +21,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@Component(service = XLSXExporterService.class)
-public class XlsxExporterServiceImpl implements XLSXExporterService{
+@Component(service = XlsxExporterService.class)
+public class XlsxExporterServiceImpl implements XlsxExporterService {
     private static final Logger LOGGER = LoggerFactory.getLogger(XlsxExporterServiceImpl.class);
 
     // ISO8601Long
@@ -47,18 +46,16 @@ public class XlsxExporterServiceImpl implements XLSXExporterService{
     }
 
     /**
-     *
-     * @param out - any output stream
-     * @param title - sheet title
-     * @param headers - table headers<br />
-     * <p>Convention:</p>
-     * 			<p>1. if the header contains ", URL" - the URL style will be applied and the cell will have the "Address" type</p>
-     * 			<p>2. if the header contains ", Date" - the Date style will be applied and the cell will have the "Date" type</p>
-     * @param data - table data, the list of Key(header)/Value - the Keys should be the equal the headers in the "headers" list parameter
+     * @param out     - any output stream
+     * @param columns - table columns<br />
+     *                <p>Convention:</p>
+     *                <p>1. if the columns contains ", URL" - the URL style will be applied and the cell will have the "Address" type</p>
+     *                <p>2. if the columns contains ", Date" - the Date style will be applied and the cell will have the "Date" type</p>
+     * @param data    - table data, the list of Key(header)/Value - the Keys should be the equal the columns in the "columns" list parameter
      */
     @Override
-    public void export(final OutputStream out, final String title, final Map<String, String> headers, final List<Map<String, String>> data) {
-        if (MapUtils.isEmpty(headers) || CollectionUtils.isEmpty(data)) {
+    public void export(final OutputStream out, final Map<String, String> columns, final List<Map<String, String>> data) {
+        if (MapUtils.isEmpty(columns) || CollectionUtils.isEmpty(data)) {
             return;
         }
         System.setProperty("java.awt.headless", "true");
@@ -71,7 +68,7 @@ public class XlsxExporterServiceImpl implements XLSXExporterService{
 
         try (Workbook wb = new XSSFWorkbook()) {
 
-            Sheet sheet = wb.createSheet(WorkbookUtil.createSafeSheetName(title));
+            Sheet sheet = wb.createSheet();
             CreationHelper createHelper = wb.getCreationHelper();
 
             int rowNumber = 0;
@@ -87,7 +84,7 @@ public class XlsxExporterServiceImpl implements XLSXExporterService{
             font.setColor(IndexedColors.WHITE.getIndex());
             headerStyle.setFont(font);
 
-            for (String header : headers.keySet()) {
+            for (String header : columns.keySet()) {
                 Cell cell = row.createCell(columnNumber++);
                 cell.setCellValue(header);
                 cell.setCellStyle(headerStyle);
@@ -97,13 +94,13 @@ public class XlsxExporterServiceImpl implements XLSXExporterService{
                 row = sheet.createRow(++rowNumber);
                 columnNumber = 0;
 
-                for (Map.Entry<String, String> headerEntry : headers.entrySet()) {
+                for (Map.Entry<String, String> headerEntry : columns.entrySet()) {
                     Cell cell = row.createCell(columnNumber++);
                     String value = dataRow.get(headerEntry.getValue());
 
                     if (headerEntry.getKey().endsWith(", URL")) {
                         putURLCell(createHelper, wb, cell, value, rowNumber % 2 != 0);
-                    } else if(headerEntry.getKey().endsWith(", Date")) {
+                    } else if (headerEntry.getKey().endsWith(", Date")) {
                         putDateCell(createHelper, wb, cell, getParsedDate(value), rowNumber % 2 != 0);
                     } else {
                         putStringCell(wb, cell, value, rowNumber % 2 != 0);
@@ -111,11 +108,11 @@ public class XlsxExporterServiceImpl implements XLSXExporterService{
                 }
             }
 
-            for(int i = 0; i < headers.keySet().size(); i++) {
+            for (int i = 0; i < columns.keySet().size(); i++) {
                 sheet.autoSizeColumn(i);
             }
 
-            sheet.setAutoFilter(new CellRangeAddress(0, rowNumber, 0, columnNumber-1));
+            sheet.setAutoFilter(new CellRangeAddress(0, rowNumber, 0, columnNumber - 1));
             wb.write(out);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
