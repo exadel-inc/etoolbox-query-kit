@@ -45,11 +45,11 @@ $(function () {
         $('#resultInfo').remove();
         $(document).trigger('query-kit:success-response', [data]);
         updateUrlParams();
-        if (data && data["data"].length === 0) {
+        if (data && data["results"].length === 0) {
             var dialog = getPromptDialog('warning', 'No results found');
             dialog.show();
         } else {
-            buildResultTable(data["data"]);
+            buildResultTable(data["results"]);
             addPagination(data);
         }
     }
@@ -67,7 +67,7 @@ $(function () {
         var table = new Coral.Table();
         table.classList.add('resultTable');
         table.setAttribute("id", "resultTable");
-        var columns = Object.keys(data[0]);
+        var columns = Object.keys(data);
         columns.forEach(() => {
             table.appendChild(new Coral.Table.Column());
         });
@@ -78,14 +78,14 @@ $(function () {
             head.appendChild(headCell)
         });
         table.appendChild(head);
-        data.forEach(item => {
+        for (let i = 0; i < data["path"].length; i++) {
             var row = table.items.add({});
-            Object.entries(item).forEach(item => {
+            Object.keys(data).forEach(key => {
                 var cell = new Coral.Table.Cell();
-                cell.innerHTML = item[0] === 'path' ? '<a href="' + $domain + item[1] + '">' + item[1] + '</a>' : item[1];
+                cell.innerHTML = key === 'path' ? '<a href="' + $domain + data[key][i] + '">' + data[key][i] + '</a>' : data[key][i];
                 row.appendChild(cell);
             })
-        });
+        }
         $resultContainer.append(table);
     }
 
@@ -94,8 +94,8 @@ $(function () {
         var currentPage = Math.floor(data["offset"] / data["limit"]) + 1;
         var language = data["language"];
         var query = data["query"];
-        var offset_next = data["offset"] + data["data"].length;
-        var offset_previous = data["offset"] - data["data"].length;
+        var offset_next = data["offset"] + data["results"]["path"].length;
+        var offset_previous = data["offset"] - data["results"]["path"].length;
         var limit = data["limit"];
         var limitInput = $('#limitInput');
 
@@ -150,7 +150,7 @@ $(function () {
 
         var resultInfo = document.createElement("div");
         resultInfo.setAttribute('id', 'resultInfo');
-        resultInfo.innerText = `${data['offset'] + 1} - ${data['offset'] + data["data"].length} rows of ${data['resultCount'] !== -1 ? data['resultCount'] : 'unknown'}`;
+        resultInfo.innerText = `${data['offset'] + 1} - ${data['offset'] + data["results"]["path"].length} rows of ${data['resultCount'] !== -1 ? data['resultCount'] : 'unknown'}`;
         var resultTable = $("#resultTable");
         resultTable.before(resultInfo);
         resultTable.after(pageSelect).after(buttonNextPage).after(buttonPreviousPage);

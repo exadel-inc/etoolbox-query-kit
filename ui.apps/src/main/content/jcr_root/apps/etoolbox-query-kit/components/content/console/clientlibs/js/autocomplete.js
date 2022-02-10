@@ -5,7 +5,8 @@ $(document).ready(function () {
         editor = CodeMirror.fromTextArea(textArea, {
             lineNumbers: true,
             mode: "text/sql2",
-            matchBrackets: true
+            matchBrackets: true,
+            lineWrapping: true
         });
     editor.on("keyup", function (cm, event) {
         if (!cm.state.completionActive &&

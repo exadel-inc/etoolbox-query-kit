@@ -72,7 +72,7 @@ public class ExportServlet extends SlingAllMethodsServlet {
             case "JSON": {
                 response.setContentType(CONTENT_TYPE_JSON);
                 response.setHeader(HEADER_CONTENT_DISPOSITION, "attachment; filename=result.json");
-                outputStream.print(GSON.toJson(queryResultModel.getData()
+                outputStream.print(GSON.toJson(queryResultModel.getResults()
                         .stream()
                         .map(stringMap -> stringMap.values().stream().findFirst())
                         .filter(Optional::isPresent)

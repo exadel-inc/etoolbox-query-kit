@@ -21,21 +21,6 @@
         populateSettings();
     });
 
-    $(document).on("coral-collection:add", ".settings-multifield", function() {
-        var id = this.id;
-        this.items.getAll().forEach(function (item, i) {
-            var input = item.querySelector('input')
-            if (input && settingsTemp[`${id}`].length > i) {
-                input.value = settingsTemp[`${id}`][i];
-            }
-        })
-    });
-
-    $(document).on("click", "#saveSettingsButton", function() {
-        collectSettingsFromDialog();
-        closeDialog('#settingsDialog')
-    });
-
     function populateSettings() {
         var settingValues;
         var settingField;
@@ -54,50 +39,19 @@
         });
     }
 
-    function getSettingFromLocalStorage(key) {
-        var storageItem = localStorage.getItem(key);
-        return storageItem ? JSON.parse(storageItem) : settings[`${key}`];
-    }
-
-    function collectSettingsFromDialog() {
-        Object.keys(settings).forEach(function (settingKey, i) {
-            var values = [];
-            $(`#${settingKey} input[is="coral-textfield"]`).each(function (i, value) {
-                values.push(value.value);
-            });
-            saveSettingToLocalStorage(settingKey, values);
-        });
-    }
-
-    function saveSettingToLocalStorage(key, value) {
-        localStorage.setItem(key, JSON.stringify(value));
-    }
-
-    $(document).on("click", ".new-option-dialog", function() {
-        var dialogId = this.getAttribute('id').replace('Button', 'Dialog')
-        openDialog(`#${dialogId}`);
+    $(document).on("coral-collection:add", ".settings-multifield", function() {
+        var id = this.id;
+        this.items.getAll().forEach(function (item, i) {
+            var input = item.querySelector('input')
+            if (input && settingsTemp[`${id}`].length > i) {
+                input.value = settingsTemp[`${id}`][i];
+            }
+        })
     });
 
-    $(document).on("click", "#editorComponentsButton", function() {
-        closeDialog('#componentsDialog');
-        editComponentQuery()
-    });
-
-    $(document).on("click", "#executeComponentsButton", function() {
-        closeDialog('#componentsDialog');
-        editComponentQuery();
-        $('#executeButton')[0].click();
-    });
-
-    $(document).on("click", "#editorTemplateButton", function() {
-        closeDialog('#templateDialog');
-        editTemplateQuery()
-    });
-
-    $(document).on("click", "#executeTemplateButton", function() {
-        closeDialog('#templateDialog');
-        editTemplateQuery();
-        $('#executeButton')[0].click();
+    $(document).on("click", "#saveSettingsButton", function() {
+        collectSettingsFromDialog();
+        closeDialog('#settingsDialog')
     });
 
     $(document).on("click", "#newQueryButton", function() {
@@ -108,88 +62,24 @@
         $('#resultInfo').remove();
     });
 
-    function updateUrlParams() {
-        var newUrl = window.location.origin + window.location.pathname;
-        window.history.pushState({path:newUrl},'',newUrl);
-    }
-
-    function editComponentQuery() {
-        var selectedComponentResourceType = selectList.selectedItem.value;
-        var contentPaths = getSettingFromLocalStorage('contentField');
-        var descendantNode = concatenateDescendantNode(contentPaths);
-        setQueryValue(`SELECT parent.[jcr:content/jcr:title] FROM [cq:Page] AS parent INNER JOIN [nt:base] AS component ON ISDESCENDANTNODE(component,parent) WHERE ${descendantNode} AND component.[sling:resourceType] = '${selectedComponentResourceType}'`);
-    }
-
-    function editTemplateQuery() {
-        var selectedTemplate = getSelectSelectedValue('#templateSelect');
-        var contentPaths = getSettingFromLocalStorage('contentField');
-        var descendantNode = concatenateDescendantNode(contentPaths);
-        setQueryValue(`SELECT child.[jcr:title], child.[cq:lastModified], child.[cq:lastModifiedBy] FROM [cq:Page] AS parent INNER JOIN [nt:base] AS child ON ISCHILDNODE(child,parent) WHERE ${descendantNode} AND child.[cq:template] = '${selectedTemplate}'`);
-    }
-    
-    function getSelectSelectedValue(selectSelector) {
-        return $(selectSelector)[0].selectedItem.value;
-    }
-
     function setQueryValue(value) {
         var editor = document.querySelector('.CodeMirror').CodeMirror;
         editor.setValue(value);
     }
 
-    function closeDialog(dialogSelector) {
-        var dialog = document.querySelector(dialogSelector);
-        dialog && dialog.hide();
+    function updateUrlParams() {
+        var newUrl = window.location.origin + window.location.pathname;
+        window.history.pushState({path:newUrl},'',newUrl);
     }
 
-    function openDialog(dialogSelector) {
-        var dialog = document.querySelector(dialogSelector);
-        dialog.center();
-        dialog.show();
-    }
+    $(document).on("click", ".new-option-dialog", function() {
+        var dialogId = this.getAttribute('id').replace('Button', 'Dialog')
+        openDialog(`#${dialogId}`);
+    });
 
     $(document).on("coral-overlay:beforeopen", "#componentsDialog", function() {
         getComponents();
     });
-
-    $(document).on("coral-overlay:beforeopen", "#templateDialog", function() {
-        getTemplates();
-    });
-
-    function getTemplates() {
-        var templatePath = getSettingFromLocalStorage('templateField');
-        var descendantNode = concatenateDescendantNode(templatePath);
-        $.ajax({
-            url: '/services/etoolbox-query-kit/execute',
-            type: "POST",
-            data: {'query':`SELECT child.[jcr:title] as title FROM [cq:Template] AS parent LEFT OUTER JOIN [cq:PageContent] AS child ON ISCHILDNODE(child,parent) where ${descendantNode}`},
-            success: fillTemplatesSelectItems,
-            error: function (error) {
-                console.log('LOL');
-            }
-        })
-    }
-    
-    function concatenateDescendantNode(paths) {
-        var descendantNode = `ISDESCENDANTNODE(parent, "${paths[0]}")`;
-        for (var i = 1; i < paths.length; i++) {
-            descendantNode += ` OR ISDESCENDANTNODE(parent, "${paths[i]}")`
-        }
-        return descendantNode;
-    }
-
-    function fillTemplatesSelectItems(data) {
-        var templateSelect = $('#templateSelect')[0];
-        templateSelect.items.clear();
-        if (data && data["data"].length === 0) {
-            return;
-        }
-        data["data"].forEach(function (component, i) {
-            var selectItem = new Coral.Select.Item();
-            selectItem.innerHTML = component["title"];
-            selectItem.value = component["path"].split('/jcr:content').shift();
-            templateSelect.items.add(selectItem);
-        });
-    }
 
     function getComponents() {
         var componentsPath = getSettingFromLocalStorage('componentField');
@@ -203,6 +93,40 @@
                 console.log('LOL');
             }
         })
+    }
+
+    function fillComponentsSelectItems(data) {
+        var search = new Coral.Search();
+        search.set({
+            placeholder: "Enter Keyword"
+        })
+        selectList = new Coral.SelectList();
+        components = {};
+        for (let i = 0; i < data["results"]["path"].length; i++) {
+            var group = data["results"]["componentGroup"][i];
+            if (!components[group]) {
+                components[group] = [];
+            }
+            components[group].push({
+                title: data["results"]["jcr:title"][i] ? data["results"]["jcr:title"][i] : 'No name',
+                resourceType: data["results"]["path"][i].split('/apps/')[1]
+            })
+        }
+
+        fillSelectList('');
+
+        search.on("coral-search:input", function() {
+            fillSelectList(this.value);
+        });
+
+        search.on("coral-search:clear", function() {
+            fillSelectList('');
+        });
+
+        var container = $('#searchContainer');
+        container.empty();
+        container[0].prepend(selectList);
+        container[0].prepend(search);
     }
 
     function fillSelectList(prefix) {
@@ -227,38 +151,115 @@
         });
     }
 
-    function fillComponentsSelectItems(data) {
-        var search = new Coral.Search();
-        search.set({
-            placeholder: "Enter Keyword"
-        })
-        selectList = new Coral.SelectList();
-        components = {};
-        data["data"].forEach(function (component, i) {
-            var group = component["componentGroup"];
-            if (!components[group]) {
-                components[group] = [];
+    $(document).on("coral-overlay:beforeopen", "#templateDialog", function() {
+        getTemplates();
+    });
+
+    function getTemplates() {
+        var templatePath = getSettingFromLocalStorage('templateField');
+        var descendantNode = concatenateDescendantNode(templatePath);
+        $.ajax({
+            url: '/services/etoolbox-query-kit/execute',
+            type: "POST",
+            data: {'query':`SELECT child.[jcr:title] as title FROM [cq:Template] AS parent LEFT OUTER JOIN [cq:PageContent] AS child ON ISCHILDNODE(child,parent) where ${descendantNode}`},
+            success: fillTemplatesSelectItems,
+            error: function (error) {
+                console.log('LOL');
             }
-            components[group].push({
-                title: component["jcr:title"],
-                resourceType: component["path"].split('/apps/')[1]
-            })
+        })
+    }
+
+    function fillTemplatesSelectItems(data) {
+        var templateSelect = $('#templateSelect')[0];
+        templateSelect.items.clear();
+        if (data && data["results"].length === 0) {
+            return;
+        }
+        for (let i = 0; i < data["results"]["path"].length; i++) {
+            var selectItem = new Coral.Select.Item();
+            selectItem.innerHTML = data["results"]["title"][i];
+            selectItem.value = data["results"]["path"][i].split('/jcr:content').shift();
+            templateSelect.items.add(selectItem);
+        }
+    }
+
+
+    function getSettingFromLocalStorage(key) {
+        var storageItem = localStorage.getItem(key);
+        return storageItem ? JSON.parse(storageItem) : settings[`${key}`];
+    }
+
+    function saveSettingToLocalStorage(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function collectSettingsFromDialog() {
+        Object.keys(settings).forEach(function (settingKey, i) {
+            var values = [];
+            $(`#${settingKey} input[is="coral-textfield"]`).each(function (i, value) {
+                values.push(value.value);
+            });
+            saveSettingToLocalStorage(settingKey, values);
         });
+    }
 
-        fillSelectList('');
+    $(document).on("click", "#editorComponentsButton", function() {
+        closeDialog('#componentsDialog');
+        editComponentQuery()
+    });
 
-        search.on("coral-search:input", function() {
-            fillSelectList(this.value);
-        });
+    $(document).on("click", "#executeComponentsButton", function() {
+        closeDialog('#componentsDialog');
+        editComponentQuery();
+        $('#executeButton')[0].click();
+    });
 
-        search.on("coral-search:clear", function() {
-            fillSelectList('');
-        });
+    $(document).on("click", "#editorTemplateButton", function() {
+        closeDialog('#templateDialog');
+        editTemplateQuery()
+    });
 
-        var container = $('#searchContainer');
-        container.empty();
-        container[0].prepend(selectList);
-        container[0].prepend(search);
+    $(document).on("click", "#executeTemplateButton", function() {
+        closeDialog('#templateDialog');
+        editTemplateQuery();
+        $('#executeButton')[0].click();
+    });
+
+    function editComponentQuery() {
+        var selectedComponentResourceType = selectList.selectedItem.value;
+        var contentPaths = getSettingFromLocalStorage('contentField');
+        var descendantNode = concatenateDescendantNode(contentPaths);
+        setQueryValue(`SELECT parent.[jcr:content/jcr:title] FROM [cq:Page] AS parent INNER JOIN [nt:base] AS component ON ISDESCENDANTNODE(component,parent) WHERE ${descendantNode} AND component.[sling:resourceType] = '${selectedComponentResourceType}'`);
+    }
+
+    function editTemplateQuery() {
+        var selectedTemplate = getSelectSelectedValue('#templateSelect');
+        var contentPaths = getSettingFromLocalStorage('contentField');
+        var descendantNode = concatenateDescendantNode(contentPaths);
+        setQueryValue(`SELECT child.[jcr:title], child.[cq:lastModified], child.[cq:lastModifiedBy] FROM [cq:Page] AS parent INNER JOIN [nt:base] AS child ON ISCHILDNODE(child,parent) WHERE ${descendantNode} AND child.[cq:template] = '${selectedTemplate}'`);
+    }
+    
+    function getSelectSelectedValue(selectSelector) {
+        return $(selectSelector)[0].selectedItem.value;
+    }
+
+    function closeDialog(dialogSelector) {
+        var dialog = document.querySelector(dialogSelector);
+        dialog && dialog.hide();
+    }
+
+    function openDialog(dialogSelector) {
+        var dialog = document.querySelector(dialogSelector);
+        dialog.center();
+        dialog.show();
+    }
+    
+    function concatenateDescendantNode(paths) {
+        var descendantNode = `ISDESCENDANTNODE(parent, "${paths[0]}")`;
+        for (var i = 1; i < paths.length; i++) {
+            descendantNode += ` OR ISDESCENDANTNODE(parent, "${paths[i]}")`
+        }
+        return descendantNode;
     }
 
 })(document, Granite.$);

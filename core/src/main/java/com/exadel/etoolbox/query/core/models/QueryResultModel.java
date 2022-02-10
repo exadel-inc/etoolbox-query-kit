@@ -13,8 +13,8 @@ public class QueryResultModel {
     private static final long DEFAULT_OFFSET = 0;
     private static final long DEFAULT_LIMIT = 1000;
 
-    private final Map<String, String> columns = new LinkedHashMap<>();
-    private final List<Map<String, String>> data = new ArrayList<>();
+    private final Map<String, List<String>> results = new LinkedHashMap<>();
+
     private final String query;
     private final long offset;
     private final long limit;
@@ -26,24 +26,8 @@ public class QueryResultModel {
         limit = getNumericValue(request.getParameter(PARAMETER_LIMIT), DEFAULT_LIMIT);
     }
 
-    public void addData(Map<String, String> columnToValue) {
-        data.add(columnToValue);
-    }
-
-    public void setColumns(Set<String> columns) {
-        columns.forEach(column -> this.columns.put(column, column));
-    }
-
     public boolean isValid() {
         return StringUtils.isNotBlank(query);
-    }
-
-    public Map<String, String> getColumns() {
-        return columns;
-    }
-
-    public List<Map<String, String>> getData() {
-        return data;
     }
 
     public String getQuery() {
@@ -60,6 +44,10 @@ public class QueryResultModel {
 
     public long getResultCount() {
         return resultCount;
+    }
+
+    public Map<String, List<String>> getResults() {
+        return results;
     }
 
     public void setResultCount(long resultCount) {
