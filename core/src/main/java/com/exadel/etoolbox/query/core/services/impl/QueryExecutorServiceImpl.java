@@ -10,10 +10,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Column;
 import javax.jcr.query.qom.QueryObjectModel;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component(service = QueryExecutorService.class)
@@ -26,24 +23,22 @@ public class QueryExecutorServiceImpl implements QueryExecutorService {
         try {
             QueryResult result = queryObjectModel.execute();
             Map<String, String> columnsNameToProperty = getColumnsNamesAndProperties(queryObjectModel);
-            if (queryResultModel.getColumns().isEmpty()) {
-                queryResultModel.setColumns(columnsNameToProperty.keySet());
-            }
+            Map<String, List<String>> results = queryResultModel.getResults();
+            columnsNameToProperty.forEach((key, value) -> results.put(key, new LinkedList<>()));
             NodeIterator nodes = result.getNodes();
             while (nodes.hasNext()) {
                 Node node = nodes.nextNode();
-                Map<String, String> columnToValue = new TreeMap<>();
                 for (String columnsName : columnsNameToProperty.keySet()) {
+                    List<String> columnValues = results.get(columnsName);
                     if (columnsName.equals(PATH_COLUMN)) {
-                        columnToValue.put(columnsName, node.getPath());
+                        columnValues.add(node.getPath());
                     } else {
                         String property = columnsNameToProperty.get(columnsName);
                         if (node.hasProperty(property)) {
-                            columnToValue.put(columnsName, node.getProperty(property).getString());
+                            columnValues.add(node.getProperty(property).getString());
                         }
                     }
                 }
-                queryResultModel.addData(columnToValue);
             }
         } catch (RepositoryException e) {
             e.printStackTrace();

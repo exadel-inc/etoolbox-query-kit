@@ -6,5 +6,5 @@ import java.util.Map;
 import java.util.Set;
 
 public interface PdfExporterService {
-    void export(OutputStream out, Set<String> headers, List<Map<String, String>> data);
+    void export(OutputStream out, Map<String, List<String>> data);
 }

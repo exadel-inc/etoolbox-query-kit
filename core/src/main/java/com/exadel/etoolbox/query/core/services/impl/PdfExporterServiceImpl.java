@@ -19,17 +19,16 @@ import java.util.Set;
 public class PdfExporterServiceImpl implements PdfExporterService {
 
     @Override
-    public void export(OutputStream out, Set<String> headers, List<Map<String, String>> data) {
+    public void export(OutputStream out, Map<String, List<String>> data) {
         try {
             Document document = new Document();
             PdfWriter.getInstance(document, out);
 
             document.open();
 
-            PdfPTable table = new PdfPTable(headers.size());
-            addTableHeader(table, headers);
+            PdfPTable table = new PdfPTable(data.size());
+            addTableHeader(table, data.keySet());
             data.forEach(row -> addRows(table, row));
-
             document.add(table);
             document.close();
         } catch (DocumentException e) {
