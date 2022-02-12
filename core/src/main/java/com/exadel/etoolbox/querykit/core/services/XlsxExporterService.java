@@ -1,4 +1,4 @@
-package com.exadel.etoolbox.query.core.services;
+package com.exadel.etoolbox.querykit.core.services;
 
 import java.io.OutputStream;
 import java.util.List;

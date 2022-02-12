@@ -1,6 +1,6 @@
-package com.exadel.etoolbox.query.core.services.impl;
+package com.exadel.etoolbox.querykit.core.services.impl;
 
-import com.exadel.etoolbox.query.core.services.XlsxExporterService;
+import com.exadel.etoolbox.querykit.core.services.XlsxExporterService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;

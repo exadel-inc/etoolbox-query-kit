@@ -1,10 +1,8 @@
-package com.exadel.etoolbox.query.core.servlets;
+package com.exadel.etoolbox.querykit.core.servlets;
 
-import com.exadel.etoolbox.query.core.services.PdfExporterService;
-import com.exadel.etoolbox.query.core.services.QueryConverterService;
-import com.exadel.etoolbox.query.core.services.QueryExecutorService;
-import com.exadel.etoolbox.query.core.services.XlsxExporterService;
-import com.exadel.etoolbox.query.core.models.QueryResultModel;
+import com.exadel.etoolbox.querykit.core.services.PdfExporterService;
+import com.exadel.etoolbox.querykit.core.services.QueryConverterService;
+import com.exadel.etoolbox.querykit.core.services.XlsxExporterService;
 import com.google.gson.Gson;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;

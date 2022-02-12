@@ -1,6 +1,5 @@
-package com.exadel.etoolbox.query.core.services;
+package com.exadel.etoolbox.querykit.core.services;
 
-import com.exadel.etoolbox.query.core.models.QueryResultModel;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.jcr.query.qom.QueryObjectModel;

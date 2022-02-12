@@ -1,6 +1,6 @@
-package com.exadel.etoolbox.query.core.services.impl;
+package com.exadel.etoolbox.querykit.core.services.impl;
 
-import com.exadel.etoolbox.query.core.services.PdfExporterService;
+import com.exadel.etoolbox.querykit.core.services.PdfExporterService;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;

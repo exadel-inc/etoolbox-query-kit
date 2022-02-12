@@ -1,12 +1,11 @@
-package com.exadel.etoolbox.query.core.services.impl;
+package com.exadel.etoolbox.querykit.core.services.impl;
 
 import com.day.cq.search.PredicateConverter;
 import com.day.cq.search.PredicateGroup;
 import com.day.cq.search.Query;
 import com.day.cq.search.QueryBuilder;
 import com.day.text.Text;
-import com.exadel.etoolbox.query.core.services.QueryConverterService;
-import com.exadel.etoolbox.query.core.models.QueryResultModel;
+import com.exadel.etoolbox.querykit.core.services.QueryConverterService;
 import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.commons.query.sql2.Parser;
