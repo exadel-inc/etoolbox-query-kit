@@ -1,9 +1,11 @@
-#base=js
+#base=libs/codemirror
+lib/codemirror.js
+mode/sql/sql.js
+addon/hint/sql-hint.js
+addon/hint/show-hint.js
 
-codemirror.js
-sql.js
-sql-hint.js
-show-hint.js
+#base=js
+editor/sql2-init.js
 etoolbox-query-kit.js
 autocomplete.js
 query-kit-dialog.js
