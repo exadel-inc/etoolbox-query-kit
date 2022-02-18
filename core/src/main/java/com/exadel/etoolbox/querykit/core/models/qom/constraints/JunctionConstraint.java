@@ -1,5 +1,6 @@
 package com.exadel.etoolbox.querykit.core.models.qom.constraints;
 
+import com.exadel.etoolbox.querykit.core.utils.Constants;
 import com.exadel.etoolbox.querykit.core.utils.serialization.JsonExportable;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -58,7 +59,7 @@ public interface JunctionConstraint extends JsonExportable {
                     "constraints",
                     serializer.serialize(Arrays.asList(getConstraint1(), getConstraint2())));
         }
-        result.addProperty("type", getType());
+        result.addProperty(Constants.PROPERTY_TYPE, getType());
         return result;
     }
 }

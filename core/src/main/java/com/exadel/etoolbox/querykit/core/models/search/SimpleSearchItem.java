@@ -57,7 +57,7 @@ class SimpleSearchItem implements SearchItem {
     @Override
     public JsonElement toJson(JsonSerializationContext serializer, ColumnCollection data) {
         JsonObject result = new JsonObject();
-        result.addProperty(Constants.PROPERTY_PATH, path);
+        result.addProperty(Constants.PROPERTY_JCR_PATH, path);
         List<String> matchingPropertyNames = data == null || CollectionUtils.isEmpty(data.getItems())
                 ? new ArrayList<>(properties.keySet())
                 : data.getPropertyNames();

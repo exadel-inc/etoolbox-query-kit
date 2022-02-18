@@ -59,7 +59,7 @@ public class ModifiableColumnCollection implements ColumnCollection, JsonExporta
         String firstSelector = getSelectors().get(0);
         getAdapters()
                 .stream()
-                .filter(adapter -> StringUtils.equals(adapter.getSelectorName(), firstSelector) && Constants.PROPERTY_PATH.equals(adapter.getPropertyName()))
+                .filter(adapter -> StringUtils.equals(adapter.getSelectorName(), firstSelector) && Constants.PROPERTY_JCR_PATH.equals(adapter.getPropertyName()))
                 .findFirst()
                 .ifPresent(items::remove);
     }
@@ -162,7 +162,7 @@ public class ModifiableColumnCollection implements ColumnCollection, JsonExporta
 
         @Override
         public String getPropertyName() {
-            return Constants.PROPERTY_PATH;
+            return Constants.PROPERTY_JCR_PATH;
         }
 
         @Override
@@ -174,7 +174,7 @@ public class ModifiableColumnCollection implements ColumnCollection, JsonExporta
         public JsonElement toJson(JsonSerializationContext context) {
             JsonObject jsonObject = new  JsonObject();
             jsonObject.addProperty("title", Constants.TITLE_PATH);
-            jsonObject.addProperty("property", Constants.PROPERTY_PATH);
+            jsonObject.addProperty("property", Constants.PROPERTY_JCR_PATH);
             return jsonObject;
         }
     }

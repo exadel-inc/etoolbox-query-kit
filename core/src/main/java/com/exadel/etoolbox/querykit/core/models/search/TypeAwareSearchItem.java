@@ -93,7 +93,7 @@ class TypeAwareSearchItem implements SearchItem {
     @Override
     public JsonElement toJson(JsonSerializationContext serializer, ColumnCollection data) {
         JsonObject result = new JsonObject();
-        result.addProperty(Constants.PROPERTY_PATH, path);
+        result.addProperty(Constants.PROPERTY_JCR_PATH, path);
         List<String> matchingPropertyNames = data == null || CollectionUtils.isEmpty(data.getItems())
                 ? new ArrayList<>(properties.keySet())
                 : data.getPropertyNames();
@@ -120,10 +120,10 @@ class TypeAwareSearchItem implements SearchItem {
         @Override
         public JsonElement toJson(JsonSerializationContext serializer) {
             JsonObject result = new JsonObject();
-            JsonExportUtil.submitValue(result, "value", value);
-            result.addProperty("path", path);
+            JsonExportUtil.submitValue(result, Constants.PROPERTY_VALUE, value);
+            result.addProperty(Constants.PROPERTY_PATH, path);
             if (type > 0) {
-                result.addProperty("type", PropertyType.nameFromValue(type) + (multiple ? "[]" : StringUtils.EMPTY));
+                result.addProperty(Constants.PROPERTY_TYPE, PropertyType.nameFromValue(type) + (multiple ? "[]" : StringUtils.EMPTY));
             }
             return result;
         }

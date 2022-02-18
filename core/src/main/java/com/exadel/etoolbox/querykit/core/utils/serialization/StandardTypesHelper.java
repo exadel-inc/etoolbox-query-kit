@@ -1,9 +1,8 @@
 package com.exadel.etoolbox.querykit.core.utils.serialization;
 
+import com.exadel.etoolbox.querykit.core.utils.Constants;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import lombok.experimental.UtilityClass;
 
@@ -20,7 +19,6 @@ import javax.jcr.query.qom.NodeLocalName;
 import javax.jcr.query.qom.NodeName;
 import javax.jcr.query.qom.SameNodeJoinCondition;
 import javax.jcr.query.qom.UpperCase;
-import java.lang.reflect.Type;
 
 @UtilityClass
 class StandardTypesHelper {
@@ -56,7 +54,7 @@ class StandardTypesHelper {
                         getJsonObject(
                         "childSelector", value.getChildSelectorName(),
                         "parentSelector", value.getParentSelectorName(),
-                        "type", "ISCHILDNODE"
+                        Constants.PROPERTY_TYPE, "ISCHILDNODE"
                 ));
     }
 
@@ -65,10 +63,10 @@ class StandardTypesHelper {
                 DescendantNodeJoinCondition.class,
                 (JsonSerializer<DescendantNodeJoinCondition>) (value, type, context) ->
                         getJsonObject(
-                        "descendantSelector", value.getDescendantSelectorName(),
-                        "ancestorSelector", value.getAncestorSelectorName(),
-                        "type", "ISDESCENDANTNODE"
-                ));
+                                "descendantSelector", value.getDescendantSelectorName(),
+                                "ancestorSelector", value.getAncestorSelectorName(),
+                                Constants.PROPERTY_TYPE, "ISDESCENDANTNODE"
+                        ));
     }
 
     private static void addForEquiJoinCondition(GsonBuilder builder) {
@@ -76,12 +74,12 @@ class StandardTypesHelper {
                 EquiJoinCondition.class,
                 (JsonSerializer<EquiJoinCondition>) (value, type, context) ->
                         getJsonObject(
-                        "selector1", value.getSelector1Name(),
-                        "property1", value.getProperty1Name(),
-                        "selector2", value.getSelector2Name(),
-                        "property2", value.getProperty2Name(),
-                        "type", "EQUAL"
-                ));
+                                "selector1", value.getSelector1Name(),
+                                "property1", value.getProperty1Name(),
+                                "selector2", value.getSelector2Name(),
+                                "property2", value.getProperty2Name(),
+                                Constants.PROPERTY_TYPE, "EQUAL"
+                        ));
     }
 
     private static void addForLength(GsonBuilder builder) {
@@ -89,10 +87,10 @@ class StandardTypesHelper {
                 Length.class,
                 (JsonSerializer<Length>) (value, type, context) ->
                         getJsonObject(
-                        "selector", value.getPropertyValue().getSelectorName(),
-                        "property", value.getPropertyValue().getPropertyName(),
-                        "type", "LENGTH"
-                ));
+                                "selector", value.getPropertyValue().getSelectorName(),
+                                "property", value.getPropertyValue().getPropertyName(),
+                                Constants.PROPERTY_TYPE, "LENGTH"
+                        ));
     }
 
     private static void addForLowerCase(GsonBuilder builder) {
@@ -101,7 +99,7 @@ class StandardTypesHelper {
                 (JsonSerializer<LowerCase>) (value, type, context) -> {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.add("operand", context.serialize(value.getOperand()));
-                    jsonObject.addProperty("type", "LOWER");
+                    jsonObject.addProperty(Constants.PROPERTY_TYPE, "LOWER");
                     return jsonObject;
                 });
     }
@@ -111,9 +109,9 @@ class StandardTypesHelper {
                 NodeLocalName.class,
                 (JsonSerializer<NodeLocalName>) (value, type, context) ->
                         getJsonObject(
-                        "selector", value.getSelectorName(),
-                        "type", "LOCAL_NAME"
-                ));
+                                "selector", value.getSelectorName(),
+                                Constants.PROPERTY_TYPE, "LOCAL_NAME"
+                        ));
     }
 
     private static void addForNodeName(GsonBuilder builder) {
@@ -121,9 +119,9 @@ class StandardTypesHelper {
                 NodeName.class,
                 (JsonSerializer<NodeLocalName>) (value, type, context) ->
                         getJsonObject(
-                        "selector", value.getSelectorName(),
-                        "type", "NAME"
-                ));
+                                "selector", value.getSelectorName(),
+                                Constants.PROPERTY_TYPE, "NAME"
+                        ));
     }
 
     private static void addForSameNodeJoinCondition(GsonBuilder builder) {
@@ -131,11 +129,11 @@ class StandardTypesHelper {
                 SameNodeJoinCondition.class,
                 (JsonSerializer<SameNodeJoinCondition>) (value, type, context) ->
                         getJsonObject(
-                        "selector1", value.getSelector1Name(),
-                        "selector2", value.getSelector2Name(),
-                        "path", value.getSelector2Path(),
-                        "type", "ISSAMENODE"
-                ));
+                                "selector1", value.getSelector1Name(),
+                                "selector2", value.getSelector2Name(),
+                                Constants.PROPERTY_PATH, value.getSelector2Path(),
+                                Constants.PROPERTY_TYPE, "ISSAMENODE"
+                        ));
     }
 
     private static void addForUpperCase(GsonBuilder builder) {
@@ -144,7 +142,7 @@ class StandardTypesHelper {
                 (JsonSerializer<UpperCase>) (value, type, context) -> {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.add("operand", context.serialize(value.getOperand()));
-                    jsonObject.addProperty("type", "UPPER");
+                    jsonObject.addProperty(Constants.PROPERTY_TYPE, "UPPER");
                     return jsonObject;
                 });
     }
@@ -160,8 +158,8 @@ class StandardTypesHelper {
                         return null;
                     }
                     return getJsonObject(
-                            "value", valueArgument,
-                            "type", PropertyType.nameFromValue(value.getType()));
+                            Constants.PROPERTY_VALUE, valueArgument,
+                            Constants.PROPERTY_TYPE, PropertyType.nameFromValue(value.getType()));
                 });
     }
 
