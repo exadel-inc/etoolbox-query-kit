@@ -13,31 +13,14 @@
 
     <artifactId>etoolbox-query-kit.ui.apps</artifactId>
 
-    <name>Exadel Toolbox Query Kit - Application Package</name>
-    <description>Contains static assets and webpage-rendering logic required to facilitate Exadel Toolbox Query Kit for AEM</description>
+    <name>EToolbox Query Kit - UI Application Package</name>
+    <description>Contains webpage-rendering logic required to facilitate EToolbox Query Kit functionality</description>
 
     <build>
         <sourceDirectory>src/main/content/jcr_root</sourceDirectory>
         <resources>
             <resource>
                 <directory>${basedir}/src/main/content/jcr_root</directory>
-                <excludes>
-                    <!-- exclude .vlt control files in the package -->
-                    <exclude>**/.vlt</exclude>
-                    <exclude>**/.vltignore</exclude>
-                    <exclude>**/.gitignore</exclude>
-                    <exclude>**/*.iml</exclude>
-                    <exclude>**/.classpath</exclude>
-                    <exclude>**/.project</exclude>
-                    <exclude>**/.settings</exclude>
-                    <exclude>**/.DS_Store</exclude>
-                    <exclude>**/target/**</exclude>
-                    <exclude>**/pom.xml</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>${basedir}/src/main/content/META-INF/vault/definition</directory>
-                <targetPath>../vault-work/META-INF/vault/definition</targetPath>
             </resource>
         </resources>
         <plugins>
