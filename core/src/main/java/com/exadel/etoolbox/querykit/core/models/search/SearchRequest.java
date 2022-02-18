@@ -8,6 +8,7 @@ import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.jcr.RepositoryException;
@@ -21,20 +22,22 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.exadel.etoolbox.querykit.core.utils.RequestUtil.PARAMETER_PREFIX;
+
 @Builder(access = AccessLevel.PRIVATE, builderClassName = "Builder")
 @Getter
 @Slf4j
 public class SearchRequest {
 
-    private static final String PARAMETER_ALL = "q_allprops";
-    private static final String PARAMETER_ITEM_FILTERS = "q_filters";
-    private static final String PARAMETER_ITEM_CONVERTERS = "q_converters";
-    private static final String PARAMETER_OFFSET = "q_offset";
-    private static final String PARAMETER_LIMIT = "q_limit";
-    private static final String PARAMETER_QUERY = "q_query";
-    private static final String PARAMETER_SHOW_TOTAL = "q_total";
-    private static final String PARAMETER_TYPE_AWARE = "q_typeaware";
-    private static final String PARAMETER_TRAVERSE = "q_traverse";
+    private static final String PARAMETER_ALL = PARAMETER_PREFIX + "allprops";
+    private static final String PARAMETER_ITEM_FILTERS = PARAMETER_PREFIX + "filters";
+    private static final String PARAMETER_ITEM_CONVERTERS = PARAMETER_PREFIX + "converters";
+    private static final String PARAMETER_OFFSET = PARAMETER_PREFIX + "offset";
+    private static final String PARAMETER_LIMIT = PARAMETER_PREFIX + "limit";
+    private static final String PARAMETER_QUERY = PARAMETER_PREFIX + "query";
+    private static final String PARAMETER_SHOW_TOTAL = PARAMETER_PREFIX + "total";
+    private static final String PARAMETER_TYPE_AWARE = PARAMETER_PREFIX + "typeaware";
+    private static final String PARAMETER_TRAVERSE = PARAMETER_PREFIX + "traverse";
 
     private static final int DEFAULT_OFFSET = 0;
     public static final int DEFAULT_LIMIT = Integer.MAX_VALUE;
@@ -106,23 +109,27 @@ public class SearchRequest {
        --------------- */
 
     public static SearchRequest from(SlingHttpServletRequest request) {
+        return from(request, null);
+    }
+
+    public static SearchRequest from(SlingHttpServletRequest request, Resource resource) {
         return SearchRequest
                 .builder()
                 .resourceResolver(request.getResourceResolver())
-                .statement(RequestUtil.decode(request.getParameter(PARAMETER_QUERY), request))
+                .statement(RequestUtil.getParameter(request, resource, PARAMETER_QUERY))
                 .userParameters(collectUserParameters(request))
 
-                .itemFilters(RequestUtil.getStringCollection(request, PARAMETER_ITEM_FILTERS))
+                .itemFilters(RequestUtil.getStringCollection(request, resource, PARAMETER_ITEM_FILTERS))
                 .format(SearchResultFormat.from(request.getRequestPathInfo().getExtension()))
-                .iterating(PARAM_VALUE_ITERATING.equals(request.getParameter(PARAMETER_SHOW_TOTAL)))
-                .limit(RequestUtil.getNumericValue(request.getParameter(PARAMETER_LIMIT), DEFAULT_LIMIT))
-                .itemConverters(RequestUtil.getStringCollection(request, PARAMETER_ITEM_CONVERTERS))
-                .offset(RequestUtil.getNumericValue(request.getParameter(PARAMETER_OFFSET), DEFAULT_OFFSET))
-                .showAllProperties(Boolean.parseBoolean(request.getParameter(PARAMETER_ALL)))
-                .showTotal(Boolean.parseBoolean(request.getParameter(PARAMETER_SHOW_TOTAL))
-                        || PARAM_VALUE_ITERATING.equals(request.getParameter(PARAMETER_SHOW_TOTAL)))
-                .storeDetails(Boolean.parseBoolean(request.getParameter(PARAMETER_TYPE_AWARE)))
-                .traverse(Boolean.parseBoolean(request.getParameter(PARAMETER_TRAVERSE)))
+                .iterating(PARAM_VALUE_ITERATING.equals(RequestUtil.getParameter(request, resource, PARAMETER_SHOW_TOTAL)))
+                .limit(RequestUtil.getNumericValue(RequestUtil.getParameter(request, resource, PARAMETER_LIMIT), DEFAULT_LIMIT))
+                .itemConverters(RequestUtil.getStringCollection(request, resource, PARAMETER_ITEM_CONVERTERS))
+                .offset(RequestUtil.getNumericValue(RequestUtil.getParameter(request, resource, PARAMETER_OFFSET), DEFAULT_OFFSET))
+                .showAllProperties(Boolean.parseBoolean(RequestUtil.getParameter(request, resource, PARAMETER_ALL)))
+                .showTotal(Boolean.parseBoolean(RequestUtil.getParameter(request, resource, PARAMETER_SHOW_TOTAL))
+                        || PARAM_VALUE_ITERATING.equals(RequestUtil.getParameter(request, resource, PARAMETER_SHOW_TOTAL)))
+                .storeDetails(Boolean.parseBoolean(RequestUtil.getParameter(request, resource, PARAMETER_TYPE_AWARE)))
+                .traverse(Boolean.parseBoolean(RequestUtil.getParameter(request, resource, PARAMETER_TRAVERSE)))
 
                 .build();
     }
@@ -132,7 +139,7 @@ public class SearchRequest {
                 .getRequestParameterMap()
                 .keySet()
                 .stream()
-                .filter(key -> !key.startsWith("q_"))
+                .filter(key -> !key.startsWith(PARAMETER_PREFIX))
                 .collect(Collectors.toList());
         Map<String, Object> result = new HashMap<>();
         for (String key : parameterKeys) {
