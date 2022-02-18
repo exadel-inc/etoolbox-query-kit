@@ -131,14 +131,6 @@
         saveSavedQueriesToLocalStorage();
     });
 
-    $(document).on("click", "#openSavedQueriesButton", function() {
-        openDialog('#querySavedDialog')
-    });
-
-    $(document).on("click", "#openLatestSuccessfulQueriesButton", function() {
-        openDialog('#querySuccessfulDialog')
-    });
-
     function openDialog(dialogSelector) {
         var dialog = document.querySelector(dialogSelector);
         dialog.center();

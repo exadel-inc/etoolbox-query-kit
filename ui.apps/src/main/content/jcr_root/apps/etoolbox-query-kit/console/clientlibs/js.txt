@@ -11,3 +11,4 @@ export-group.js
 share-query.js
 save-query.js
 settings.js
+query-dialog.js
