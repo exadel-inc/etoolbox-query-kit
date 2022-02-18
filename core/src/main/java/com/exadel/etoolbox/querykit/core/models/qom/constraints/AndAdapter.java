@@ -1,6 +1,7 @@
 package com.exadel.etoolbox.querykit.core.models.qom.constraints;
 
 import com.exadel.etoolbox.querykit.core.models.qom.EvaluationContext;
+import com.exadel.etoolbox.querykit.core.models.qom.QomAdapterContext;
 import lombok.Getter;
 
 import javax.jcr.RepositoryException;
@@ -16,10 +17,10 @@ public class AndAdapter extends ConstraintAdapter implements JunctionConstraint 
     private final ConstraintAdapter constraint1;
     private final ConstraintAdapter constraint2;
 
-    AndAdapter(And original) {
+    AndAdapter(And original, QomAdapterContext context) {
         super(original, "AND");
-        constraint1 = from(original.getConstraint1());
-        constraint2 = from(original.getConstraint2());
+        constraint1 = from(original.getConstraint1(), context);
+        constraint2 = from(original.getConstraint2(), context);
     }
 
     @Override

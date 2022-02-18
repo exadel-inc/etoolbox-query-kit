@@ -1,8 +1,9 @@
 package com.exadel.etoolbox.querykit.core.models.qom.constraints;
 
 import com.exadel.etoolbox.querykit.core.models.qom.EvaluationContext;
+import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.ConstraintHelper;
 import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.InterpolationHelper;
-import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.OperandHelper;
+import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.PredicateHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.jackrabbit.commons.query.qom.Operator;
 import org.apache.jackrabbit.value.StringValue;
@@ -30,7 +31,7 @@ public class FullTextSearchAdapter extends ConstraintAdapter {
 
     @Override
     public Constraint getConstraint(QueryObjectModelFactory factory, Map<String, Object> arguments) {
-        String value = InterpolationHelper.getLiteralValue(expression);
+        String value = ConstraintHelper.getLiteralValue(expression);
         return InterpolationHelper.interpolate(
                 this,
                 arguments,
@@ -41,6 +42,6 @@ public class FullTextSearchAdapter extends ConstraintAdapter {
 
     @Override
     public Predicate<EvaluationContext> getPredicate() {
-        return context -> OperandHelper.compare(context, selector, property, Operator.LIKE.toString(), expression);
+        return context -> PredicateHelper.compare(context, selector, property, Operator.LIKE.toString(), expression);
     }
 }

@@ -1,12 +1,16 @@
 package com.exadel.etoolbox.querykit.core.models.qom.constraints;
 
+import com.exadel.etoolbox.querykit.core.utils.serialization.JsonExportable;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
 import org.apache.commons.lang3.ClassUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public interface JunctionConstraint {
+public interface JunctionConstraint extends JsonExportable {
 
     ConstraintAdapter getConstraint1();
 
@@ -41,6 +45,20 @@ public interface JunctionConstraint {
                 result.add(item);
             }
         }
+        return result;
+    }
+
+    @Override
+    default JsonElement toJson(JsonSerializationContext serializer) {
+        JsonObject result = new JsonObject();
+        if (isCascade()) {
+            result.add("constraints", serializer.serialize(flatten()));
+        } else {
+            result.add(
+                    "constraints",
+                    serializer.serialize(Arrays.asList(getConstraint1(), getConstraint2())));
+        }
+        result.addProperty("type", getType());
         return result;
     }
 }

@@ -1,6 +1,7 @@
 package com.exadel.etoolbox.querykit.core.models.qom.constraints;
 
 import com.exadel.etoolbox.querykit.core.models.qom.EvaluationContext;
+import com.exadel.etoolbox.querykit.core.models.qom.QomAdapterContext;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.query.qom.Constraint;
@@ -13,9 +14,9 @@ public class NotAdapter extends ConstraintAdapter {
 
     private final ConstraintAdapter constraint;
 
-    NotAdapter(Not original) {
+    NotAdapter(Not original, QomAdapterContext context) {
         super(original, "NOT");
-        constraint = ConstraintAdapter.from(original.getConstraint());
+        constraint = ConstraintAdapter.from(original.getConstraint(), context);
     }
 
     @Override

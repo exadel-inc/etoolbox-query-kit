@@ -1,8 +1,9 @@
 package com.exadel.etoolbox.querykit.core.models.qom.constraints;
 
 import com.exadel.etoolbox.querykit.core.models.qom.EvaluationContext;
+import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.ConstraintHelper;
 import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.InterpolationHelper;
-import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.OperandHelper;
+import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.PredicateHelper;
 import com.exadel.etoolbox.querykit.core.models.qom.operands.DynamicOperandAdapter;
 import org.apache.jackrabbit.value.StringValue;
 
@@ -22,7 +23,7 @@ public class ComparisonAdapter extends ConstraintAdapter {
     private final String operator;
     private final StaticOperand operand2;
 
-    ComparisonAdapter(Comparison original) {
+    public ComparisonAdapter(Comparison original) {
         super(original, "COMPARE");
         operand1 = DynamicOperandAdapter.from(original.getOperand1());
         operator = original.getOperator();
@@ -31,18 +32,23 @@ public class ComparisonAdapter extends ConstraintAdapter {
 
     @Override
     public Constraint getConstraint(QueryObjectModelFactory factory, Map<String, Object> arguments) {
-        String value = InterpolationHelper.getLiteralValue(operand2);
+        String value = ConstraintHelper.getLiteralValue(operand2);
         return InterpolationHelper.interpolate(
                 this,
                 arguments,
                 factory,
                 () -> value,
                 (qomFactory, str) -> qomFactory.comparison(operand1.getOperand(), operator, factory.literal(new StringValue(str))),
-                QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO.equals(operator) ? Or.class : And.class);
+                useDisjunctionWithValueArray(operator) ? Or.class : And.class);
     }
 
     @Override
     public Predicate<EvaluationContext> getPredicate() {
-        return context -> OperandHelper.compare(context, operand1, operator, operand2);
+        return context -> PredicateHelper.compare(context, operand1, operator, operand2);
+    }
+
+    private static boolean useDisjunctionWithValueArray(String operator) {
+        return QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO.equals(operator)
+                || QueryObjectModelConstants.JCR_OPERATOR_LIKE.equals(operator);
     }
 }

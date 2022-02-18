@@ -1,6 +1,7 @@
 package com.exadel.etoolbox.querykit.core.models.qom.constraints;
 
 import com.exadel.etoolbox.querykit.core.models.qom.EvaluationContext;
+import com.exadel.etoolbox.querykit.core.models.qom.QomAdapterContext;
 import lombok.Getter;
 
 import javax.jcr.RepositoryException;
@@ -16,10 +17,10 @@ public class OrAdapter extends ConstraintAdapter implements JunctionConstraint {
     private final ConstraintAdapter constraint1;
     private final ConstraintAdapter constraint2;
 
-    OrAdapter(Or original) {
+    OrAdapter(Or original, QomAdapterContext context) {
         super(original, "OR");
-        constraint1 = ConstraintAdapter.from(original.getConstraint1());
-        constraint2 = ConstraintAdapter.from(original.getConstraint2());
+        constraint1 = ConstraintAdapter.from(original.getConstraint1(), context);
+        constraint2 = ConstraintAdapter.from(original.getConstraint2(), context);
     }
 
     @Override
