@@ -6,10 +6,10 @@ import com.exadel.etoolbox.querykit.core.utils.ValueUtil;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.commons.query.qom.Operator;
 
+import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.qom.BindVariableValue;
 import javax.jcr.query.qom.Literal;
@@ -22,7 +22,7 @@ import static org.apache.jackrabbit.commons.query.qom.Operator.LIKE;
 
 @UtilityClass
 @Slf4j
-public class OperandHelper {
+public class PredicateHelper {
 
     private static final String WILDCARD = "%";
 
@@ -57,21 +57,21 @@ public class OperandHelper {
             Map<String, Object> bindVariables) {
 
         Object rightValue = extractValue(right, bindVariables);
-        Class<?> castType = guessType(rightValue);
         if (rightValue == null) {
             return false;
         }
+        int castType = ValueUtil.detectType(rightValue);
         Operator operatorObject = getOperator(operator);
-        if (boolean.class.equals(castType)) {
+        if (castType == PropertyType.BOOLEAN) {
             return compare((boolean) leftValue, operatorObject, (boolean) rightValue);
         }
-        if (Calendar.class.equals(castType)) {
+        if (castType == PropertyType.DATE) {
             return compare((Calendar) leftValue, operatorObject, (Calendar) rightValue);
         }
-        if (long.class.equals(castType) || double.class.equals(castType)) {
+        if (castType == PropertyType.LONG || castType == PropertyType.DOUBLE) {
             return compare((double) leftValue, operatorObject, (double) rightValue);
         }
-        if (String.class.equals(castType)) {
+        if (castType == PropertyType.STRING) {
             return compare(leftValue.toString(), operatorObject, rightValue.toString());
         }
         return false;
@@ -144,7 +144,7 @@ public class OperandHelper {
     private static Object extractValue(StaticOperand operand, Map<String, Object> bindVariables) {
         if (operand instanceof Literal) {
             try {
-                return ValueUtil.getValue(((Literal) operand).getLiteralValue());
+                return ValueUtil.extractValue(((Literal) operand).getLiteralValue());
             } catch (RepositoryException e) {
                 log.error("Could not extract value", e);
                 return null;
@@ -152,28 +152,6 @@ public class OperandHelper {
         } else if (operand instanceof BindVariableValue && MapUtils.isNotEmpty(bindVariables)) {
             String variableName = ((BindVariableValue) operand).getBindVariableName();
             return bindVariables.get(variableName);
-        }
-        return null;
-    }
-
-    private static Class<?> guessType(Object value) {
-        if (value == null) {
-            return null;
-        }
-        if (ClassUtils.isAssignable(value.getClass(), Boolean.class)) {
-            return boolean.class;
-        }
-        if (ClassUtils.isAssignable(value.getClass(), Calendar.class)) {
-            return Calendar.class;
-        }
-        if (ClassUtils.isAssignable(value.getClass(), Long.class)) {
-            return long.class;
-        }
-        if (ClassUtils.isAssignable(value.getClass(), Double.class)) {
-            return double.class;
-        }
-        if (ClassUtils.isAssignable(value.getClass(), String.class)) {
-            return String.class;
         }
         return null;
     }
