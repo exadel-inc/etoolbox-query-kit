@@ -1,8 +1,8 @@
 package com.exadel.etoolbox.querykit.core.servlets;
 
-import com.exadel.etoolbox.querykit.core.models.SearchRequest;
-import com.exadel.etoolbox.querykit.core.models.SearchResult;
-import com.exadel.etoolbox.querykit.core.models.serialization.SearchResultSerializationHelper;
+import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
+import com.exadel.etoolbox.querykit.core.models.search.SearchResult;
+import com.exadel.etoolbox.querykit.core.utils.serialization.JsonExportUtil;
 import com.exadel.etoolbox.querykit.core.services.query.QueryService;
 import com.exadel.etoolbox.querykit.core.utils.ResponseUtil;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -41,6 +41,11 @@ public class QueryServlet extends SlingAllMethodsServlet {
             return;
         }
         SearchResult searchResult = queryService.execute(searchRequest);
-        ResponseUtil.sendContent(response, SearchResultSerializationHelper.serialize(searchResult));
+        switch (searchRequest.getFormat()) {
+            case HTML:
+            case CSV:
+            default:
+                ResponseUtil.sendJson(response, JsonExportUtil.export(searchResult));
+        }
     }
 }
