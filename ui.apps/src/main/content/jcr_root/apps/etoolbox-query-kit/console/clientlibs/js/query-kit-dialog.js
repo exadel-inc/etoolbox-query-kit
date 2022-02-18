@@ -1,58 +1,58 @@
-(function(window, document, $, URITemplate) {
-    "use strict";
+(function (window, document, $, URITemplate) {
+    'use strict';
 
-    var ns = "." + Date.now();
+    const ns = '.' + Date.now();
 
     function resolveToggleable(control, src, target) {
         if (src) {
-            var promise;
+            let promise;
             promise = $.ajax({
                 url: src,
                 cache: false
             });
-            return promise.then(function(html) {
+            return promise.then(function (html) {
                 return $(html)
-                    .on("foundation-toggleable-hide", function(e) {
-                        var target = $(e.target);
+                    .on('foundation-toggleable-hide', function (e) {
+                        const target = $(e.target);
 
-                        requestAnimationFrame(function() {
+                        requestAnimationFrame(function () {
                             target.detach();
                         });
                     })
                     .appendTo(document.body)
-                    .trigger("foundation-contentloaded");
+                    .trigger('foundation-contentloaded');
             });
         }
-        var el;
+        let el;
         if (target) {
             el = $(target);
         } else {
-            el = control.closest(".foundation-toggleable");
+            el = control.closest('.foundation-toggleable');
         }
         return $.Deferred().resolve(el).promise();
     }
 
-    $(window).adaptTo("foundation-registry").register("foundation.collection.action.action", {
-        name: "foundation.dialog.query",
-        handler: function(name, el, config) {
-            var control = $(el);
-            var target = config.data.target;
-            var nesting = config.data.nesting;
-            var src;
+    $(window).adaptTo('foundation-registry').register('foundation.collection.action.action', {
+        name: 'foundation.dialog.query',
+        handler: function (name, el, config) {
+            const control = $(el);
+            const target = config.data.target;
+            const nesting = config.data.nesting;
+            let src;
             if (config.data.src) {
                 src = config.data.src;
             }
-            resolveToggleable(control, src, target).then(function(toggleable) {
-                var api = toggleable.adaptTo("foundation-toggleable");
-                toggleable.off(ns).one("foundation-form-submitted" + ns, function(e, success, xhr) {
+            resolveToggleable(control, src, target).then(function (toggleable) {
+                const api = toggleable.adaptTo('foundation-toggleable');
+                toggleable.off(ns).one('foundation-form-submitted' + ns, function (e, success, xhr) {
                     if (!success) {
                         return;
                     }
                     api.hide();
                 });
-                requestAnimationFrame(function() {
-                    if (nesting === "hide") {
-                        var parentAPI = control.closest(".foundation-toggleable").adaptTo("foundation-toggleable");
+                requestAnimationFrame(function () {
+                    if (nesting === 'hide') {
+                        const parentAPI = control.closest('.foundation-toggleable').adaptTo('foundation-toggleable');
                         if (parentAPI) {
                             parentAPI.hide();
                         }

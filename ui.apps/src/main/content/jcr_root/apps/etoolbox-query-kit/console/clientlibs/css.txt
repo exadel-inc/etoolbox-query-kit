@@ -1,6 +1,7 @@
-#base=css
+#base=libs/codemirror
+lib/codemirror.css
+addon/hint/show-hint.css
 
+#base=css
 etoolbox-query-kit.css
 saved-query.css
-codemirror.css
-show-hint.css
