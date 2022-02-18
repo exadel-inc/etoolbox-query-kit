@@ -1,0 +1,59 @@
+<jcr:root
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        jcr:primaryType="nt:unstructured">
+
+    <menuItem
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
+            target=".eqk-ui"
+            action="foundation.dialog"
+            text="Components containing another component">
+        <data jcr:primaryType="nt:unstructured"
+              nesting="hide"
+              src.url="/mnt/overlay/etoolbox-query-kit/console/dialogs/query.html?path=/conf/etoolbox-query-kit/settings/dialogs/find-by-nested-component/content"/>
+    </menuItem>
+
+    <content jcr:primaryType="nt:unstructured"
+             sling:resourceType="granite/ui/components/coral/foundation/container">
+        <items jcr:primaryType="nt:unstructured">
+            <!-- Add <granite:data dynamic-ds-query="..."/> to facilitate populating the list dynamically
+                 (with user-set values interpolation) -->
+            <!-- Add <datasource sling:resourceType="..."/> to facilitate populating the list statically -->
+            <parentComponent
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                    granite:class="eqk-dynamic-datasource"
+                    name="parent"
+                    fieldLabel="Select parent component">
+                <items jcr:primaryType="nt:unstructured">
+                    <placeholder jcr:primaryType="nt:unstructured" text="Loading..." value=""/>
+                </items>
+                <granite:data jcr:primaryType="nt:unstructured"
+                              datasource-query="SELECT comp.[jcr:title] FROM [cq:Component] AS comp WHERE ISDESCENDANTNODE(comp,'/apps/hpeweb/components') ORDER BY comp.[jcr:title]"/>
+            </parentComponent>
+            <childComponent
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                    granite:class="eqk-dynamic-datasource"
+                    name="child"
+                    fieldLabel="Select child component">
+                <items jcr:primaryType="nt:unstructured">
+                    <placeholder jcr:primaryType="nt:unstructured" text="Loading..." value=""/>
+                </items>
+                <granite:data jcr:primaryType="nt:unstructured"
+                              datasource-query="SELECT comp.[jcr:title] FROM [cq:Component] AS comp WHERE ISDESCENDANTNODE(comp, '/apps/hpeweb/components') ORDER BY comp.[jcr:title]"/>
+            </childComponent>
+            <dsFolder
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/form/hidden"
+                    name="dsFolder"
+                    value="/apps/hpeweb/components"/>
+        </items>
+        <!-- Main query -->
+        <granite:data jcr:primaryType="nt:unstructured"
+                      query="SELECT page.* FROM [cq:PageContent] AS page INNER JOIN [nt:unstructured] AS comp ON ISDESCENDANTNODE(comp, page) WHERE comp.[sling:resourceType] = '$parent' AND ISDESCENDANTNODE(page, '/content/hpe')"/>
+    </content>
+</jcr:root>

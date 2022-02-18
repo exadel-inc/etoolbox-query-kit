@@ -1,0 +1,45 @@
+<jcr:root
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        jcr:primaryType="nt:unstructured">
+    <menuItem
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
+            granite:id="componentButton"
+            target=".eqk-ui"
+            action="foundation.dialog"
+            text="Pages containing component">
+        <data jcr:primaryType="nt:unstructured"
+              nesting="hide"
+              src.url="/mnt/overlay/etoolbox-query-kit/console/dialogs/query.html?path=/conf/etoolbox-query-kit/settings/dialogs/find-by-component/content"/>
+    </menuItem>
+    <content jcr:primaryType="nt:unstructured"
+             sling:resourceType="granite/ui/components/coral/foundation/container">
+        <items jcr:primaryType="nt:unstructured">
+            <resType
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                    name="resType"
+                    fieldLabel="Select component">
+                <datasource jcr:primaryType="nt:unstructured"
+                            sling:resourceType="/apps/etoolbox-query-kit/datasources/itemlist"
+                            query="SELECT comp.[jcr:title] FROM [cq:Component] AS comp WHERE ISDESCENDANTNODE(comp,'/apps/hpeweb/components') ORDER BY comp.[jcr:title]"
+                            sort="true"/>
+            </resType>
+            <rootPaths
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                    fieldLabel="Folder(s) to look in">
+                <field jcr:primaryType="nt:unstructured"
+                       sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                       name="rootPath"
+                       rootPath="/content"/>
+            </rootPaths>
+        </items>
+        <!-- Main query -->
+        <granite:data jcr:primaryType="nt:unstructured"
+                      query="SELECT page.* FROM [cq:PageContent] AS page INNER JOIN [nt:unstructured] AS comp ON ISDESCENDANTNODE(comp, page) WHERE comp.[sling:resourceType] = '$resType' AND ISDESCENDANTNODE(page, '$rootPath')"/>
+    </content>
+</jcr:root>
