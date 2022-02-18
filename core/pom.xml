@@ -8,12 +8,12 @@
     <parent>
         <groupId>com.exadel.etoolbox</groupId>
         <artifactId>etoolbox-query-kit</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>etoolbox-query-kit.core</artifactId>
 
-    <name>Exadel Query Kit for AEM - Bundle</name>
+    <name>Exadel Toolbox Query Kit - Bundle</name>
     <description>Contains classes and interfaces required to facilitate Exadel Query Kit for AEM server-side functionality</description>
 
     <properties>
@@ -130,12 +130,6 @@
     </profiles>
 
     <dependencies>
-        <!-- AEM -->
-        <dependency>
-            <groupId>com.adobe.aem</groupId>
-            <artifactId>uber-jar</artifactId>
-            <classifier>apis</classifier>
-        </dependency>
         <!-- OSGi Dependencies -->
         <dependency>
             <groupId>org.osgi</groupId>
@@ -148,6 +142,11 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.annotation</artifactId>
+        </dependency>
+        <!-- Sling -->
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.api</artifactId>
         </dependency>
         <!-- Servlet and Model API -->
         <dependency>
@@ -207,6 +206,10 @@
         </dependency>
         <!-- Testing -->
         <dependency>
+            <groupId>io.wcm</groupId>
+            <artifactId>io.wcm.testing.aem-mock.junit4</artifactId>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
@@ -219,18 +222,15 @@
             <artifactId>mockito-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.wcm</groupId>
-            <artifactId>io.wcm.testing.aem-mock.junit4</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.testing.sling-mock-oak</artifactId>
         </dependency>
+
+        <!-- AEM -->
         <dependency>
-            <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.api</artifactId>
-            <version>2.16.2</version>
-            <scope>compile</scope>
+            <groupId>com.adobe.aem</groupId>
+            <artifactId>uber-jar</artifactId>
+            <classifier>apis</classifier>
         </dependency>
     </dependencies>
 </project>

@@ -8,7 +8,7 @@
 
     <groupId>com.exadel.etoolbox</groupId>
     <artifactId>etoolbox-query-kit</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <modules>
         <module>core</module>
@@ -191,14 +191,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- AEM -->
-            <dependency>
-                <groupId>com.adobe.aem</groupId>
-                <artifactId>uber-jar</artifactId>
-                <version>6.5.0.0</version>
-                <classifier>apis</classifier>
-                <scope>provided</scope>
-            </dependency>
             <!-- OSGi -->
             <dependency>
                 <groupId>org.osgi</groupId>
@@ -217,6 +209,13 @@
                 <artifactId>osgi.annotation</artifactId>
                 <version>6.0.1</version>
                 <scope>provided</scope>
+            </dependency>
+            <!-- Sling -->
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.api</artifactId>
+                <version>2.16.2</version>
+                <scope>compile</scope>
             </dependency>
             <!-- Servlet and Model API -->
             <dependency>
@@ -240,7 +239,7 @@
             <dependency>
                 <groupId>org.apache.jackrabbit</groupId>
                 <artifactId>oak-core</artifactId>
-                <version>1.22.5</version>
+                <version>1.6.1</version>
             </dependency>
             <!-- Logging -->
             <dependency>
@@ -285,11 +284,22 @@
                 <artifactId>pdfbox</artifactId>
                 <version>2.0.4</version>
             </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.22</version>
+            </dependency>
             <!-- Testing -->
+            <dependency>
+                <groupId>io.wcm</groupId>
+                <artifactId>io.wcm.testing.aem-mock.junit4</artifactId>
+                <version>3.1.0</version>
+                <scope>test</scope>
+            </dependency>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.13.1</version>
+                <version>4.13.2</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -305,12 +315,6 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>io.wcm</groupId>
-                <artifactId>io.wcm.testing.aem-mock.junit4</artifactId>
-                <version>3.0.0</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>org.apache.sling.testing.sling-mock-oak</artifactId>
                 <version>2.1.6</version>
@@ -322,10 +326,13 @@
                 <groupId>org.apache.geronimo.specs</groupId>
                 <scope>provided</scope>
             </dependency>
+            <!-- AEM -->
             <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>1.18.22</version>
+                <groupId>com.adobe.aem</groupId>
+                <artifactId>uber-jar</artifactId>
+                <version>6.5.0</version>
+                <classifier>apis</classifier>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

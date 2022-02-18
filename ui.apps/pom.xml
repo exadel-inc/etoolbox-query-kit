@@ -8,15 +8,13 @@
     <parent>
         <groupId>com.exadel.etoolbox</groupId>
         <artifactId>etoolbox-query-kit</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>etoolbox-query-kit.content</artifactId>
+    <artifactId>etoolbox-query-kit.ui.apps</artifactId>
 
-    <name>Exadel Query Kit for AEM - UI</name>
-    <description>Contains static assets and webpage-rendering logic required to facilitate Exadel Query Kit for AEM browser
-        functionality
-    </description>
+    <name>Exadel Toolbox Query Kit - Application Package</name>
+    <description>Contains static assets and webpage-rendering logic required to facilitate Exadel Toolbox Query Kit for AEM</description>
 
     <build>
         <sourceDirectory>src/main/content/jcr_root</sourceDirectory>
