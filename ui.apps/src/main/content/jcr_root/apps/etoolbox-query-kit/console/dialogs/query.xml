@@ -1,0 +1,51 @@
+<jcr:root
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        jcr:primaryType="nt:unstructured"
+        jcr:title="Find content"
+        granite:id="dialog-query"
+        granite:class="coral-Form coral-Form--vertical eqk-query-dialog"
+        sling:resourceType="granite/ui/components/coral/foundation/dialog">
+    <items jcr:primaryType="nt:unstructured">
+        <content jcr:primaryType="nt:unstructured"
+                 sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns">
+            <items jcr:primaryType="nt:unstructured">
+                <column jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/container">
+                    <items jcr:primaryType="nt:unstructured">
+                        <payloadWrapper jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/container"
+                                        granite:class="query-dialog-payload">
+                            <items jcr:primaryType="nt:unstructured">
+                                <payload jcr:primaryType="nt:unstructured"
+                                         sling:resourceType="etoolbox-query-kit/components/inpage/includePath"/>
+                            </items>
+                        </payloadWrapper>
+                        <footer jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container"
+                                granite:class="query-dialog-footer">
+                            <items jcr:primaryType="nt:unstructured">
+                                <toEditor
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                                        granite:id="dialog-button-toEditor"
+                                        action="etoolbox.querykit.queryToEditor"
+                                        target=".eqk-ui"
+                                        text="To editor"
+                                        variant="silent"/>
+                                <find
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/button"
+                                        granite:id="dialog-button-find"
+                                        text="Find"
+                                        variant="primary"/>
+                            </items>
+                        </footer>
+                    </items>
+                </column>
+            </items>
+        </content>
+    </items>
+</jcr:root>
