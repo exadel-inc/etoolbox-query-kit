@@ -17,9 +17,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.jcr.PropertyType;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class TypeAwareSearchItem implements SearchItem {
 
@@ -43,11 +45,16 @@ class TypeAwareSearchItem implements SearchItem {
             return;
         }
         this.properties = new HashMap<>();
-        properties.forEach((name, value) -> storeProperty(
+        properties.forEach((name, value) -> putProperty(
                 name,
                 value,
                 propertiesPath,
                 ValueUtil.detectType(value), ValueUtil.detectMultivalue(value)));
+    }
+
+    @Override
+    public Set<String> getPropertyNames() {
+        return properties != null ? properties.keySet() : Collections.emptySet();
     }
 
     @Override
@@ -75,15 +82,23 @@ class TypeAwareSearchItem implements SearchItem {
     }
 
     @Override
-    public void storeProperty(String name, Object value) {
-        storeProperty(name, value, null, 0, false);
+    public void putProperty(String name, Object value) {
+        putProperty(name, value, null, 0, false);
     }
 
-    public void storeProperty(String name, Object value, String path, int type, boolean multiple) {
+    public void putProperty(String name, Object value, String path, int type, boolean multiple) {
         if (properties == null) {
             properties = new HashMap<>();
         }
         properties.put(name, new PropertyDefinition(value, path, type, multiple));
+    }
+
+    @Override
+    public void clearProperties() {
+        if (properties == null) {
+            return;
+        }
+        properties.clear();
     }
 
     /* -------------

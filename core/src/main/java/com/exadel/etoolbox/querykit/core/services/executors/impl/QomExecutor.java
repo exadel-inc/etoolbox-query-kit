@@ -43,7 +43,8 @@ public class QomExecutor extends QueryBasedExecutor {
         return queryConverterService.convert(
                 request.getStatement(),
                 request.getResourceResolver(),
-                QomAdapter.class).getModel();
+                QomAdapter.class)
+                .getModel();
     }
 
     @Override

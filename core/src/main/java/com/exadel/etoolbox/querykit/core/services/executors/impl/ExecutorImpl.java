@@ -109,9 +109,9 @@ abstract class ExecutorImpl implements Executor {
                 Property property = node.getProperty(propertyName);
                 Object value = ValueUtil.extractValue(property);
                 String path = !((ColumnAdapter) column).isDefault() ? node.getPath() : null;
-                searchItem.storeProperty(columnAdapter.getUniquePropertyName(), value, path, property.getType(), property.isMultiple());
+                searchItem.putProperty(columnAdapter.getUniquePropertyName(), value, path, property.getType(), property.isMultiple());
             } catch (PathNotFoundException e) {
-                searchItem.storeProperty(columnAdapter.getUniquePropertyName(), null);
+                searchItem.putProperty(columnAdapter.getUniquePropertyName(), null);
             }
         }
     }
@@ -124,6 +124,7 @@ abstract class ExecutorImpl implements Executor {
                 .stream()
                 .map(modifierName -> getItemConverters().stream().filter(modifier -> modifierName.equals(modifier.getName())).findFirst().orElse(null))
                 .filter(Objects::nonNull)
+                .distinct()
                 .map(modifierFactory -> modifierFactory.getModifier(request))
                 .map(modifier -> (Function<SearchItem, SearchItem>) modifier)
                 .reduce(DEFAULT_MODIFIER, Function::andThen);
@@ -137,6 +138,7 @@ abstract class ExecutorImpl implements Executor {
                 .stream()
                 .map(filterName -> getItemFilters().stream().filter(filter -> filterName.equals(filter.getName())).findFirst().orElse(null))
                 .filter(Objects::nonNull)
+                .distinct()
                 .map(filterFactory -> filterFactory.getFilter(request, columns))
                 .reduce(DEFAULT_FILTER, Predicate::and);
     }

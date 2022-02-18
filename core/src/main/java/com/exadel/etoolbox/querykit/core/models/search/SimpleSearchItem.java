@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class SimpleSearchItem implements SearchItem {
 
@@ -33,6 +34,11 @@ class SimpleSearchItem implements SearchItem {
     }
 
     @Override
+    public Set<String> getPropertyNames() {
+        return properties.keySet();
+    }
+
+    @Override
     public <T> T getProperty(String name, Class<T> type) {
         if (name == null || type == null) {
             return null;
@@ -46,8 +52,13 @@ class SimpleSearchItem implements SearchItem {
     }
 
     @Override
-    public void storeProperty(String name, Object value, String localPath, int type, boolean multiple) {
+    public void putProperty(String name, Object value, String localPath, int type, boolean multiple) {
         properties.put(name, value);
+    }
+
+    @Override
+    public void clearProperties() {
+        properties.clear();
     }
 
     /* -------------

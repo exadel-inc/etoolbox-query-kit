@@ -14,8 +14,10 @@ import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 
 import javax.jcr.query.qom.Column;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 public interface SearchItem extends JsonExportableWithContext<ColumnCollection> {
 
@@ -23,19 +25,23 @@ public interface SearchItem extends JsonExportableWithContext<ColumnCollection> 
 
     void setPath(String path);
 
+    Set<String> getPropertyNames();
+
     <T> T getProperty(String name, Class<T> type);
 
     Object getProperty(String name);
 
-    default void storeProperty(String name, Object value) {
-        storeProperty(name, value, null, 0, false);
+    default void putProperty(String name, Object value) {
+        putProperty(name, value, null, 0, false);
     }
 
-    void storeProperty(String name, Object value, String localPath, int type, boolean multiple);
+    void putProperty(String name, Object value, String localPath, int type, boolean multiple);
+
+    void clearProperties();
 
     default Resource toVirtualResource(ResourceResolver resourceResolver, ColumnCollection columns) {
         if (columns == null || CollectionUtils.isEmpty(columns.getItems())) {
-            return null;
+            return toVirtualResource(resourceResolver);
         }
         Map<String, Object> matchingProperties = new LinkedHashMap<>();
         for (Column item : columns.getItems()) {
@@ -48,6 +54,17 @@ public interface SearchItem extends JsonExportableWithContext<ColumnCollection> 
         }
 
         ValueMap valueMap = new ValueMapDecorator(matchingProperties);
+        return new ValueMapResource(
+                resourceResolver,
+                getPath(),
+                JcrConstants.NT_UNSTRUCTURED,
+                valueMap);
+    }
+
+    default Resource toVirtualResource(ResourceResolver resourceResolver) {
+        Map<String, Object> properties = new HashMap<>();
+        getPropertyNames().forEach(name -> properties.put(name, getProperty(name)));
+        ValueMap valueMap = new ValueMapDecorator(properties);
         return new ValueMapResource(
                 resourceResolver,
                 getPath(),

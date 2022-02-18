@@ -56,7 +56,8 @@ public class SqlExecutor extends QueryBasedExecutor  {
         QueryObjectModel qom = queryConverterService.convert(
                 prepareSelectExtract(source.getStatement()),
                 request.getResourceResolver(),
-                QomAdapter.class).getModel();
+                QomAdapter.class)
+                .getModel();
         return new ModifiableColumnCollection(qom);
     }
 
