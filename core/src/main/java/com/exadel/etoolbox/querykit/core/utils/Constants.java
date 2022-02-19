@@ -7,6 +7,10 @@ public class Constants {
 
     public static final String CONTENT_TYPE_JSON = "application/json";
 
+    public static final String NODE_DATASOURCE = "datasource";
+
+    public static final String NODE_TYPE_PLACEHOLDER = "eqk:placeholder";
+
     public static final String PROPERTY_JCR_PATH = "jcr:path";
     public static final String PROPERTY_JCR_TITLE = "jcr:title";
     public static final String PROPERTY_PATH = "path";
@@ -20,9 +24,8 @@ public class Constants {
     public static final String TITLE_PATH = "Path";
 
     public static final String CLOSING_BRACKET = ")";
+    public static final String COMMA = ",";
     public static final String OPENING_BRACKET = "(";
     public static final String QUOTE = "'";
     public static final String QUOTE_ESCAPED = "&#39;";
-
-
 }

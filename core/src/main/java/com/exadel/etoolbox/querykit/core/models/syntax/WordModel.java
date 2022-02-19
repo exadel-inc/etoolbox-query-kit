@@ -2,6 +2,7 @@ package com.exadel.etoolbox.querykit.core.models.syntax;
 
 import com.exadel.etoolbox.querykit.core.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -12,6 +13,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class WordModel {
@@ -21,9 +25,14 @@ public class WordModel {
     private static final int CHARACTER_QUOTE = '\'';
     private static final int CHARACTER_RETURN = '\r';
     private static final int CHARACTER_SPACE = ' ';
+    private static final int CHARACTER_UNDERSCORE = '_';
 
-    private static final Predicate<String> IS_NON_WORD = str -> StringUtils.isBlank(str) || ",".equals(str);
+    private static final Pattern ESCAPED_CHAR_PATTERN = Pattern.compile("__(\\d+)__");
+
+    private static final Predicate<String> IS_NON_WORD = str -> StringUtils.isBlank(str) || Constants.COMMA.equals(str);
     private static final Predicate<String> IS_WORD = IS_NON_WORD.negate();
+
+    private static final String[] UNWANTED_SEQUENCES = new String[] {"''"};
 
     private final List<String> elements;
 
@@ -60,9 +69,13 @@ public class WordModel {
     }
 
     public boolean hasToken(String... value) {
+        return hasToken(elt -> StringUtils.equalsAnyIgnoreCase(elt, value));
+    }
+
+    public boolean hasToken(Predicate<String> filter) {
         return elements.subList(getStartPosition(), getEndPosition())
                 .stream()
-                .anyMatch(elt -> StringUtils.equalsAnyIgnoreCase(elt, value));
+                .anyMatch(filter);
     }
 
     public WordModel extractWord(int position) {
@@ -234,6 +247,40 @@ public class WordModel {
         return String.join(StringUtils.EMPTY, elements.subList(getStartPosition(), getEndPosition()));
     }
 
+    /* ---------------
+       Utility methods
+       --------------- */
+
+    public static String escape(String value, String... unwanted) {
+        if (org.apache.commons.lang.StringUtils.isEmpty(value) || ArrayUtils.isEmpty(unwanted)) {
+            return value;
+        }
+        String result = value;
+        for (String token : unwanted) {
+            if (result.contains(token)) {
+                result = result.replace(token, prepareEscapedSequence(token));
+            }
+        }
+        return result;
+    }
+
+    public static String unescape(String value) {
+        StringBuilder result = new StringBuilder(value);
+        Matcher matcher = ESCAPED_CHAR_PATTERN.matcher(result);
+        while (matcher.find()) {
+            result.replace(matcher.start(), matcher.end(), Character.toString((char) Integer.parseInt(matcher.group(1))));
+            matcher.reset(result);
+        }
+        return result.toString();
+    }
+
+    private static String prepareEscapedSequence(String token) {
+        return token.chars()
+                .mapToObj(String::valueOf)
+                .map(chr -> "__" + chr + "__")
+                .collect(Collectors.joining());
+    }
+
     /* --------------
        Initialization
        -------------- */
@@ -244,12 +291,16 @@ public class WordModel {
             return result;
         }
 
-        StringReader reader = new StringReader(value);
+        String escapedValue = escape(value, UNWANTED_SEQUENCES);
+        boolean hasEscaping = !escapedValue.equals(value);
+
+        StringReader reader = new StringReader(escapedValue);
         StreamTokenizer tokenizer = new StreamTokenizer(reader);
         tokenizer.ordinaryChar(CHARACTER_SPACE);
         tokenizer.ordinaryChar(CHARACTER_NEWLINE);
         tokenizer.ordinaryChar(CHARACTER_RETURN);
         tokenizer.wordChars(CHARACTER_COLON, CHARACTER_COLON);
+        tokenizer.wordChars(CHARACTER_UNDERSCORE, CHARACTER_UNDERSCORE);
 
         int currentToken;
         try {
@@ -263,6 +314,12 @@ public class WordModel {
             log.error("Error parsing statement", e);
         } finally {
             reader.close();
+        }
+
+        if (hasEscaping) {
+            for (int i = 0; i < result.size(); i++) {
+                result.set(i, unescape(result.get(i)));
+            }
         }
         return result;
     }
