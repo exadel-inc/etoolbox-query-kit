@@ -1,5 +1,6 @@
 package com.exadel.etoolbox.querykit.core.models.syntax;
 
+import com.exadel.etoolbox.querykit.core.utils.Constants;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +12,7 @@ public class WordModelTest {
 
     private static final String SELECT_EXPRESSION = "SELECT page.[jcr:title], comp.[jcr:title] AS ['My Title']\nFROM [cq:PageContent] AS page\n" +
             "INNER JOIN [nt:unstructured] AS comp ON ISDESCENDANTNODE(comp, page)\n" +
-            "WHERE (comp.[sling:resourceType] = 'some/component' OR comp.[type] IN ('1', 'in(2)', '3')) " +
+            "WHERE (comp.[sling:resourceType] = 'some/comp''onent' OR comp.[type] IN ('1', 'in(2)', '3')) " +
             "AND ISDESCENDANTNODE(page, '/content/hpe/base/blueprint') " +
             "AND LOWER(comp.category) IN('some', 'cat')\n\n" +
             "UNION SELECT * FROM [cq:PageContent] AS page WHERE ISCHILDNODE(page2, '/content') " +
@@ -35,8 +36,9 @@ public class WordModelTest {
     @Test
     public void shouldSearchKeywords() {
         Assert.assertTrue(wordModel.hasToken("isdescendantnode"));
-        Assert.assertTrue(wordModel.hasToken("from"));
-        Assert.assertTrue(wordModel.hasToken("sling:resourceType"));
+        Assert.assertTrue(wordModel.hasToken("from", "to"));
+        Assert.assertTrue(wordModel.hasToken("sling:resourceType"::equals));
+        Assert.assertTrue(wordModel.hasToken("'some/comp''onent'"));
         Assert.assertFalse(wordModel.hasToken("comp.[sling:resourceType]"));
     }
 
@@ -67,7 +69,7 @@ public class WordModelTest {
         List<WordModel> inFunctionArgs = new ArrayList<>();
         WordModel inFunction = wordModel.extractFunction("in");
         while (inFunction != null) {
-            List<WordModel> args = inFunction.extractBetween("(", ")").split(",");
+            List<WordModel> args = inFunction.extractBetween("(", ")").split(Constants.COMMA);
             inFunctionArgs.addAll(args);
             inFunction = wordModel.extractFunction("in", inFunction.getEndPosition());
         }

@@ -81,8 +81,9 @@ public class QueryServiceTest {
         aemContext.request().addRequestParameter(
                 "q_query",
                 "SELECT * FROM [cq:PageContent] AS e WHERE ISDESCENDANTNODE(e, '/content') " +
-                        "UNION SELECT * FROM [cq:Page] AS e WHERE ISDESCENDANTNODE(e, '/content')");
+                        "UNION SELECT * FROM [cq:Page] AS e WHERE ISDESCENDANTNODE(e, '/$var')");
         aemContext.request().addRequestParameter("q_total", "true");
+        aemContext.request().addRequestParameter("var", "content");
 
         SearchRequest request = SearchRequest.from(aemContext.request());
         SearchResult result = queryService.execute(request);
@@ -109,7 +110,70 @@ public class QueryServiceTest {
     }
 
     @Test
-    public void shouldApplyFilters() {
+    public void shouldSearchWithVariableInterpolationSql() {
+        aemContext.request().addRequestParameter(
+                "q_query",
+                "SELECT * FROM [cq:PageContent] AS e WHERE e.[jcr:title] = '$title' " +
+                        "UNION SELECT * FROM [cq:Page] AS e WHERE e.[jcr:title] = '$title'");
+        aemContext.request().addRequestParameter("title", "Page 1");
+        aemContext.request().addRequestParameter("title", "Page 2");
+
+        SearchRequest request = SearchRequest.from(aemContext.request());
+        SearchResult result = queryService.execute(request);
+
+        Assert.assertTrue(result.isSuccess());
+        Assert.assertEquals(2, result.getItems().size());
+    }
+
+    @Test
+    public void shouldSearchWithVariableInterpolationQom() {
+        aemContext.request().addRequestParameter(
+                "q_query",
+                "SELECT * FROM [cq:PageContent] AS e WHERE ISDESCENDANTNODE(e, '$path') AND e.[jcr:title] = '$title'");
+        aemContext.request().addRequestParameter("path", "/content");
+        aemContext.request().addRequestParameter("title", "Page 1");
+        aemContext.request().addRequestParameter("title", "Page 2");
+
+        SearchRequest request = SearchRequest.from(aemContext.request());
+        SearchResult result = queryService.execute(request);
+
+        Assert.assertTrue(result.isSuccess());
+        Assert.assertEquals(2, result.getItems().size());
+    }
+
+    @Test
+    public void shouldSearchWithExtraColumnsSql() {
+        aemContext.request().addRequestParameter(
+                "q_query",
+                "SELECT e.* FROM [cq:PageContent] AS e WHERE e.[jcr:title] = 'Page 1' " +
+                        "UNION SELECT * FROM [cq:Page] AS e WHERE e.[jcr:title] = 'Page 1'");
+        aemContext.request().addRequestParameter("q_allprops", "true");
+
+        SearchRequest request = SearchRequest.from(aemContext.request());
+        SearchResult result = queryService.execute(request);
+
+        Assert.assertTrue(result.isSuccess());
+        Assert.assertEquals(1, result.getItems().size());
+        Assert.assertEquals("Page 1", result.getItems().get(0).getProperty("jcr:title"));
+    }
+
+    @Test
+    public void shouldSearchWithExtraColumnsQom() {
+        aemContext.request().addRequestParameter(
+                "q_query",
+                "SELECT e.* FROM [cq:PageContent] AS e WHERE e.[jcr:title] = 'Page 1'");
+        aemContext.request().addRequestParameter("q_allprops", "true");
+
+        SearchRequest request = SearchRequest.from(aemContext.request());
+        SearchResult result = queryService.execute(request);
+
+        Assert.assertTrue(result.isSuccess());
+        Assert.assertEquals(1, result.getItems().size());
+        Assert.assertEquals("Page 1", result.getItems().get(0).getProperty("jcr:title"));
+    }
+
+    @Test
+    public void shouldApplyCustomFilters() {
         aemContext.request().addRequestParameter(
                 "q_query",
                 "SELECT * FROM [cq:PageContent] AS content " +
@@ -126,7 +190,7 @@ public class QueryServiceTest {
     }
 
     @Test
-    public void shouldApplyFilters2() {
+    public void shouldApplyDuplicateFilter() {
         aemContext.request().addRequestParameter(
                 "q_query",
                 "SELECT * FROM [nt:unstructured] AS e WHERE ISDESCENDANTNODE(e, '/content/site') " +
@@ -158,5 +222,4 @@ public class QueryServiceTest {
         Assert.assertEquals(4, result.getTotal());
         Assert.assertTrue(result.getItems().stream().allMatch(item -> item.getProperty("jcr:title", String.class).startsWith("Page")));
     }
-
 }
