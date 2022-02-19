@@ -21,7 +21,7 @@
         <title
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="granite/ui/components/coral/foundation/text"
-                text="Query Console"/>
+                text="EToolbox Query Console"/>
         <actions jcr:primaryType="nt:unstructured">
             <primary jcr:primaryType="nt:unstructured">
                 <new
