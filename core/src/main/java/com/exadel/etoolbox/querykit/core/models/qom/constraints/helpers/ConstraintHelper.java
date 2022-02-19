@@ -28,29 +28,17 @@ import java.util.Queue;
 @Slf4j
 public class ConstraintHelper {
 
-    public static String getLiteralValue(Operand operand) {
-        if (!(operand instanceof Literal)) {
-            return StringUtils.EMPTY;
-        }
-        try {
-            return ((Literal) operand).getLiteralValue().getString();
-        } catch (RepositoryException e) {
-            log.error("Could not retrieve a value for the static operand", e);
-        }
-        return StringUtils.EMPTY;
-    }
-
     public static Constraint unmaskInFunction(
             DynamicOperand dynamicOperand,
             String maskedValue,
             QomAdapterContext context) throws RepositoryException {
 
-        List<WordModel> arguments = new WordModel(maskedValue).extractBetween(Constants.OPENING_BRACKET, Constants.CLOSING_BRACKET).split(",");
+        List<WordModel> arguments = new WordModel(maskedValue).extractBetween(Constants.OPENING_BRACKET, Constants.CLOSING_BRACKET).split(Constants.COMMA);
         if (arguments.isEmpty()) {
             return null;
         }
         if (arguments.size() == 1) {
-            StaticOperand newStaticOperand = getStaticOperand(arguments.get(0).toString(), context);
+            StaticOperand newStaticOperand = getStaticFunctionOperand(arguments.get(0).toString(), context);
             return context.getModelFactory().comparison(
                     dynamicOperand,
                     QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO,
@@ -59,7 +47,7 @@ public class ConstraintHelper {
 
         List <Constraint> inVariants = new ArrayList<>();
         for (WordModel argument : arguments) {
-            StaticOperand staticOperand = getStaticOperand(argument.toString(), context);
+            StaticOperand staticOperand = getStaticFunctionOperand(argument.toString(), context);
             Constraint inVariant = context.getModelFactory().comparison(
                     dynamicOperand,
                     QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO,
@@ -99,8 +87,8 @@ public class ConstraintHelper {
         return null;
     }
 
-    private static StaticOperand getStaticOperand(String value, QomAdapterContext context) throws RepositoryException {
-        String adapted = value.replace(Constants.QUOTE_ESCAPED, Constants.QUOTE);
+    private static StaticOperand getStaticFunctionOperand(String value, QomAdapterContext context) throws RepositoryException {
+        String adapted = WordModel.unescape(value);
         adapted = StringUtils.strip(adapted, " '");
         Value literal = context.getValueFactory().createValue(adapted);
         return context.getModelFactory().literal(literal);

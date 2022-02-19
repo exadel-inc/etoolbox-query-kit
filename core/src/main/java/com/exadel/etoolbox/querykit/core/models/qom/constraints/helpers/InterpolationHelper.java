@@ -45,7 +45,7 @@ public class InterpolationHelper {
             Class<?> reductionOperator) {
 
         String templatedString = valueSupplier.get();
-        if (StringUtils.isEmpty(templatedString) || !INTERPOLATION_TEMPLATE.matcher(templatedString).find()) {
+        if (StringUtils.isEmpty(templatedString) || !isProcessable(templatedString)) {
             return source.getConstraint();
         }
         List<String> variants = InterpolationHelper.getVariants(templatedString, arguments);
@@ -97,5 +97,13 @@ public class InterpolationHelper {
                 variants.add(affected.replace(formattedKey, val.toString()));
             }
         }
+    }
+    public static boolean isProcessable(String value, String placeholder) {
+        Matcher matcher = INTERPOLATION_TEMPLATE.matcher(value);
+        return matcher.find() && matcher.group(1).equals(placeholder);
+    }
+
+    private static boolean isProcessable(String target) {
+        return INTERPOLATION_TEMPLATE.matcher(target).find();
     }
 }

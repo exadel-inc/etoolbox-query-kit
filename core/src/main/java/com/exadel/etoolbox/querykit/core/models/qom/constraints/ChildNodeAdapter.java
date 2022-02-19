@@ -9,7 +9,7 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import java.util.Map;
 import java.util.function.Predicate;
 
-public class ChildNodeAdapter extends ConstraintAdapter {
+public class ChildNodeAdapter extends ConstraintAdapter implements LiteralHolder {
 
     private final String selector;
     private final String path;
@@ -33,5 +33,10 @@ public class ChildNodeAdapter extends ConstraintAdapter {
     @Override
     public Predicate<EvaluationContext> getPredicate() {
         return context -> context.getPath(selector).equals(path + "/" + context.getResource(selector).getName());
+    }
+
+    @Override
+    public String getLiteralValue() {
+        return path;
     }
 }

@@ -3,6 +3,7 @@ package com.exadel.etoolbox.querykit.core.models.qom.constraints;
 import com.exadel.etoolbox.querykit.core.models.qom.EvaluationContext;
 import com.exadel.etoolbox.querykit.core.models.qom.QomAdapterContext;
 import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.ConstraintHelper;
+import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.OperandHelper;
 import com.exadel.etoolbox.querykit.core.utils.Constants;
 import com.exadel.etoolbox.querykit.core.utils.TryBiFunction;
 import com.google.common.collect.ImmutableMap;
@@ -29,6 +30,7 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.SameNode;
 import javax.jcr.query.qom.StaticOperand;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -84,6 +86,10 @@ public abstract class ConstraintAdapter {
 
     public abstract Predicate<EvaluationContext> getPredicate();
 
+    public void visit(Consumer<ConstraintAdapter> consumer) {
+        consumer.accept(this);
+    }
+
     public static ConstraintAdapter from(
             Constraint original,
             QomAdapterContext context) {
@@ -113,7 +119,7 @@ public abstract class ConstraintAdapter {
         DynamicOperand operand1 = original.getOperand1();
         StaticOperand operand2 = original.getOperand2();
         String stringLiteral = operand2 instanceof Literal
-                ? ConstraintHelper.getLiteralValue(original.getOperand2())
+                ? OperandHelper.getLiteralValue(original.getOperand2())
                 : StringUtils.EMPTY;
 
         Matcher matcher = MASKED_FUNCTION.matcher(stringLiteral);

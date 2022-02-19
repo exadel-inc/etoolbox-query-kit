@@ -3,6 +3,7 @@ package com.exadel.etoolbox.querykit.core.models.qom.constraints;
 import com.exadel.etoolbox.querykit.core.models.qom.EvaluationContext;
 import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.ConstraintHelper;
 import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.InterpolationHelper;
+import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.OperandHelper;
 import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.PredicateHelper;
 import com.exadel.etoolbox.querykit.core.models.qom.operands.DynamicOperandAdapter;
 import org.apache.jackrabbit.value.StringValue;
@@ -15,9 +16,10 @@ import javax.jcr.query.qom.QueryObjectModelConstants;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.StaticOperand;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class ComparisonAdapter extends ConstraintAdapter {
+public class ComparisonAdapter extends ConstraintAdapter implements LiteralHolder {
 
     private final DynamicOperandAdapter operand1;
     private final String operator;
@@ -32,7 +34,7 @@ public class ComparisonAdapter extends ConstraintAdapter {
 
     @Override
     public Constraint getConstraint(QueryObjectModelFactory factory, Map<String, Object> arguments) {
-        String value = ConstraintHelper.getLiteralValue(operand2);
+        String value = OperandHelper.getLiteralValue(operand2);
         return InterpolationHelper.interpolate(
                 this,
                 arguments,
@@ -50,5 +52,10 @@ public class ComparisonAdapter extends ConstraintAdapter {
     private static boolean useDisjunctionWithValueArray(String operator) {
         return QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO.equals(operator)
                 || QueryObjectModelConstants.JCR_OPERATOR_LIKE.equals(operator);
+    }
+
+    @Override
+    public String getLiteralValue() {
+        return OperandHelper.getLiteralValue(operand2);
     }
 }

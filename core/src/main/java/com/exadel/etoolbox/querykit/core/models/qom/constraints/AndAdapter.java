@@ -9,6 +9,7 @@ import javax.jcr.query.qom.And;
 import javax.jcr.query.qom.Constraint;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @Getter
@@ -33,5 +34,12 @@ public class AndAdapter extends ConstraintAdapter implements JunctionConstraint 
     @Override
     public Predicate<EvaluationContext> getPredicate() {
         return constraint1.getPredicate().and(constraint2.getPredicate());
+    }
+
+    @Override
+    public void visit(Consumer<ConstraintAdapter> consumer) {
+        consumer.accept(this);
+        constraint1.visit(consumer);
+        constraint2.visit(consumer);
     }
 }

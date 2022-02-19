@@ -9,7 +9,7 @@ import javax.jcr.query.qom.SameNode;
 import java.util.Map;
 import java.util.function.Predicate;
 
-public class SameNodeAdapter extends ConstraintAdapter {
+public class SameNodeAdapter extends ConstraintAdapter implements LiteralHolder {
 
     private final String selector;
     private final String path;
@@ -33,5 +33,10 @@ public class SameNodeAdapter extends ConstraintAdapter {
     @Override
     public Predicate<EvaluationContext> getPredicate() {
         return context -> context.getPath(selector).equals(path);
+    }
+
+    @Override
+    public String getLiteralValue() {
+        return path;
     }
 }

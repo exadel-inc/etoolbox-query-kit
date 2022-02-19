@@ -8,6 +8,7 @@ import javax.jcr.query.qom.Constraint;
 import javax.jcr.query.qom.Not;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class NotAdapter extends ConstraintAdapter {
@@ -27,5 +28,11 @@ public class NotAdapter extends ConstraintAdapter {
     @Override
     public Predicate<EvaluationContext> getPredicate() {
         return context -> !constraint.getPredicate().test(context);
+    }
+
+    @Override
+    public void visit(Consumer<ConstraintAdapter> consumer) {
+        consumer.accept(this);
+        constraint.visit(consumer);
     }
 }

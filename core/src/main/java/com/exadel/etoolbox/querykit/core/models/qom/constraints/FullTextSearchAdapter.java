@@ -3,6 +3,7 @@ package com.exadel.etoolbox.querykit.core.models.qom.constraints;
 import com.exadel.etoolbox.querykit.core.models.qom.EvaluationContext;
 import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.ConstraintHelper;
 import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.InterpolationHelper;
+import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.OperandHelper;
 import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.PredicateHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.jackrabbit.commons.query.qom.Operator;
@@ -16,7 +17,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 @Slf4j
-public class FullTextSearchAdapter extends ConstraintAdapter {
+public class FullTextSearchAdapter extends ConstraintAdapter implements LiteralHolder {
 
     private final String selector;
     private final String property;
@@ -31,7 +32,7 @@ public class FullTextSearchAdapter extends ConstraintAdapter {
 
     @Override
     public Constraint getConstraint(QueryObjectModelFactory factory, Map<String, Object> arguments) {
-        String value = ConstraintHelper.getLiteralValue(expression);
+        String value = OperandHelper.getLiteralValue(expression);
         return InterpolationHelper.interpolate(
                 this,
                 arguments,
@@ -43,5 +44,10 @@ public class FullTextSearchAdapter extends ConstraintAdapter {
     @Override
     public Predicate<EvaluationContext> getPredicate() {
         return context -> PredicateHelper.compare(context, selector, property, Operator.LIKE.toString(), expression);
+    }
+
+    @Override
+    public String getLiteralValue() {
+        return OperandHelper.getLiteralValue(expression);
     }
 }
