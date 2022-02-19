@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Component(service = QueryConverter.class, property = "converter.output=Qom")
+@Component(service = QueryConverter.class, property = "converter.output=qom")
 public class SqlToQomConverter implements QueryConverter {
 
     private static final String PSEUDO_EQUALITY_FORMAT = "= '$in$(%s)'";
@@ -107,9 +107,10 @@ public class SqlToQomConverter implements QueryConverter {
     private static void replaceUnparseableParts(WordModel wordModel) {
         WordModel inFunction = wordModel.extractFunction(Constants.OPERATOR_IN);
         while (inFunction != null) {
-            String argument = StringUtils
-                    .substringBetween(inFunction.toString(), Constants.OPENING_BRACKET, Constants.CLOSING_BRACKET)
-                    .replace(Constants.QUOTE, Constants.QUOTE_ESCAPED);
+            String argument = StringUtils.substringBetween(
+                    inFunction.toString(),
+                    Constants.OPENING_BRACKET, Constants.CLOSING_BRACKET);
+            argument = WordModel.escape(argument, Constants.QUOTE);
             wordModel.replace(inFunction, String.format(PSEUDO_EQUALITY_FORMAT, argument));
             inFunction = wordModel.extractFunction(Constants.OPERATOR_IN);
         }

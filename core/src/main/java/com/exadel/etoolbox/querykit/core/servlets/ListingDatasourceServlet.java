@@ -34,16 +34,14 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
                 SLING_SERVLET_PATHS + "=/apps/etoolbox-query-kit/datasources/itemlist"
         })
 @Slf4j
-public class ItemDatasourceServlet extends SlingSafeMethodsServlet {
-
-    private static final String NODE_DATASOURCE = "datasource";
+public class ListingDatasourceServlet extends SlingSafeMethodsServlet {
 
     @Reference
     private QueryService queryService;
 
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
-        SearchRequest searchRequest = SearchRequest.from(request, request.getResource().getChild(NODE_DATASOURCE));
+        SearchRequest searchRequest = SearchRequest.from(request, request.getResource().getChild(Constants.NODE_DATASOURCE));
         searchRequest.getItemConverters().add(ListItemConverterFactory.NAME);
 
         if (!searchRequest.isValid()) {
@@ -68,10 +66,6 @@ public class ItemDatasourceServlet extends SlingSafeMethodsServlet {
         }
     }
 
-    /* -----------
-       JSON output
-       ----------- */
-
     private static void outputJson(
             SlingHttpServletRequest request,
             SlingHttpServletResponse response,
@@ -90,10 +84,6 @@ public class ItemDatasourceServlet extends SlingSafeMethodsServlet {
             writer.endArray();
         }
     }
-
-    /* -----------------
-       DataSource output
-       ----------------- */
 
     private static void outputDatasource(
             SlingHttpServletRequest request,

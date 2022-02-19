@@ -22,7 +22,7 @@ import java.util.List;
 @Component(service = Executor.class)
 public class QomExecutor extends QueryBasedExecutor {
 
-    @Reference(target = "(converter.output=Qom)", policyOption = ReferencePolicyOption.GREEDY)
+    @Reference(target = "(converter.output=qom)", policyOption = ReferencePolicyOption.GREEDY)
     private QueryConverter queryConverterService;
 
     @Getter(AccessLevel.PACKAGE)

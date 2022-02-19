@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Properties;
 
-@Component(service = QueryConverter.class, property = "converter.output=String")
+@Component(service = QueryConverter.class, property = "converter.output=string")
 public class QueryBuilderToSqlConverter extends XPathToSqlConverter {
 
     @Reference
