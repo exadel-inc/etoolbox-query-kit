@@ -10,6 +10,9 @@ import javax.jcr.query.qom.Column;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ColumnAdapter implements Column {
+
+    private static final String WILDCARD = "*";
+
     private final String selector;
     private final String property;
     private final String title;
@@ -51,6 +54,6 @@ public class ColumnAdapter implements Column {
     }
 
     boolean isWildcard() {
-        return StringUtils.isEmpty(property);
+        return StringUtils.isEmpty(property) || property.equals(WILDCARD);
     }
 }

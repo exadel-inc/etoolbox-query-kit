@@ -56,7 +56,11 @@ public class ModifiableColumnCollection implements ColumnCollection, JsonExporta
     }
 
     private void removeDuplicatingPathColumn() {
-        String firstSelector = getSelectors().get(0);
+        List<String> selectors = getSelectors();
+        if (selectors.isEmpty()) {
+            return;
+        }
+        String firstSelector = selectors.get(0);
         getAdapters()
                 .stream()
                 .filter(adapter -> StringUtils.equals(adapter.getSelectorName(), firstSelector) && Constants.PROPERTY_JCR_PATH.equals(adapter.getPropertyName()))
@@ -104,10 +108,10 @@ public class ModifiableColumnCollection implements ColumnCollection, JsonExporta
 
         for (String selector : selectorsToProperties.keySet()) {
             List<String> propertiesToInsert = selectorsToProperties.get(selector);
-            List<ColumnAdapter> matchingColumns = this.getItems()
+            List<ColumnAdapter> matchingColumns = items
                     .stream()
                     .filter(col -> col instanceof ColumnAdapter)
-                    .filter(col -> selector.contains(col.getSelectorName()))
+                    .filter(col -> StringUtils.equalsAny(col.getSelectorName(), selector, Constants.NODE_TYPE_PLACEHOLDER))
                     .map(ColumnAdapter.class::cast)
                     .collect(Collectors.toList());
             ColumnAdapter wildcardColumn = matchingColumns
@@ -119,11 +123,11 @@ public class ModifiableColumnCollection implements ColumnCollection, JsonExporta
             if (wildcardColumn == null || propertiesToInsert.isEmpty()) {
                 continue;
             }
-            int insertionPosition = this.getItems().indexOf(wildcardColumn) + 1;
+            int insertionPosition = items.indexOf(wildcardColumn) + 1;
             for (String  propertyToInsert : propertiesToInsert) {
-                this.getItems().add(insertionPosition++, new ColumnAdapter(selector, propertyToInsert));
+                items.add(insertionPosition++, new ColumnAdapter(selector, propertyToInsert));
             }
-            this.getItems().remove(wildcardColumn);
+            items.remove(wildcardColumn);
         }
     }
 
