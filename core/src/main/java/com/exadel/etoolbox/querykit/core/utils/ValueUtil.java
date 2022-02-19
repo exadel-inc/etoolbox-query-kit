@@ -1,6 +1,7 @@
 package com.exadel.etoolbox.querykit.core.utils;
 
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -76,6 +77,19 @@ public class ValueUtil {
         }
         return ClassUtils.isAssignable(value.getClass(), Collection.class)
                 || value.getClass().isArray();
+    }
+
+    public static Value createFlatValue(Object source, ValueFactory valueFactory) {
+        if (source == null) {
+            return valueFactory.createValue(StringUtils.EMPTY);
+        }
+        if (!source.getClass().isArray()) {
+            return createValue(source, valueFactory);
+        }
+        if (ArrayUtils.getLength(source) > 0) {
+            return createValue(((Object[]) source)[0], valueFactory);
+        }
+        return valueFactory.createValue(StringUtils.EMPTY);
     }
 
     public static Value createValue(Object source, ValueFactory valueFactory) {

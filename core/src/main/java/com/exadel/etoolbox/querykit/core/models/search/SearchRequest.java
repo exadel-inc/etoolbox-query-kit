@@ -143,7 +143,7 @@ public class SearchRequest {
                 .collect(Collectors.toList());
         Map<String, Object> result = new HashMap<>();
         for (String key : parameterKeys) {
-            Object value = RequestUtil.getValueOrStringifiedArray(request, key);
+            Object value = RequestUtil.getValueOrArray(request, key);
             if (value != null) {
                 result.put(key, value);
             }

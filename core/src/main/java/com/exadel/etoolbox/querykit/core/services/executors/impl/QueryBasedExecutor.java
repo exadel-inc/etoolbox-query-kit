@@ -67,7 +67,7 @@ abstract class QueryBasedExecutor extends ExecutorImpl {
         }
         for (Map.Entry<String, Object> entry : request.getUserParameters().entrySet()) {
             if (ArrayUtils.contains(query.getBindVariableNames(), entry.getKey())) {
-                query.bindValue(entry.getKey(), ValueUtil.createValue(entry.getValue(), valueFactory));
+                query.bindValue(entry.getKey(), ValueUtil.createFlatValue(entry.getValue(), valueFactory));
             }
         }
         return query;

@@ -75,7 +75,7 @@ class MeasuredExecutorHelper {
                 .getQueryManager()
                 .createQuery("MEASURE " + query.getStatement(), Query.JCR_SQL2);
         for (String bindVariable : query.getBindVariableNames()) {
-            Value newBindValue = ValueUtil.createValue(
+            Value newBindValue = ValueUtil.createFlatValue(
                     request.getUserParameters().get(bindVariable),
                     request.getValueFactory());
             measurementQuery.bindValue(bindVariable, newBindValue);

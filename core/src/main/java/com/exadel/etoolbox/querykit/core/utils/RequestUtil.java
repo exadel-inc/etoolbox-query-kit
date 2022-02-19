@@ -12,7 +12,6 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -22,7 +21,7 @@ import java.util.stream.Collectors;
 public class RequestUtil {
 
     public static final String PARAMETER_PREFIX = "q_";
-    private static final Pattern SPLITTER = Pattern.compile(",");
+    private static final Pattern SPLITTER = Pattern.compile(Constants.COMMA);
 
     public static long getNumericValue(String rawValue, int defaultValue) {
         if (!StringUtils.isNumeric(rawValue)) {
@@ -64,7 +63,7 @@ public class RequestUtil {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public static Object getValueOrStringifiedArray(SlingHttpServletRequest request, String param) {
+    public static Object getValueOrArray(SlingHttpServletRequest request, String param) {
         RequestParameter[] namedParameters = request.getRequestParameters(param);
         if (namedParameters != null && namedParameters.length == 1) {
             String raw = decode(namedParameters[0].getString(), request);
@@ -74,7 +73,7 @@ public class RequestUtil {
                     .stream(namedParameters)
                     .map(RequestParameter::getString)
                     .map(str -> decode(str, request))
-                    .collect(Collectors.joining(","));
+                    .toArray(String[]::new);
         }
         return null;
     }
