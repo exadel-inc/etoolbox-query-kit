@@ -9,7 +9,7 @@
             jcr:primaryType="nt:unstructured"
             sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
             target=".eqk-ui"
-            action="foundation.dialog"
+            action="eqk.query.dialog"
             text="Components containing another component">
         <data jcr:primaryType="nt:unstructured"
               nesting="hide"
@@ -19,9 +19,6 @@
     <content jcr:primaryType="nt:unstructured"
              sling:resourceType="granite/ui/components/coral/foundation/container">
         <items jcr:primaryType="nt:unstructured">
-            <!-- Add <granite:data dynamic-ds-query="..."/> to facilitate populating the list dynamically
-                 (with user-set values interpolation) -->
-            <!-- Add <datasource sling:resourceType="..."/> to facilitate populating the list statically -->
             <parentComponent
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="granite/ui/components/coral/foundation/form/select"
@@ -32,7 +29,7 @@
                     <placeholder jcr:primaryType="nt:unstructured" text="Loading..." value=""/>
                 </items>
                 <granite:data jcr:primaryType="nt:unstructured"
-                              datasource-query="SELECT comp.[jcr:title] FROM [cq:Component] AS comp WHERE ISDESCENDANTNODE(comp,'$componentPath') ORDER BY comp.[jcr:title]"/>
+                              datasource-query="SELECT comp.[jcr:title] FROM [cq:Component] AS comp WHERE ISDESCENDANTNODE(comp,'$componentsPath') ORDER BY comp.[jcr:title]"/>
             </parentComponent>
             <childComponent
                     jcr:primaryType="nt:unstructured"
@@ -44,25 +41,57 @@
                     <placeholder jcr:primaryType="nt:unstructured" text="Loading..." value=""/>
                 </items>
                 <granite:data jcr:primaryType="nt:unstructured"
-                              datasource-query="SELECT comp.[jcr:title] FROM [cq:Component] AS comp WHERE ISDESCENDANTNODE(comp, '$componentPath') ORDER BY comp.[jcr:title]"/>
+                              datasource-query="SELECT comp.[jcr:title] FROM [cq:Component] AS comp WHERE ISDESCENDANTNODE(comp, '$componentsPath') ORDER BY comp.[jcr:title]"/>
             </childComponent>
-            <componentPath
+            <headingOptionalParams
                     jcr:primaryType="nt:unstructured"
-                    sling:resourceType="granite/ui/components/coral/foundation/form/hidden"
-                    name="componentPath"
-                    value="/apps/hpeweb/components"/>
-            <contentPath
+                    sling:resourceType="granite/ui/components/coral/foundation/heading"
+                    granite:class="optional-params-heading"
+                    level="4"
+                    text="Optional params"/>
+            <optonalParams
                     jcr:primaryType="nt:unstructured"
-                    sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
-                    fieldLabel="Folder(s) to look in">
-                <field jcr:primaryType="nt:unstructured"
-                       sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
-                       name="contentPath"
-                       rootPath="/content"/>
-            </contentPath>
+                    sling:resourceType="granite/ui/components/coral/foundation/accordion"
+                    granite:class="optional-params">
+                <items jcr:primaryType="nt:unstructured">
+
+                    <componentsPathContainer
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/coral/foundation/container"
+                            jcr:title="Component paths">
+                        <items jcr:primaryType="nt:unstructured">
+                            <readOnlyList
+                                    jcr:primaryType="nt:unstructured"
+                                    sling:resourceType="etoolbox-query-kit/components/console/readOnlyList"
+                                    name="componentsPath"/>
+                            <description
+                                    jcr:primaryType="nt:unstructured"
+                                    sling:resourceType="granite/ui/components/coral/foundation/text"
+                                    text="The paths are defined in the Profile settings"/>
+                        </items>
+                    </componentsPathContainer>
+
+                    <contentPathContainer
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/coral/foundation/container"
+                            jcr:title="Folder(s) to look in">
+                        <items jcr:primaryType="nt:unstructured">
+                            <contentPath
+                                    jcr:primaryType="nt:unstructured"
+                                    sling:resourceType="granite/ui/components/coral/foundation/form/multifield">
+                                <field jcr:primaryType="nt:unstructured"
+                                       sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                                       name="contentPath"
+                                       rootPath="/content"/>
+                            </contentPath>
+                        </items>
+                    </contentPathContainer>
+
+                </items>
+            </optonalParams>
         </items>
         <!-- Main query -->
         <granite:data jcr:primaryType="nt:unstructured"
-                      query="SELECT page.* FROM [cq:PageContent] AS page INNER JOIN [nt:unstructured] AS comp ON ISDESCENDANTNODE(comp, page) WHERE comp.[sling:resourceType] = '$parent' AND ISDESCENDANTNODE(page, '$contentPath')"/>
+                      query="SELECT page.* FROM [cq:PageContent] AS page INNER JOIN [nt:unstructured] AS parentComp ON ISDESCENDANTNODE(parentComp, page) INNER JOIN [nt:unstructured] as childComp ON ISDESCENDANTNODE(childComp, parentComp) WHERE parentComp.[sling:resourceType] = '$parent' AND childComp.[sling:resourceType] = '$child' AND ISDESCENDANTNODE(page, '$contentPath')"/>
     </content>
 </jcr:root>

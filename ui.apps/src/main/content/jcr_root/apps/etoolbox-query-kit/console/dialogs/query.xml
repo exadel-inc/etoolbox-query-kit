@@ -6,7 +6,7 @@
         jcr:primaryType="nt:unstructured"
         jcr:title="Find content"
         granite:id="dialog-query"
-        granite:class="coral-Form coral-Form--vertical eqk-query-dialog"
+        granite:class="coral-Form coral-Form--vertical eqk-dialog"
         sling:resourceType="granite/ui/components/coral/foundation/dialog">
     <items jcr:primaryType="nt:unstructured">
         <content jcr:primaryType="nt:unstructured"
@@ -16,8 +16,14 @@
                 <column jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/container">
                     <items jcr:primaryType="nt:unstructured">
-                        <payload jcr:primaryType="nt:unstructured"
-                                 sling:resourceType="etoolbox-query-kit/components/inpage/includePath"/>
+                        <form jcr:primaryType="nt:unstructured"
+                              sling:resourceType="granite/ui/components/foundation/form"
+                              dataPath="/conf/etoolbox-query-kit/settings/profiles/jcr:content/${param['profile'] != null ? param['profile'] : 'default'}">
+                            <items jcr:primaryType="nt:unstructured">
+                                <payload jcr:primaryType="nt:unstructured"
+                                         sling:resourceType="etoolbox-query-kit/components/console/includePath"/>
+                            </items>
+                        </form>
                     </items>
                 </column>
             </items>
@@ -28,7 +34,7 @@
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="granite/ui/components/coral/foundation/collection/action"
                 granite:id="dialog-button-toEditor"
-                action="etoolbox.querykit.queryToEditor"
+                action="eqk.query.toEditor"
                 target=".eqk-ui"
                 text="To editor"
                 variant="silent"/>
@@ -36,6 +42,7 @@
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="granite/ui/components/coral/foundation/button"
                 granite:id="dialog-button-find"
+                action="eqk.query.toEditorAndRun"
                 text="Find"
                 variant="primary"/>
     </footer>

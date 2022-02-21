@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workspaceFilter version="1.0">
-    <filter root="/conf/etoolbox-query-kit/settings"/>
+    <filter root="/conf/etoolbox-query-kit/settings/dialogs"/>
+    <filter root="/conf/etoolbox-query-kit/settings/custom-dialogs" mode="merge"/>
+    <filter root="/conf/etoolbox-query-kit/settings/profiles" mode="merge"/>
 </workspaceFilter>

@@ -1,0 +1,64 @@
+<jcr:root
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        jcr:primaryType="nt:unstructured">
+    <!-- Remove "disabled" flag before deploying a new dialog -->
+    <menuItem
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
+            action="eqk.query.dialog"
+            disabled="true"
+            target=".eqk-ui"
+            text="Sample dialog">
+        <!-- Modify the ?path=/conf/etoolbox-query-kit/... part as needed -->
+        <data jcr:primaryType="nt:unstructured"
+              nesting="hide"
+              src.url="/mnt/overlay/etoolbox-query-kit/console/dialogs/query.html?path=/conf/etoolbox-query-kit/settings/dialogs/sample-dialog/content"/>
+    </menuItem>
+    <content jcr:primaryType="nt:unstructured"
+             sling:resourceType="granite/ui/components/coral/foundation/container">
+        <items jcr:primaryType="nt:unstructured">
+            <!-- Use this approach to populate "static" components (not dependent on user settings) -->
+            <select1
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                    name="select1"
+                    fieldLabel="Select component">
+                <datasource jcr:primaryType="nt:unstructured"
+                            sling:resourceType="/apps/etoolbox-query-kit/datasources/itemlist"
+                            query="SELECT comp.[jcr:title] FROM [cq:Component] AS comp WHERE ISDESCENDANTNODE(comp,'/apps') AND comp.[jcr:title] IS NOT NULL AND comp.[jcr:title] <> '' ORDER BY comp.[jcr:title]"/>
+            </select1>
+            <!-- Use this approach to populate "dynamic" components (using interpolation of user preferences) -->
+            <select2
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                    name="select2"
+                    fieldLabel="Select component">
+                <items jcr:primaryType="nt:unstructured">
+                    <placeholder jcr:primaryType="nt:unstructured" text="Loading..." value=""/>
+                </items>
+                <granite:data jcr:primaryType="nt:unstructured"
+                              datasource-query="SELECT comp.[jcr:title] FROM [cq:Component] AS comp WHERE ISDESCENDANTNODE(comp, '$componentsPath') ORDER BY comp.[jcr:title]"/>
+            </select2>
+
+            <componentsPath
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/form/hidden"
+                    name="componentsPath"/>
+            <contentPath
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                    fieldLabel="Folder(s) to look in">
+                <field jcr:primaryType="nt:unstructured"
+                       sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                       name="contentPath"
+                       rootPath="/content"/>
+            </contentPath>
+        </items>
+        <!-- Main query -->
+        <granite:data jcr:primaryType="nt:unstructured"
+                      query="SELECT page.* FROM [cq:PageContent] AS page INNER JOIN [nt:unstructured] AS comp ON ISDESCENDANTNODE(comp, page) WHERE comp.[sling:resourceType] = '$select1' AND ISDESCENDANTNODE(page, '$contentPath')"/>
+    </content>
+</jcr:root>

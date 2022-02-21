@@ -1,4 +1,10 @@
 <jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0"
           jcr:primaryType="cq:Page">
-    <jcr:content jcr:primaryType="nt:unstructured"/>
+    <jcr:content jcr:primaryType="cq:PageContent">
+        <default jcr:primaryType="nt:unstructured"
+                 jcr:title="Default"
+                 componentsPath="[/apps]"
+                 templatesPath="[/conf]"
+                 contentPath="[/content]"/>
+    </jcr:content>
 </jcr:root>
