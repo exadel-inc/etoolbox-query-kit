@@ -2,7 +2,6 @@ package com.exadel.etoolbox.querykit.core.servlets.datasources;
 
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
-import com.exadel.etoolbox.querykit.core.models.request.RequestAttributes;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;

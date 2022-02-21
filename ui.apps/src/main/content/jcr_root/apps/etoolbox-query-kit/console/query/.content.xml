@@ -196,9 +196,9 @@
                                             jcr:primaryType="nt:unstructured"
                                             sling:resourceType="/apps/etoolbox-query-kit/datasources/queryColumns"/>
                                 </table>
-                                <reqReader
+                                <executionInfo
                                         jcr:primaryType="nt:unstructured"
-                                        sling:resourceType="etoolbox-query-kit/components/console/requestReader"/>
+                                        sling:resourceType="etoolbox-query-kit/components/console/executionInfo"/>
                                 <pagination
                                         jcr:primaryType="nt:unstructured"
                                         sling:resourceType="etoolbox-query-kit/components/console/pagination"/>
