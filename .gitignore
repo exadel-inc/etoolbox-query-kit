@@ -77,5 +77,6 @@ buildNumber.properties
 *.iml
 
 ### UI ###
+node/
 node_modules/
-ui.apps/src/main/content/jcr_root/apps/etoolbox-query-kit/components/content/console/clientlibs/libs/
+**/clientlibs/libs/
