@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Component(service = QueryConverter.class, property = "converter.output=qom")
+@Component(service = QueryConverter.class, property = "converter.output=QOM")
 public class SqlToQomConverter implements QueryConverter {
 
     private static final String PSEUDO_EQUALITY_FORMAT = "= '$in$(%s)'";
@@ -48,7 +48,7 @@ public class SqlToQomConverter implements QueryConverter {
             QueryManager queryManager = workspace.getQueryManager();
             QueryObjectModelFactory queryObjectModelFactory = queryManager.getQOMFactory();
             ValueFactory queryValueFactory = session.getValueFactory();
-            QomAdapterContext qomAdapterContext = new QomAdapterContext(queryObjectModelFactory, queryValueFactory);
+            QomAdapterContext qomAdapterContext = QomAdapterContext.from(queryObjectModelFactory, queryValueFactory);
 
             Parser parser = new Parser(queryObjectModelFactory, queryValueFactory);
             List<QomAdapter> qomAdapters = new ArrayList<>();
@@ -67,11 +67,11 @@ public class SqlToQomConverter implements QueryConverter {
 
     private <T> T output(List<QomAdapter> qomAdapters, Class<T> type) {
         if (String.class.equals(type) && qomAdapters.size() == 1) {
-            return type.cast(qomAdapters.get(0).toFormattedString());
+            return type.cast(qomAdapters.get(0).toSqlString());
         } else if (String.class.equals(type) && qomAdapters.size() > 1) {
-            type.cast(new QomAdapterBundle(qomAdapters).toFormattedString());
+            type.cast(new QomAdapterBundle(qomAdapters).toSqlString());
         } else if (String[].class.equals(type)) {
-            return type.cast(qomAdapters.stream().map(QomAdapter::toFormattedString).toArray(String[]::new));
+            return type.cast(qomAdapters.stream().map(QomAdapter::toSqlString).toArray(String[]::new));
 
         } else if (QueryObjectModel.class.equals(type)) {
             return type.cast(qomAdapters.get(0).getModel());

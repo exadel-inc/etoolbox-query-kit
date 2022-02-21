@@ -32,7 +32,7 @@ public class SqlExecutor extends QueryBasedExecutor  {
     private static final String KEYWORD_SELECT = "select";
     private static final String KEYWORD_FROM = "from";
 
-    @Reference(target = "(converter.output=qom)", policyOption = ReferencePolicyOption.GREEDY)
+    @Reference(target = "(converter.output=QOM)", policyOption = ReferencePolicyOption.GREEDY)
     private QueryConverter queryConverterService;
 
     @Getter(AccessLevel.PACKAGE)

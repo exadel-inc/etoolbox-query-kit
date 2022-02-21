@@ -10,7 +10,7 @@ import org.osgi.service.component.annotations.Component;
 
 import java.text.ParseException;
 
-@Component(service = QueryConverter.class, property = "converter.output=string")
+@Component(service = QueryConverter.class, property = "converter.output=SQL")
 public class XPathToSqlConverter implements QueryConverter {
     static final String ERROR_MESSAGE_PARSE = "Could not parse statement ";
 
