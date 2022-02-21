@@ -1,6 +1,6 @@
 package com.exadel.etoolbox.querykit.core.services.executors.impl;
 
-import com.exadel.etoolbox.querykit.core.models.queryengine.MeasuredQueryResult;
+import com.exadel.etoolbox.querykit.core.models.query.MeasuredQueryResult;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.utils.ValueUtil;
 import lombok.Builder;

@@ -1,6 +1,6 @@
 package com.exadel.etoolbox.querykit.core.services.executors.impl;
 
-import com.exadel.etoolbox.querykit.core.models.queryengine.MeasuredQueryResult;
+import com.exadel.etoolbox.querykit.core.models.query.MeasuredQueryResult;
 import com.exadel.etoolbox.querykit.core.models.qom.columns.ModifiableColumnCollection;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.models.search.SearchResult;
@@ -18,7 +18,7 @@ abstract class QueryBasedExecutor extends ExecutorImpl {
 
     @Override
     public SearchResult execute(SearchRequest request) throws Exception {
-        Query query = prepareQuery(request);
+        Query query = compileAndSetUp(request);
         ModifiableColumnCollection columnCollection = (ModifiableColumnCollection) getColumnCollection(request, query);
 
         long startingTime = System.currentTimeMillis();
@@ -59,11 +59,11 @@ abstract class QueryBasedExecutor extends ExecutorImpl {
                 .build();
     }
 
-    abstract Query getBasicQuery(SearchRequest request) throws RepositoryException, ConverterException;
+    abstract Query compile(SearchRequest request) throws Exception;
 
-    private Query prepareQuery(SearchRequest request) throws RepositoryException, ConverterException {
+    private Query compileAndSetUp(SearchRequest request) throws Exception {
         ValueFactory valueFactory = request.getValueFactory();
-        Query query = getBasicQuery(request);
+        Query query = compile(request);
         if (!request.isIterating()) {
             query.setOffset(request.getOffset());
             if (request.getLimit() > 0 && request.getLimit() != SearchRequest.DEFAULT_LIMIT) {
@@ -76,5 +76,12 @@ abstract class QueryBasedExecutor extends ExecutorImpl {
             }
         }
         return query;
+    }
+
+    private QueryResult executeMeasured(SearchRequest request, Query query) throws Exception {
+        if (!request.isShowTotal()) {
+            return new MeasuredQueryResult(query.execute());
+        }
+        return MeasuredExecutorHelper.execute(request, query);
     }
 }

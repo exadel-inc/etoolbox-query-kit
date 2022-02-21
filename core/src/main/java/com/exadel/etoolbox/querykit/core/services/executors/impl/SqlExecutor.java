@@ -4,8 +4,10 @@ import com.exadel.etoolbox.querykit.core.models.qom.QomAdapter;
 import com.exadel.etoolbox.querykit.core.models.qom.QomAdapterBundle;
 import com.exadel.etoolbox.querykit.core.models.qom.columns.ColumnCollection;
 import com.exadel.etoolbox.querykit.core.models.qom.columns.ModifiableColumnCollection;
+import com.exadel.etoolbox.querykit.core.models.query.ParsedQueryInfo;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.models.syntax.WordModel;
+import com.exadel.etoolbox.querykit.core.services.executors.ExecutorType;
 import com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemConverterFactory;
 import com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemFilterFactory;
 import com.exadel.etoolbox.querykit.core.services.executors.Executor;
@@ -14,11 +16,11 @@ import com.exadel.etoolbox.querykit.core.utils.Constants;
 import com.exadel.etoolbox.querykit.core.utils.ConverterException;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
 
-import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.qom.QueryObjectModel;
 import java.util.LinkedHashSet;
@@ -44,22 +46,41 @@ public class SqlExecutor extends QueryBasedExecutor  {
     private List<SearchItemConverterFactory> itemConverters;
 
     @Override
-    public String getType() {
-        return "SQL";
+    public ExecutorType getType() {
+        return ExecutorType.SQL;
     }
 
     @Override
-    Query getBasicQuery(SearchRequest request) throws RepositoryException, ConverterException {
-        String statement = request.getStatement();
+    public ParsedQueryInfo parse(SearchRequest request) throws Exception {
 
         if (request.getUserParameters().size() > 0
-            && containsInterpolatableValues(request.getStatement(), request.getUserParameters().keySet())) {
+                && containsInterpolateableValues(request.getStatement(), request.getUserParameters().keySet())) {
 
-            statement = queryConverterService.convert(request.getStatement(), request.getResourceResolver(), QomAdapterBundle.class)
-                    .buildWith(request.getQueryManager().getQOMFactory(), request.getUserParameters())
-                    .toFormattedString();
+            return queryConverterService.convert(
+                            request.getStatement(),
+                            request.getResourceResolver(),
+                            QomAdapterBundle.class)
+                    .buildWith(
+                            request.getQueryManager().getQOMFactory(),
+                            request.getUserParameters());
         }
-        return request.getQueryManager().createQuery(statement, Query.JCR_SQL2);
+
+        return new ParsedQueryInfo() {
+            @Override
+            public String toJson() {
+                return StringUtils.EMPTY;
+            }
+
+            @Override
+            public String toSqlString() {
+                return request.getStatement();
+            }
+        };
+    }
+
+    @Override
+    Query compile(SearchRequest request) throws Exception {
+        return request.getQueryManager().createQuery(parse(request).toSqlString(), Query.JCR_SQL2);
     }
 
     @Override
@@ -72,7 +93,7 @@ public class SqlExecutor extends QueryBasedExecutor  {
         return new ModifiableColumnCollection(qom);
     }
 
-    private static boolean containsInterpolatableValues(String statement, Set<String> variableNames) {
+    private static boolean containsInterpolateableValues(String statement, Set<String> variableNames) {
         WordModel wordModel = new WordModel(statement);
         for (String name : variableNames) {
             boolean match = wordModel.hasToken(elt -> elt.startsWith("'") && elt.endsWith("'") && elt.contains("$" + name));
@@ -82,7 +103,6 @@ public class SqlExecutor extends QueryBasedExecutor  {
         }
         return false;
     }
-
 
     private static String prepareSelectExtract(String statement) {
         WordModel wordModel = new WordModel(statement);
