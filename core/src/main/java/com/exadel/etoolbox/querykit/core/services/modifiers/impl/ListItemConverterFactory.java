@@ -12,7 +12,11 @@ import java.util.function.UnaryOperator;
 
 @Component
 public class ListItemConverterFactory implements SearchItemConverterFactory {
+
     public static final String NAME = "list-item";
+
+    private static final String PREFIX_APPS = "/apps/";
+    private static final String FALLBACK_TITLE_FORMAT = "[%s]";
 
     @Override
     public String getName() {
@@ -30,10 +34,13 @@ public class ListItemConverterFactory implements SearchItemConverterFactory {
 
         @Override
         public SearchItem apply(SearchItem searchItem) {
-            String text = StringUtils.defaultString(searchItem.getProperty(Constants.PROPERTY_JCR_TITLE, String.class), "Component");
+            String value = StringUtils.removeStart(searchItem.getPath(), PREFIX_APPS);
+            String text = StringUtils.defaultString(
+                    searchItem.getProperty(Constants.PROPERTY_JCR_TITLE, String.class),
+                    String.format(FALLBACK_TITLE_FORMAT, value));
             searchItem.clearProperties();
             searchItem.putProperty(Constants.PROPERTY_TEXT, text);
-            searchItem.putProperty(Constants.PROPERTY_VALUE, searchItem.getPath());
+            searchItem.putProperty(Constants.PROPERTY_VALUE, value);
             return searchItem;
         }
     }
