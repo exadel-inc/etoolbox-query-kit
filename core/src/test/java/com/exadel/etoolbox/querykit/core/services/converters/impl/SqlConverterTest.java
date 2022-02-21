@@ -26,7 +26,7 @@ public class SqlConverterTest {
         String statement = "SELECT * FROM [nt:unstructured] AS a WHERE ISDESCENDANTNODE(a, '/content') AND a.[jcr:title] LIKE $bind";
         String result = sqlToQomConverter.convert(statement, aemContext.resourceResolver(), String.class);
         Assert.assertEquals(
-                "SELECT a.* FROM [nt:unstructured] AS a WHERE ISDESCENDANTNODE(a, [/content]) AND a.[jcr:title] LIKE $bind",
+                "SELECT a.* FROM [nt:unstructured] AS a WHERE ISDESCENDANTNODE(a, '/content') AND a.[jcr:title] LIKE $bind",
                 result);
     }
 }

@@ -36,7 +36,7 @@
         }
 
         const queryParams = collectQueryParams($dialog);
-        queryParams.q_query = $dsInput.data('datasource-query');
+        queryParams['-query'] = $dsInput.data('datasource-query');
 
         $.ajax({
             url: DATASOURCE_ENDPOINT,
@@ -82,8 +82,7 @@
             return;
         }
         const queryParams = collectQueryParams($dialog);
-        queryParams.q_query = queryString;
-        queryParams.q_format = 'sql2';
+        queryParams['-query'] = queryString;
 
         foundationUi.wait();
 

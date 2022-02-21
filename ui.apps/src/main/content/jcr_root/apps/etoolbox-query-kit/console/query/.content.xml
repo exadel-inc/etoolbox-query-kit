@@ -140,7 +140,7 @@
                                         granite:class="codemirror-textarea"
                                         granite:id="textQuery"
                                         autocomplete="on"
-                                        name="q_query"/>
+                                        name="-query"/>
                                 <buttons
                                         jcr:primaryType="nt:unstructured"
                                         sling:resourceType="granite/ui/components/coral/foundation/container"

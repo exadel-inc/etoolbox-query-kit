@@ -20,8 +20,8 @@ $(function () {
     function updateUrlParams(query) {
         if (query && query.trim().length > 0 && history.pushState) {
             const url = new URL(window.location);
-            url.searchParams.set('q_query', encodeURIComponent(query));
-            url.searchParams.set('q_measure', 'true');
+            url.searchParams.set('-query', encodeURIComponent(query));
+            url.searchParams.set('-measure', 'true');
             window.history.pushState({}, '', url);
         }
     }
@@ -30,7 +30,7 @@ $(function () {
         $.ajax({
             url: TABLE_URL,
             type: "GET",
-            data: {'q_query': query, 'q_offset': offset, 'q_limit': limit, 'q_measure': !totalCount},
+            data: {'-query': query, '-offset': offset, '-limit': limit, '-measure': !totalCount},
             beforeSend: function(){
                 foundationUi.wait();
             },

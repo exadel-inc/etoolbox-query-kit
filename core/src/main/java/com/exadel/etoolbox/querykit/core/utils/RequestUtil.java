@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RequestUtil {
 
-    public static final String PARAMETER_PREFIX = "q_";
+    public static final String PARAMETER_PREFIX = "-";
     private static final Pattern SPLITTER = Pattern.compile(Constants.COMMA);
 
     public static long getNumericValue(String rawValue, int defaultValue) {

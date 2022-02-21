@@ -43,11 +43,11 @@ public class QueryServiceTest {
     @Test
     public void shouldExecuteMeasurementQuery() {
         aemContext.request().addRequestParameter(
-                "q_query",
+                "-query",
                 "SELECT * FROM [cq:PageContent] AS e WHERE ISDESCENDANTNODE(e, '/content')");
-        aemContext.request().addRequestParameter("q_total", "true");
-        aemContext.request().addRequestParameter("q_offset", "1");
-        aemContext.request().addRequestParameter("q_limit", "1");
+        aemContext.request().addRequestParameter("-measure", "true");
+        aemContext.request().addRequestParameter("-offset", "1");
+        aemContext.request().addRequestParameter("-limit", "1");
 
         SearchRequest request = SearchRequest.from(aemContext.request());
         SearchResult result = queryService.execute(request);
@@ -61,11 +61,11 @@ public class QueryServiceTest {
     @Test
     public void shouldExecuteIteratingQuery() {
         aemContext.request().addRequestParameter(
-                "q_query",
+                "-query",
                 "SELECT * FROM [cq:Page] AS e WHERE ISCHILDNODE(e, '/content/site')");
-        aemContext.request().addRequestParameter("q_total", "iterating");
-        aemContext.request().addRequestParameter("q_offset", "3");
-        aemContext.request().addRequestParameter("q_limit", "5");
+        aemContext.request().addRequestParameter("-measure", "iterating");
+        aemContext.request().addRequestParameter("-offset", "3");
+        aemContext.request().addRequestParameter("-limit", "5");
 
         SearchRequest request = SearchRequest.from(aemContext.request());
         SearchResult result = queryService.execute(request);
@@ -79,10 +79,10 @@ public class QueryServiceTest {
     @Test
     public void shouldSwitchToSqlWhenUnsupportedKeywords() {
         aemContext.request().addRequestParameter(
-                "q_query",
+                "-query",
                 "SELECT * FROM [cq:PageContent] AS e WHERE ISDESCENDANTNODE(e, '/content') " +
                         "UNION SELECT * FROM [cq:Page] AS e WHERE ISDESCENDANTNODE(e, '/$var')");
-        aemContext.request().addRequestParameter("q_total", "true");
+        aemContext.request().addRequestParameter("-measure", "true");
         aemContext.request().addRequestParameter("var", "content");
 
         SearchRequest request = SearchRequest.from(aemContext.request());
@@ -96,9 +96,9 @@ public class QueryServiceTest {
     @Test
     public void shouldBindVariables() {
         aemContext.request().addRequestParameter(
-                "q_query",
+                "-query",
                 "SELECT * FROM [cq:PageContent] AS e WHERE e.[jcr:title] = $title AND e.ranking = $ranking");
-        aemContext.request().addRequestParameter("q_total", "true");
+        aemContext.request().addRequestParameter("-measure", "true");
         aemContext.request().addRequestParameter("title", "Page 1");
         aemContext.request().addRequestParameter("ranking", "42");
 
@@ -112,7 +112,7 @@ public class QueryServiceTest {
     @Test
     public void shouldSearchWithVariableInterpolationSql() {
         aemContext.request().addRequestParameter(
-                "q_query",
+                "-query",
                 "SELECT * FROM [cq:PageContent] AS e WHERE e.[jcr:title] = '$title' " +
                         "UNION SELECT * FROM [cq:Page] AS e WHERE e.[jcr:title] = '$title'");
         aemContext.request().addRequestParameter("title", "Page 1");
@@ -128,7 +128,7 @@ public class QueryServiceTest {
     @Test
     public void shouldSearchWithVariableInterpolationQom() {
         aemContext.request().addRequestParameter(
-                "q_query",
+                "-query",
                 "SELECT * FROM [cq:PageContent] AS e WHERE ISDESCENDANTNODE(e, '$path') AND e.[jcr:title] = '$title'");
         aemContext.request().addRequestParameter("path", "/content");
         aemContext.request().addRequestParameter("title", "Page 1");
@@ -144,10 +144,10 @@ public class QueryServiceTest {
     @Test
     public void shouldSearchWithExtraColumnsSql() {
         aemContext.request().addRequestParameter(
-                "q_query",
+                "-query",
                 "SELECT e.* FROM [cq:PageContent] AS e WHERE e.[jcr:title] = 'Page 1' " +
                         "UNION SELECT * FROM [cq:Page] AS e WHERE e.[jcr:title] = 'Page 1'");
-        aemContext.request().addRequestParameter("q_allprops", "true");
+        aemContext.request().addRequestParameter("-allprops", "true");
 
         SearchRequest request = SearchRequest.from(aemContext.request());
         SearchResult result = queryService.execute(request);
@@ -160,9 +160,9 @@ public class QueryServiceTest {
     @Test
     public void shouldSearchWithExtraColumnsQom() {
         aemContext.request().addRequestParameter(
-                "q_query",
+                "-query",
                 "SELECT e.* FROM [cq:PageContent] AS e WHERE e.[jcr:title] = 'Page 1'");
-        aemContext.request().addRequestParameter("q_allprops", "true");
+        aemContext.request().addRequestParameter("-allprops", "true");
 
         SearchRequest request = SearchRequest.from(aemContext.request());
         SearchResult result = queryService.execute(request);
@@ -175,12 +175,12 @@ public class QueryServiceTest {
     @Test
     public void shouldApplyCustomFilters() {
         aemContext.request().addRequestParameter(
-                "q_query",
+                "-query",
                 "SELECT * FROM [cq:PageContent] AS content " +
                         "INNER JOIN [cq:Page] AS page ON ISCHILDNODE(content, page)" +
                         "WHERE ISCHILDNODE(page, '/content/site')");
-        aemContext.request().addRequestParameter("q_filters", "skip-by-title, skip-by-ranking");
-        aemContext.request().addRequestParameter("q_total", "true");
+        aemContext.request().addRequestParameter("-filters", "skip-by-title, skip-by-ranking");
+        aemContext.request().addRequestParameter("-measure", "true");
 
         SearchRequest request = SearchRequest.from(aemContext.request());
         SearchResult result = queryService.execute(request);
@@ -192,11 +192,11 @@ public class QueryServiceTest {
     @Test
     public void shouldApplyDuplicateFilter() {
         aemContext.request().addRequestParameter(
-                "q_query",
+                "-query",
                 "SELECT * FROM [nt:unstructured] AS e WHERE ISDESCENDANTNODE(e, '/content/site') " +
                         "AND e.[sling:resourceType] LIKE '%type'");
-        aemContext.request().addRequestParameter("q_filters", "no-duplicate-pages");
-        aemContext.request().addRequestParameter("q_total", "true");
+        aemContext.request().addRequestParameter("-filters", "no-duplicate-pages");
+        aemContext.request().addRequestParameter("-measure", "true");
         aemContext.request().setMethod("POST");
 
         SearchRequest request = SearchRequest.from(aemContext.request());
@@ -209,11 +209,11 @@ public class QueryServiceTest {
     @Test
     public void shouldApplyModifiers() {
         aemContext.request().addRequestParameter(
-                "q_query",
+                "-query",
                 "SELECT * FROM [nt:unstructured] AS e WHERE ISDESCENDANTNODE(e, '/content/site') " +
                         "AND e.[sling:resourceType] LIKE '%type'");
-        aemContext.request().addRequestParameter("q_converters", "find-page");
-        aemContext.request().addRequestParameter("q_total", "true");
+        aemContext.request().addRequestParameter("-converters", "find-page");
+        aemContext.request().addRequestParameter("-measure", "true");
 
         SearchRequest request = SearchRequest.from(aemContext.request());
         SearchResult result = queryService.execute(request);

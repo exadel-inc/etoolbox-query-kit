@@ -47,10 +47,10 @@ public class QomAdapterTest {
                                 "var2", "type",
                                 "word", "will not use this"
                         ))
-                .toFormattedString();
+                .toSqlString();
         Assert.assertEquals(
                 "SELECT a.* FROM [nt:unstructured] AS a " +
-                        "WHERE ISDESCENDANTNODE(a, [/content]) " +
+                        "WHERE ISDESCENDANTNODE(a, '/content') " +
                         "AND a.[sling:resourceType] = 'some/type' " +
                         "AND a.[sling:resourceSuperType] = '$notFound' " +
                         "AND a.pageTitle = 'mid$word value' " +
@@ -72,13 +72,13 @@ public class QomAdapterTest {
                                 "var2", new String[] {"/content/acme"},
                                 "var3", "will not use this"
                         ))
-                .toFormattedString();
+                .toSqlString();
         Assert.assertEquals(
                 "SELECT a.*, b.* " +
                         "FROM [nt:unstructured] AS a " +
                         "INNER JOIN [nt:unstructured] AS b ON ISCHILDNODE(b, a) " +
-                        "WHERE (ISDESCENDANTNODE(a, [/content]) OR ISDESCENDANTNODE(a, [/apps])) " +
-                        "AND ISDESCENDANTNODE(b, [/content/acme]) " +
+                        "WHERE (ISDESCENDANTNODE(a, '/content') OR ISDESCENDANTNODE(a, '/apps')) " +
+                        "AND ISDESCENDANTNODE(b, '/content/acme') " +
                         "OR a.[jcr:title] = $bind",
                 result);
     }
@@ -98,12 +98,12 @@ public class QomAdapterTest {
                                 "var2", new String[] {"Hello", "Goodbye"},
                                 "var3", "will not use this"
                         ))
-                .toFormattedString();
+                .toSqlString();
 
         Assert.assertEquals(
                 "SELECT a.*, b.* FROM [nt:unstructured] AS a " +
                         "INNER JOIN [nt:unstructured] AS b ON ISCHILDNODE(b, a) " +
-                        "WHERE (ISDESCENDANTNODE(a, [/content]) OR ISDESCENDANTNODE(a, [/apps])) " +
+                        "WHERE (ISDESCENDANTNODE(a, '/content') OR ISDESCENDANTNODE(a, '/apps')) " +
                         "AND (a.[jcr:title] LIKE 'Hello' OR a.[jcr:title] LIKE 'Goodbye') " +
                         "AND a.[jcr:description] <> 'a$var3'",
                 result);
@@ -116,7 +116,7 @@ public class QomAdapterTest {
         String result = sqlToQomConverter
                 .convert(statement, aemContext.resourceResolver(), QomAdapter.class)
                 .buildWith(getQomFactory())
-                .toFormattedString();
+                .toSqlString();
         Assert.assertEquals(
                 "SELECT a.* FROM [nt:unstructured] AS a " +
                         "WHERE (a.[jcr:title] = 'first' OR a.[jcr:title] = 'second' OR a.[jcr:title] = 'third') " +
@@ -136,7 +136,7 @@ public class QomAdapterTest {
                         aemContext.resourceResolver(),
                         QomAdapterBundle.class)
                 .buildWith(getQomFactory(), ImmutableMap.of("var", 42))
-                .toFormattedString();
+                .toSqlString();
         Assert.assertEquals(
                 "SELECT a.* FROM [cq:Page] AS a " +
                         "UNION SELECT a.a AS a FROM [cq:PageContent] AS a " +
