@@ -4,6 +4,7 @@ import com.adobe.granite.ui.components.ds.ValueMapResource;
 import com.day.crx.JcrConstants;
 import com.exadel.etoolbox.querykit.core.models.qom.columns.ColumnAdapter;
 import com.exadel.etoolbox.querykit.core.models.qom.columns.ColumnCollection;
+import com.exadel.etoolbox.querykit.core.utils.Constants;
 import com.exadel.etoolbox.querykit.core.utils.serialization.JsonExportableWithContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
@@ -40,24 +41,32 @@ public interface SearchItem extends JsonExportableWithContext<ColumnCollection> 
     void clearProperties();
 
     default Resource toVirtualResource(ResourceResolver resourceResolver, ColumnCollection columns) {
+        return toVirtualResource(resourceResolver, columns, JcrConstants.NT_UNSTRUCTURED);
+    }
+
+    default Resource toVirtualResource(
+            ResourceResolver resourceResolver,
+            ColumnCollection columns,
+            String resourceType) {
+
         if (columns == null || CollectionUtils.isEmpty(columns.getItems())) {
             return toVirtualResource(resourceResolver);
         }
-        Map<String, Object> matchingProperties = new LinkedHashMap<>();
-        for (Column item : columns.getItems()) {
-            if (!(item instanceof ColumnAdapter)) {
-                continue;
-            }
-            ColumnAdapter columnAdapter = (ColumnAdapter) item;
-            String propName = columnAdapter.getUniquePropertyName();
-            matchingProperties.put(propName, getProperty(propName));
+
+        Map<String, Object> displayedProperties = new LinkedHashMap<>();
+        for (Column column : columns.getItems()) {
+            String propName = column instanceof ColumnAdapter
+                    ? ((ColumnAdapter) column).getUniquePropertyName()
+                    : column.getPropertyName();
+            Object propValue = Constants.PROPERTY_JCR_PATH.equals(propName) ? getPath() : getProperty(propName);
+            displayedProperties.put(propName, propValue);
         }
 
-        ValueMap valueMap = new ValueMapDecorator(matchingProperties);
+        ValueMap valueMap = new ValueMapDecorator(displayedProperties);
         return new ValueMapResource(
                 resourceResolver,
                 getPath(),
-                JcrConstants.NT_UNSTRUCTURED,
+                resourceType,
                 valueMap);
     }
 
