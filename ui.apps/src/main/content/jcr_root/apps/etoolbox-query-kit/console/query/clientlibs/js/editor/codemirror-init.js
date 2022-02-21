@@ -3,7 +3,6 @@
 $(document).ready(function () {
     const textArea = document.querySelector('#textQuery');
     const editor = CodeMirror.fromTextArea(textArea, {
-        lineNumbers: true,
         mode: 'text/sql2',
         matchBrackets: true,
         lineWrapping: true
