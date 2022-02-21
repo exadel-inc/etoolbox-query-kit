@@ -1,4 +1,4 @@
-package com.exadel.etoolbox.querykit.core.servlets;
+package com.exadel.etoolbox.querykit.core.servlets.datasources;
 
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
@@ -34,7 +34,7 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
                 SLING_SERVLET_PATHS + "=/apps/etoolbox-query-kit/datasources/itemlist"
         })
 @Slf4j
-public class ListingDatasourceServlet extends SlingSafeMethodsServlet {
+public class ListingDatasource extends SlingSafeMethodsServlet {
 
     @Reference
     private QueryService queryService;
@@ -45,21 +45,21 @@ public class ListingDatasourceServlet extends SlingSafeMethodsServlet {
         searchRequest.getItemConverters().add(ListItemConverterFactory.NAME);
 
         if (!searchRequest.isValid()) {
-            if (searchRequest.getFormat() == SearchResultFormat.JSON) {
-                ResponseUtil.sendError(response, "Invalid request");
+            if (searchRequest.getResultFormat() == SearchResultFormat.JSON) {
+                ResponseUtil.sendJsonError(response, "Invalid request");
             }
             return;
         }
 
         SearchResult searchResult = queryService.execute(searchRequest);
         if (!searchResult.isSuccess()) {
-            if (searchRequest.getFormat() == SearchResultFormat.JSON) {
-                ResponseUtil.sendError(response, searchResult.getErrorMessage());
+            if (searchRequest.getResultFormat() == SearchResultFormat.JSON) {
+                ResponseUtil.sendJsonError(response, searchResult.getErrorMessage());
             }
             return;
         }
 
-        if (searchRequest.getFormat() == SearchResultFormat.JSON) {
+        if (searchRequest.getResultFormat() == SearchResultFormat.JSON) {
             outputJson(request, response, searchResult);
         } else {
             outputDatasource(request, searchResult);
