@@ -10,7 +10,7 @@
   },
   "scripts": {
     "lint": "eslint src/main/content/jcr_root/apps/**/*.js",
-    "copyfiles": "copyfiles --up 1 node_modules/codemirror/**/*.{js,css} src/main/content/jcr_root/apps/etoolbox-query-kit/components/content/console/clientlibs/libs/"
+    "copyfiles": "copyfiles --up 1 node_modules/codemirror/**/*.{js,css} src/main/content/jcr_root/apps/etoolbox-query-kit/console/query/clientlibs/libs/"
   },
   "dependencies": {
     "codemirror": "5.63.3"
