@@ -163,7 +163,7 @@
                                         <share
                                                 jcr:primaryType="nt:unstructured"
                                                 sling:resourceType="granite/ui/components/coral/foundation/button"
-                                                granite:id="btnSave"
+                                                granite:id="btnShare"
                                                 icon="share"
                                                 variant="secondary"/>
                                     </items>
