@@ -1,4 +1,4 @@
-package com.exadel.etoolbox.querykit.core.models.queryengine;
+package com.exadel.etoolbox.querykit.core.models.query;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
