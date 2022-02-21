@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -35,7 +34,7 @@ public class SearchRequest {
     private static final String PARAMETER_OFFSET = PARAMETER_PREFIX + "offset";
     private static final String PARAMETER_LIMIT = PARAMETER_PREFIX + "limit";
     private static final String PARAMETER_QUERY = PARAMETER_PREFIX + "query";
-    private static final String PARAMETER_SHOW_TOTAL = PARAMETER_PREFIX + "total";
+    private static final String PARAMETER_SHOW_TOTAL = PARAMETER_PREFIX + "measure";
     private static final String PARAMETER_TYPE_AWARE = PARAMETER_PREFIX + "typeaware";
     private static final String PARAMETER_TRAVERSE = PARAMETER_PREFIX + "traverse";
 
@@ -53,7 +52,7 @@ public class SearchRequest {
 
     private List<String> itemFilters;
 
-    private SearchResultFormat format;
+    private SearchResultFormat resultFormat;
 
     private boolean iterating;
 
@@ -76,11 +75,15 @@ public class SearchRequest {
        ---------------- */
 
     public boolean isValid() {
-        return StringUtils.isNotBlank(statement) && offset >= 0 && limit >= 0;
+        return !getType().equals(QueryType.UNSUPPORTED) && offset >= 0 && limit >= 0;
     }
 
     public QueryType getType() {
         return QueryType.from(statement);
+    }
+
+    public QueryParsingFormat getParsingFormat() {
+        return this.getResultFormat() == SearchResultFormat.JSON ? QueryParsingFormat.JSON : QueryParsingFormat.SQL;
     }
 
     public boolean isIterating() {
@@ -120,7 +123,7 @@ public class SearchRequest {
                 .userParameters(collectUserParameters(request))
 
                 .itemFilters(RequestUtil.getStringCollection(request, resource, PARAMETER_ITEM_FILTERS))
-                .format(SearchResultFormat.from(request.getRequestPathInfo().getExtension()))
+                .resultFormat(SearchResultFormat.from(request.getRequestPathInfo().getExtension()))
                 .iterating(PARAM_VALUE_ITERATING.equals(RequestUtil.getParameter(request, resource, PARAMETER_SHOW_TOTAL)))
                 .limit(RequestUtil.getNumericValue(RequestUtil.getParameter(request, resource, PARAMETER_LIMIT), DEFAULT_LIMIT))
                 .itemConverters(RequestUtil.getStringCollection(request, resource, PARAMETER_ITEM_CONVERTERS))
