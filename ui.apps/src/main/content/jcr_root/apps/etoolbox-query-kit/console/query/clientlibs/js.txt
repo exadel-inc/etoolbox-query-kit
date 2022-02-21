@@ -6,11 +6,13 @@ addon/hint/show-hint.js
 
 #base=js
 editor/sql2-init.js
+editor/codemirror-init.js
 etoolbox-query-kit.js
-autocomplete.js
-query-kit-dialog.js
 export-group.js
-share-query.js
-save-query.js
-settings.js
+profiles.js
+query-kit-dialog.js
 query-dialog.js
+query-run.js
+query-save.js
+query-share.js
+settings.js

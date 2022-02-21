@@ -1,8 +1,9 @@
 (function (document, $) {
     'use strict';
 
-    const SAVED_QUERIES_KEY = 'saved_queries';
-    const LATEST_QUERIES_KEY = 'latest_queries';
+    const SAVED_QUERIES_KEY = 'eqk-saved-queries';
+    const LATEST_QUERIES_KEY = 'eqk-latest-queries';
+
     let executeAction = null;
     let deleteAction = null;
 
@@ -40,7 +41,7 @@
         const queries = getQueriesFromLocalStorage(key);
         queries.length > 0 && queries.splice(index, 1);
         saveQueriesToLocalStorage(key, queries);
-        const table = key === 'saved_queries' ? $('#savedQueriesTable tbody') : $('#latestQueriesTable tbody');
+        const table = key === SAVED_QUERIES_KEY ? $('#tableSavedQueries tbody') : $('#tableLastQueries tbody');
         populateTableValues(queries, table, key);
     }
 
@@ -96,15 +97,15 @@
 
     $(document).on('coral-overlay:beforeopen', '#querySavedDialog', function () {
         const savedQueries = getQueriesFromLocalStorage(SAVED_QUERIES_KEY);
-        populateTableValues(savedQueries, $('#savedQueriesTable tbody'), SAVED_QUERIES_KEY);
+        populateTableValues(savedQueries, $('#tableSavedQueries tbody'), SAVED_QUERIES_KEY);
     });
 
     $(document).on('coral-overlay:beforeopen', '#querySuccessfulDialog', function () {
         const latestQueries = getQueriesFromLocalStorage(LATEST_QUERIES_KEY);
-        populateTableValues(latestQueries, $('#latestQueriesTable tbody'), LATEST_QUERIES_KEY);
+        populateTableValues(latestQueries, $('#tableLastQueries tbody'), LATEST_QUERIES_KEY);
     });
 
-    $(document).on('coral-table:change ', function (e) {
+    $(document).on('coral-table:change', '#tableSavedQueries, #tableLastQueries', function (e) {
         const selectedItem = e.target.selectedItem;
         if (selectedItem) {
             toggleActionButtonsState(false);
@@ -116,8 +117,8 @@
     });
 
     $(document).on('coral-overlay:close', '#querySavedDialog, #querySuccessfulDialog', function () {
-        clearTable($('#savedQueriesTable tbody'));
-        clearTable($('#latestQueriesTable tbody'));
+        clearTable($('#tableSavedQueries tbody'));
+        clearTable($('#tableLastQueries tbody'));
         executeAction = null;
         deleteAction = null;
         toggleActionButtonsState(true);
@@ -127,7 +128,7 @@
         saveLatestQueriesToLocalStorage();
     });
 
-    $(document).on('click', '#saveButton', function () {
+    $(document).on('click', '#btnSave', function () {
         saveSavedQueriesToLocalStorage();
     });
 

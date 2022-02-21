@@ -3,7 +3,7 @@
 $(document).ready(function () {
     const $shareButton = $('#shareButton');
     const $queryForm = $('#queryForm');
-    const $executeButton = $('#executeButton');
+    const $executeButton = $('#btnExecute');
 
     const successTooltip = new Coral.Tooltip().set({
         content: {

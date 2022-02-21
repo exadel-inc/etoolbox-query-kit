@@ -210,7 +210,7 @@
     $(document).on('click', '#executeComponentsButton', function () {
         closeDialog('#componentsDialog');
         editComponentQuery();
-        $('#executeButton')[0].click();
+        $('#btnExecute')[0].click();
     });
 
     $(document).on('click', '#editorTemplateButton', function () {
@@ -221,7 +221,7 @@
     $(document).on('click', '#executeTemplateButton', function () {
         closeDialog('#templateDialog');
         editTemplateQuery();
-        $('#executeButton')[0].click();
+        $('#btnExecute')[0].click();
     });
 
     function editComponentQuery() {

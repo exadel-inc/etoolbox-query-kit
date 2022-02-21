@@ -1,7 +1,7 @@
 'use strict';
 
 $(function () {
-    const $executeButton = $('#executeButton');
+    const $executeButton = $('#btnExecute');
     const $resultContainer = $('#resultContainer');
     const $queryForm = $('#queryForm');
     const $domain = 'crx/de/index.jsp#';
