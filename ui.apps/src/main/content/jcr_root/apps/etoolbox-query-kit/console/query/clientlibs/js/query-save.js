@@ -105,9 +105,9 @@
     }
 
     function toggleActionButtonsState(value) {
-        $('.deleteQueryButton').prop('disabled', value);
-        $('.executeQueryButton').prop('disabled', value);
-        $('.shareQueryButton').prop('disabled', value);
+        $('.delete-query-button').prop('disabled', value);
+        $('.execute-query-button').prop('disabled', value);
+        $('.share-query-button').prop('disabled', value);
     }
 
     $(document).on('coral-overlay:beforeopen', '#querySavedDialog', function () {
@@ -149,15 +149,15 @@
         saveSavedQueriesToLocalStorage();
     });
 
-    $(document).on('click', '.executeQueryButton', function () {
+    $(document).on('click', '.execute-query-button', function () {
         executeAction && executeAction();
     });
 
-    $(document).on('click', '.deleteQueryButton', function () {
+    $(document).on('click', '.delete-query-button', function () {
         deleteAction && deleteAction();
     });
 
-    $(document).on('click', '.shareQueryButton', function () {
+    $(document).on('click', '.share-query-button', function () {
         shareAction && shareAction();
     });
 })(document, Granite.$);
