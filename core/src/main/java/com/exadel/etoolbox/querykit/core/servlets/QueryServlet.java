@@ -37,11 +37,11 @@ public class QueryServlet extends SlingAllMethodsServlet {
     protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
         SearchRequest searchRequest = SearchRequest.from(request);
         if (!searchRequest.isValid()) {
-            ResponseUtil.sendError(response, "Invalid request");
+            ResponseUtil.sendJsonError(response, "Invalid request");
             return;
         }
         SearchResult searchResult = queryService.execute(searchRequest);
-        switch (searchRequest.getFormat()) {
+        switch (searchRequest.getResultFormat()) {
             case HTML:
             case CSV:
             default:
