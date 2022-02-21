@@ -144,9 +144,9 @@ abstract class ExecutorImpl implements Executor {
     }
 
     private static Node getDefaultNode(Row row, ColumnCollection columns) throws RepositoryException {
-        String firstOfManySelectors = columns.getSelectors().size() > 1
+        String firstSelector = columns.getSelectors().size() > 0
                 ? columns.getSelectors().get(0)
                 : null;
-        return firstOfManySelectors != null ? row.getNode(firstOfManySelectors) : row.getNode();
+        return firstSelector != null ? row.getNode(firstSelector) : row.getNode();
     }
 }
