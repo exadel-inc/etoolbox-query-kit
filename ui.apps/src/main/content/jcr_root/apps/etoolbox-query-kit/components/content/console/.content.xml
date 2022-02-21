@@ -86,6 +86,14 @@
                 <exportbuttongroup
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="etoolbox-query-kit/components/content/exportButtonGroup"/>
+                <profile
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/foundation/form/select"
+                        name="./profile">
+                    <datasource
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="/services/etoolbox-query-kit/profiles"/>
+                </profile>
             </secondary>
         </actions>
         <content
@@ -105,8 +113,8 @@
                                 granite:class="in-row"
                                 granite:id="queryForm"
                                 autocomplete="{Boolean}true"
-                                method="post"
-                                action="/services/etoolbox-query-kit/execute"
+                                method="get"
+                                action="/services/etoolbox-query-kit/columns"
                                 foundationForm="{Boolean}true">
                             <items jcr:primaryType="nt:unstructured">
                                 <mode-container
@@ -139,17 +147,6 @@
                                         granite:id="queryTextArea"
                                         autocomplete="on"
                                         name="query"/>
-                                <offset
-                                        jcr:primaryType="nt:unstructured"
-                                        sling:resourceType="granite/ui/components/foundation/form/hidden"
-                                        name="offset"
-                                        value="0"/>
-                                <limit
-                                        jcr:primaryType="nt:unstructured"
-                                        sling:resourceType="granite/ui/components/foundation/form/hidden"
-                                        granite:id="limitInput"
-                                        name="limit"
-                                        value="10"/>
                                 <buttons
                                         jcr:primaryType="nt:unstructured"
                                         sling:resourceType="granite/ui/components/coral/foundation/container"
@@ -160,7 +157,6 @@
                                                 jcr:primaryType="nt:unstructured"
                                                 sling:resourceType="granite/ui/components/foundation/button"
                                                 granite:id="executeButton"
-                                                type="submit"
                                                 variant="primary"
                                                 text="Execute"/>
                                         <save
@@ -175,12 +171,45 @@
                         </form>
                     </items>
                 </columns>
-                <result-table
+                <result
                         jcr:primaryType="nt:unstructured"
-                        sling:resourceType="granite/ui/components/coral/foundation/container"
-                        granite:id="resultContainer"
-                        granite:class="in-row">
-                </result-table>
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                        granite:class="content-columns"
+                        margin="{Boolean}true">
+                    <items jcr:primaryType="nt:unstructured">
+                    <container
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/coral/foundation/container"
+                            granite:class="in-row"
+                            granite:id="resultColumn"
+                            margin="{Boolean}true">
+                    <items jcr:primaryType="nt:unstructured">
+                        <result-table
+                                granite:rel="granite-uptime-collection"
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/table"
+                                granite:id="resultTable"
+                                stateId="shell.collectionpage">
+                            <granite:data
+                                    jcr:primaryType="nt:unstructured"
+                                    query="${param.query}"
+                                    limit="${param.limit ? param.limit : 10}"
+                                    offset="${param.offset ? param.offset : 0}"/>
+                            <datasource
+                                    jcr:primaryType="nt:unstructured"
+                                    sling:resourceType="/services/etoolbox-query-kit/table"
+                                    itemResourceType="/apps/etoolbox-query-kit/components/content/console/tableRow"/>
+                            <columnsdatasource
+                                    jcr:primaryType="nt:unstructured"
+                                    sling:resourceType="/services/etoolbox-query-kit/columns"/>
+                        </result-table>
+                        <pagination
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="/apps/etoolbox-query-kit/components/content/pagination"/>
+                    </items>
+                    </container>
+                    </items>
+                </result>
                 <savedqueriesmodal
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="etoolbox-query-kit/components/content/savedQueriesModal"/>
@@ -358,6 +387,58 @@
                         </form>
                     </items>
                 </settingsdialog>
+                <edit-table-cell-dialog
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Edit cell"
+                        sling:resourceType="granite/ui/components/coral/foundation/dialog"
+                        granite:id="editCellDialog">
+                    <items jcr:primaryType="nt:unstructured">
+                        <form
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form"
+                                granite:id="editCellDialogForm"
+                                action=""
+                                method="post"
+                                style="vertical">
+                            <items jcr:primaryType="nt:unstructured">
+                                <content jcr:primaryType="nt:unstructured"
+                                         sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns">
+                                    <items jcr:primaryType="nt:unstructured">
+                                        <container jcr:primaryType="nt:unstructured"
+                                                   sling:resourceType="granite/ui/components/coral/foundation/container"
+                                                   granite:id="editRowDialogContainer">
+                                            <datasource
+                                                    jcr:primaryType="nt:unstructured"
+                                                    sling:resourceType="/services/etoolbox-query-kit/edit-cell"/>
+                                        </container>
+                                    </items>
+                                </content>
+                            </items>
+                        </form>
+                    </items>
+                    <footer jcr:primaryType="nt:unstructured">
+                        <close
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType = "granite/ui/components/coral/foundation/button"
+                                granite:class="edit-table-cells-buttons"
+                                text = "Cancel">
+                            <parentConfig
+                                    jcr:primaryType="nt:unstructured"
+                                    close="{Boolean}true"/>
+                        </close>
+                        <submit
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType = "granite/ui/components/coral/foundation/button"
+                                granite:class="edit-table-cells-buttons"
+                                type="submit"
+                                text="Save"
+                                formId="editRowDialogForm">
+                            <parentConfig
+                                    jcr:primaryType="nt:unstructured"
+                                    close="{Boolean}true"/>
+                        </submit>
+                    </footer>
+                </edit-table-cell-dialog>
             </items>
         </content>
     </jcr:content>

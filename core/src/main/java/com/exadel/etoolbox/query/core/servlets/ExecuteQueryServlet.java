@@ -6,6 +6,7 @@ import com.exadel.etoolbox.query.core.models.QueryResultModel;
 import com.google.gson.Gson;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.service.component.annotations.Component;
@@ -15,6 +16,7 @@ import javax.jcr.query.qom.QueryObjectModel;
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 @Component(
         service = Servlet.class,
@@ -43,7 +45,7 @@ public class ExecuteQueryServlet extends SlingAllMethodsServlet {
         }
         QueryObjectModel queryObjectModel = queryConverterService.convertQueryToJqom(resolver, queryResultModel);
         if (queryObjectModel != null) {
-            queryExecutorService.executeJqomQuery(queryObjectModel, queryResultModel);
+            List<Resource> resources = queryExecutorService.executeJqomQuery(resolver, queryObjectModel);
             String s = GSON.toJson(queryResultModel);
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType(CONTENT_TYPE_JSON);

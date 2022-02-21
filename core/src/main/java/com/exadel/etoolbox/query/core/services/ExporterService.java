@@ -2,9 +2,10 @@ package com.exadel.etoolbox.query.core.services;
 
 import org.apache.sling.api.resource.Resource;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-public interface PdfExporterService {
-    void export(OutputStream out, List<Resource> resources);
+public interface ExporterService {
+    void export(OutputStream out, List<Resource> resources) throws IOException;
 }

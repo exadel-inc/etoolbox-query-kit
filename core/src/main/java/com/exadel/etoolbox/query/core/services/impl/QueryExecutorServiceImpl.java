@@ -1,7 +1,12 @@
 package com.exadel.etoolbox.query.core.services.impl;
 
+import com.adobe.granite.ui.components.ds.ValueMapResource;
 import com.exadel.etoolbox.query.core.services.QueryExecutorService;
 import com.exadel.etoolbox.query.core.models.QueryResultModel;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.osgi.service.component.annotations.Component;
 
 import javax.jcr.Node;
@@ -19,33 +24,39 @@ public class QueryExecutorServiceImpl implements QueryExecutorService {
     private static final String PATH_COLUMN = "path";
 
     @Override
-    public void executeJqomQuery(QueryObjectModel queryObjectModel, QueryResultModel queryResultModel) {
+    public List<Resource> executeJqomQuery(ResourceResolver resolver, QueryObjectModel queryObjectModel) {
         try {
+            List<Resource> resources = new LinkedList<>();
             QueryResult result = queryObjectModel.execute();
-            Map<String, String> columnsNameToProperty = getColumnsNamesAndProperties(queryObjectModel);
-            Map<String, List<String>> results = queryResultModel.getResults();
-            columnsNameToProperty.forEach((key, value) -> results.put(key, new LinkedList<>()));
+            Map<String, String> columnsNameToProperty = getColumnsNamesToProperties(queryObjectModel);
             NodeIterator nodes = result.getNodes();
             while (nodes.hasNext()) {
                 Node node = nodes.nextNode();
-                for (String columnsName : columnsNameToProperty.keySet()) {
-                    List<String> columnValues = results.get(columnsName);
-                    if (columnsName.equals(PATH_COLUMN)) {
-                        columnValues.add(node.getPath());
+                Map<String, Object> keyToValue = new HashMap<>();
+                for (String columnName : columnsNameToProperty.keySet()) {
+                    if (columnName.equals(PATH_COLUMN)) {
+                        keyToValue.put(columnName, node.getPath());
                     } else {
-                        String property = columnsNameToProperty.get(columnsName);
+                        String property = columnsNameToProperty.get(columnName);
                         if (node.hasProperty(property)) {
-                            columnValues.add(node.getProperty(property).getString());
+                            keyToValue.put(columnName, node.getProperty(property).getString());
                         }
                     }
+
+                }
+                if (!keyToValue.isEmpty()) {
+                    ValueMapDecorator valueMap = new ValueMapDecorator(keyToValue);
+                    resources.add(new ValueMapResource(resolver, StringUtils.EMPTY, StringUtils.EMPTY, valueMap));
                 }
             }
+            return resources;
         } catch (RepositoryException e) {
             e.printStackTrace();
         }
+        return Collections.emptyList();
     }
 
-    private Map<String, String> getColumnsNamesAndProperties(QueryObjectModel queryObjectModel) {
+    private Map<String, String> getColumnsNamesToProperties(QueryObjectModel queryObjectModel) {
         Map<String, String> columnsNameToProperty = Arrays.stream(queryObjectModel.getColumns())
                 .filter(Objects::nonNull)
                 .filter(column -> Objects.nonNull(column.getColumnName()))

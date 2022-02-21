@@ -104,7 +104,7 @@
         populateTableValues(latestQueries, $("#latestQueriesTable tbody"), LATEST_QUERIES_KEY);
     });
 
-    $(document).on("coral-table:change ", function(e) {
+    $(document).on("coral-table:change ", "#savedQueriesTable, #latestQueriesTable", function(e) {
         var selectedItem = e.target.selectedItem;
         if (selectedItem) {
             toggleActionButtonsState(false);

@@ -7,32 +7,55 @@ $(function () {
         $queryForm = $('#queryForm'),
         $domain = 'crx/de/index.jsp#',
         editor = null,
-        editorLines = null;
+        editorLines = null,
+        $editRowForm = $('#editRowDialogForm');
 
-    $queryForm.submit(function (e) {
+    // $executeButton.on("click", (function () {
+    //     updateUrlParams();
+    //     location.reload();
+    // }));
+
+    $editRowForm.submit(function (e) {
         e.preventDefault();
-        updateLimit();
         var form = $(this);
         var url = form.attr('action');
-        var editor = document.querySelector('.CodeMirror').CodeMirror;
-        var query = editor.getValue();
-        var data = form.serialize().replace(/query=.+?&/, `query=${query}&`);
+        var data = form.serialize();
         $.ajax({
             url: url,
             type: "POST",
             data: data,
-            success: executeSuccess,
+            success: function (data) {
+                console.log('success');
+            },
             error: function (error) {
-                if (error.status === 400){
-                    editorLines.style.textDecoration="underline red";
-                    editorLines.style.textDecorationStyle="dashed";
-                }
-                console.error(error.statusText);
-                var dialog = getPromptDialog('error', 'Query is incorrect');
-                dialog.show();
+                console.log('LOL');
             }
         })
     });
+
+    // $queryForm.submit(function (e) {
+    //     e.preventDefault();
+    //     var form = $(this);
+    //     var url = form.attr('action');
+    //     var editor = document.querySelector('.CodeMirror').CodeMirror;
+    //     var query = editor.getValue();
+    //     var data = form.serialize().replace(/query=.+?&/, `query=${query}&`);
+    //     $.ajax({
+    //         url: url,
+    //         type: "GET",
+    //         data: data,
+    //         success: executeSuccess,
+    //         error: function (error) {
+    //             if (error.status === 400){
+    //                 editorLines.style.textDecoration="underline red";
+    //                 editorLines.style.textDecorationStyle="dashed";
+    //             }
+    //             console.error(error.statusText);
+    //             var dialog = getPromptDialog('error', 'Query is incorrect');
+    //             dialog.show();
+    //         }
+    //     })
+    // });
 
     $queryForm.on('keyup', (function () {
         editorLines.style.textDecoration="none";
@@ -40,18 +63,8 @@ $(function () {
     }));
 
     function executeSuccess(data) {
-        $('.resultTable').remove();
-        $('.query-kit-pagination').remove();
-        $('#resultInfo').remove();
-        $(document).trigger('query-kit:success-response', [data]);
+        console.log('AAAAA');
         updateUrlParams();
-        if (data && data["results"].length === 0) {
-            var dialog = getPromptDialog('warning', 'No results found');
-            dialog.show();
-        } else {
-            buildResultTable(data["results"]);
-            addPagination(data);
-        }
     }
 
     function updateUrlParams() {
@@ -61,108 +74,6 @@ $(function () {
                '?query=' + encodeURIComponent(query);
             window.history.pushState({path:newUrl},'',newUrl);
          }
-    }
-
-    function buildResultTable(data) {
-        var table = new Coral.Table();
-        table.classList.add('resultTable');
-        table.setAttribute("id", "resultTable");
-        var columns = Object.keys(data);
-        columns.forEach(() => {
-            table.appendChild(new Coral.Table.Column());
-        });
-        var head = new Coral.Table.Head();
-        columns.forEach(item => {
-            var headCell = new Coral.Table.HeaderCell();
-            headCell.innerHTML = item;
-            head.appendChild(headCell)
-        });
-        table.appendChild(head);
-        for (let i = 0; i < data["path"].length; i++) {
-            var row = table.items.add({});
-            Object.keys(data).forEach(key => {
-                var cell = new Coral.Table.Cell();
-                cell.innerHTML = key === 'path' ? '<a href="' + $domain + data[key][i] + '">' + data[key][i] + '</a>' : data[key][i];
-                row.appendChild(cell);
-            })
-        }
-        $resultContainer.append(table);
-    }
-
-    function addPagination(data) {
-        var pagesCount = Math.ceil(data["resultCount"] / data["limit"]);
-        var currentPage = Math.floor(data["offset"] / data["limit"]) + 1;
-        var language = data["language"];
-        var query = data["query"];
-        var offset_next = data["offset"] + data["results"]["path"].length;
-        var offset_previous = data["offset"] - data["results"]["path"].length;
-        var limit = data["limit"];
-        var limitInput = $('#limitInput');
-
-        var buttonNextPage = new Coral.Button().set({
-            label: {
-                innerHTML: 'Next'
-            },
-            variant: "cta",
-            iconSize: "M",
-            disabled: currentPage === pagesCount
-        });
-        buttonNextPage.classList.add('query-kit-pagination');
-        buttonNextPage.setAttribute("id", "nextPageButton");
-        buttonNextPage.on("click" ,(function () {
-            doPostForPagination(language, query, offset_next, limitInput[0].getAttribute('value'));
-        }));
-
-        var buttonPreviousPage = new Coral.Button().set({
-            label: {
-                innerHTML: 'Previous'
-            },
-            variant: "cta",
-            iconSize: "M",
-            disabled: currentPage === 1
-        });
-        buttonPreviousPage.classList.add('query-kit-pagination');
-        buttonPreviousPage.setAttribute("id", "buttonPreviousPage");
-        buttonPreviousPage.on("click" ,(function () {
-            doPostForPagination(language, query, offset_previous, limitInput[0].getAttribute('value'));
-        }));
-
-        var pageSelect = new Coral.Select().set({
-            name: "Select",
-            placeholder: "Choose a page",
-            disabled: data['resultCount'] === -1
-        });
-        pageSelect.classList.add('query-kit-pagination');
-        for (let i = 1; i <= pagesCount; i++) {
-            pageSelect.items.add({
-                content: {
-                    innerHTML: `${i} page`
-                },
-                value: i,
-                disabled: false,
-                selected: i === currentPage
-            });
-        }
-        pageSelect.on("change",  function () {
-            var newOffset = (pageSelect.selectedItem.get('value') - 1) * limit;
-            doPostForPagination(language, query, newOffset, limit);
-        })
-
-        var resultInfo = document.createElement("div");
-        resultInfo.setAttribute('id', 'resultInfo');
-        resultInfo.innerText = `${data['offset'] + 1} - ${data['offset'] + data["results"]["path"].length} rows of ${data['resultCount'] !== -1 ? data['resultCount'] : 'unknown'}`;
-        var resultTable = $("#resultTable");
-        resultTable.before(resultInfo);
-        resultTable.after(pageSelect).after(buttonNextPage).after(buttonPreviousPage);
-    }
-
-    function doPostForPagination(language, query, offset, limit) {
-       $.ajax({
-           url: $queryForm.attr('action'),
-           type: "POST",
-           data: {"language": language, "query": query, "offset": offset, "limit": limit},
-           success: executeSuccess
-       })
     }
 
     function getPromptDialog(variant, text) {
@@ -184,7 +95,7 @@ $(function () {
        editor = document.querySelector('.CodeMirror').CodeMirror;
        editorLines = document.querySelector('.CodeMirror-lines');
    }, 0)
-    
+
     function updateLimit() {
         var limitFromSettings = JSON.parse(localStorage.getItem('resultNumberField'));
         $('#limitInput')[0].setAttribute('value', limitFromSettings);

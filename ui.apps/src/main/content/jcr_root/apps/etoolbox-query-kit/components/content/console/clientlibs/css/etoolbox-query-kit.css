@@ -21,3 +21,21 @@
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+.pagination {
+    display: flex;
+}
+
+.pagination button {
+    border: 0;
+    background-color: rgba(0,0,0,0);
+}
+
+.pages-container button[disabled] {
+    color: #326ec8;
+    box-shadow: inset 0 0 0 1px;
+}
+
+coral-wait {
+    z-index: 1;
+}

@@ -8,6 +8,7 @@ import com.exadel.etoolbox.query.core.models.QueryResultModel;
 import com.google.gson.Gson;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.service.component.annotations.Component;
@@ -18,6 +19,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -54,33 +56,33 @@ public class ExportServlet extends SlingAllMethodsServlet {
         ResourceResolver resolver = request.getResourceResolver();
         QueryResultModel queryResultModel = new QueryResultModel(request);
         QueryObjectModel queryObjectModel = queryConverterService.convertQueryToJqom(resolver, queryResultModel);
-        queryExecutorService.executeJqomQuery(queryObjectModel, queryResultModel);
+        List<Resource> resources = queryExecutorService.executeJqomQuery(resolver, queryObjectModel);
         //TODO little service for the end-user and think of giving files more descriptive names (instead result)
         switch (format) {
-            case "XSLX": {
-                response.setContentType(CONTENT_TYPE_EXCEL);
-                response.setHeader(HEADER_CONTENT_DISPOSITION, "attachment; filename=result.xlsx");
-                xlsxExporterService.export(outputStream, queryResultModel.getColumns(), queryResultModel.getData());
-                break;
-            }
+//            case "XSLX": {
+//                response.setContentType(CONTENT_TYPE_EXCEL);
+//                response.setHeader(HEADER_CONTENT_DISPOSITION, "attachment; filename=result.xlsx");
+//                xlsxExporterService.export(outputStream, queryResultModel.getColumns(), queryResultModel.getData());
+//                break;
+//            }
             case "PDF": {
                 response.setContentType(CONTENT_TYPE_PDF);
                 response.setHeader(HEADER_CONTENT_DISPOSITION, "attachment; filename=result.pdf");
-                pdfExporterService.export(outputStream, queryResultModel.getColumns().keySet(), queryResultModel.getData());
+                pdfExporterService.export(outputStream, resources);
                 break;
             }
-            case "JSON": {
-                response.setContentType(CONTENT_TYPE_JSON);
-                response.setHeader(HEADER_CONTENT_DISPOSITION, "attachment; filename=result.json");
-                outputStream.print(GSON.toJson(queryResultModel.getResults()
-                        .stream()
-                        .map(stringMap -> stringMap.values().stream().findFirst())
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .collect(Collectors.toList())
-                ));
-                break;
-            }
+//            case "JSON": {
+//                response.setContentType(CONTENT_TYPE_JSON);
+//                response.setHeader(HEADER_CONTENT_DISPOSITION, "attachment; filename=result.json");
+//                outputStream.print(GSON.toJson(queryResultModel.getResults()
+//                        .stream()
+//                        .map(stringMap -> stringMap.values().stream().findFirst())
+//                        .filter(Optional::isPresent)
+//                        .map(Optional::get)
+//                        .collect(Collectors.toList())
+//                ));
+//                break;
+//            }
             default: {
                 throw new ServletException();
             }

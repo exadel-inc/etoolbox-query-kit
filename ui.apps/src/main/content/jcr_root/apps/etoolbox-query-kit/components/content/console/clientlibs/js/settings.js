@@ -253,13 +253,73 @@
         dialog.center();
         dialog.show();
     }
-    
+
     function concatenateDescendantNode(paths) {
         var descendantNode = `ISDESCENDANTNODE(parent, "${paths[0]}")`;
         for (var i = 1; i < paths.length; i++) {
             descendantNode += ` OR ISDESCENDANTNODE(parent, "${paths[i]}")`
         }
         return descendantNode;
+    }
+
+    // $(document).on("coral-table:change", "#resultTable", function(e) {
+    //     var selectedPath = e.target.selectedItem.querySelector('td[name="path"]').value;
+    //     $.ajax({
+    //         url: "/apps/etoolbox-query-kit/components/content/console/jcr:content/content/items/edit-table-row-dialog.html",
+    //         type: "GET",
+    //         data: {"path": selectedPath},
+    //         success: function (data) {
+    //             var action = $(data).find('input[name="path"]')[0].value;
+    //             var dialogContent = $(data).find('div[id="editRowDialogContainer"]')
+    //             $('#editRowDialog form').attr('action', action);
+    //             $('#editRowDialog div[id="editRowDialogContainer"]').remove();
+    //             $('#editRowDialog div.coral-FixedColumn').append(dialogContent);
+    //             openDialog('#editRowDialog');
+    //         },
+    //         error: function (error) {
+    //             console.log('error');
+    //         }
+    //     })
+    // });
+
+    $(document).on("click", ".result-table-cell", function(e) {
+        var property = e.target.getAttribute('name')
+        var path = e.target.value;
+        unselectCells();
+        e.target.setAttribute('selected', true);
+        e.target.setAttribute('aria-selected', true);
+        e.target.classList.add('is-selected');
+        $.ajax({
+            url: "/apps/etoolbox-query-kit/components/content/console/jcr:content/content/items/edit-table-cell-dialog.html",
+            type: "GET",
+            data: {"path": path, "property": property},
+            beforeSend: function(){
+                $('#coralWait').modal();
+            },
+            success: function (data) {
+                var action = $(data).find('input[name="path"]')[0].value;
+                var dialogContent = $(data).find('div[id="editCellDialogContainer"]')
+                $('#editCellDialog form').attr('action', action);
+                $('#editCellDialog div[id="editCellDialogContainer"]').remove();
+                $('#editCellDialog div.coral-FixedColumn').append(dialogContent);
+                openDialog('#editCellDialog');
+            },
+            error: function (error) {
+                console.log('error');
+            },
+            complete: function () {
+                $('#coralWait').modal('hide');
+                unselectCells();
+            }
+        })
+        console.log('click');
+    });
+    
+    function unselectCells() {
+        var cells = $('.result-table-cell');
+        cells.attr('selected', false);
+        cells.attr('aria-selected', false);
+        cells.attr('class').replace('is-selected', '');
     }
 
 })(document, Granite.$);

@@ -1,0 +1,69 @@
+<sly data-sly-use.queryStatisticModel="com.exadel.etoolbox.query.core.models.QueryStatisticModel"></sly>
+<a id="by-usage"><h1>Indexes by usage</h1></a>
+<span class="nav"><a href="#all">All queries</a></span>
+<span class="nav"><a href="#by-index">Queries by index</a></span>
+<ul data-sly-list.index="${queryStatisticModel.indexesByUsage}">
+    <li>${index}
+        <sly data-sly-test="${}"></sly>
+        <a href="#<%= getIndexId(index.getKey()) %>" class="quantity">
+            ${queryStatisticModel.indexesByUsage[index]}
+        </a>
+    </li>
+</ul>
+
+<a id="by-index"><h1>Queries by index</h1></a>
+<span class="nav"><a href="#all">All queries</a></span>
+<span class="nav"><a href="#by-usage">Indexes by usage</a></span>
+<sly data-sly-list.queryByIndex="${queryStatisticModel.queriesByIndexSorted}">
+    <a id="${queryByIndex}">
+        <h4>${queryByIndex}<span class="quantity">${queryStatisticModel.queriesByIndexSorted[queryByIndex].size}</span></h4>
+    </a>
+    <table>
+        <tr>
+            <th class="narrow">#</th>
+            <th class="narrow-2x">Count</th>
+            <th class="narrow-2x">Lang</th>
+            <th>Statement</th>
+        </tr>
+        <sly data-sly-list.queryInfo="${queryStatisticModel.queriesByIndexSorted[queryByIndex]}">
+            <tr>
+                <td class="narrow">${queryInfoList.index}</td>
+                <td class="narrow-2x">${queryInfo.executeCount}</td>
+                <td class="narrow-2x">${queryInfo.language.toUpperCase}</td>
+                <td>
+                    ${queryInfo.statement}<br/>
+                    <span class="thread">${queryInfo.threadName} at ${queryInfo.lastExecuted}</span>
+                </td>
+            </tr>
+        </sly>
+    </table>
+</sly>
+
+<a id="all"><h1>All queries</h1></a>
+<span class="nav"><a href="#by-index">Queries by index</a></span>
+<span class="nav"><a href="#by-usage">Indexes by usage</a></span>
+<table>
+    <tr>
+        <th class="narrow">#</th>
+        <th class="narrow-2x">Count</th>
+        <th class="narrow-2x">Lang</th>
+        <th>Statement</th>
+        <th class="narrow-8x">Indexes</th>
+    </tr>
+    <sly data-sly-list.queryInfo="${queryStatisticModel.allQueries}">
+        <tr>
+            <td class="narrow">${queryInfoList.index}</td>
+            <td class="narrow-2x">${queryInfo.executeCount}</td>
+            <td class="narrow-2x">${queryInfo.language.toUpperCase}</td>
+            <td>
+                ${queryInfo.statement}<br/>
+                <span class="thread">${queryInfo.threadName} at ${queryInfo.lastExecuted}</span>
+            </td>
+            <td class="narrow-8x" data-sly-list.index="${queryInfo.indexes}">
+                <a href="#<%= getIndexId(index) %>">
+                    ${index}
+                </a><br>
+            </td>
+        </tr>
+    </sly>
+</table>

@@ -54,7 +54,10 @@
                 </executions>
                 <configuration>
                     <instructions>
-                        <Embed-Dependency>oak-jcr,oak-core,oak-blob,oak-commons,commons-lang3,itextpdf,pdfbox;scope=compile</Embed-Dependency>
+                        <Embed-Dependency>oak-jcr,oak-core,oak-blob,oak-commons,commons-lang3,itextpdf,pdfbox,fontbox;scope=compile</Embed-Dependency>
+                        <Sling-Model-Packages>
+                            com.exadel.etoolbox.query.core
+                        </Sling-Model-Packages>
                     </instructions>
                 </configuration>
             </plugin>
@@ -194,13 +197,18 @@
             <artifactId>poi</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.itextpdf</groupId>
-            <artifactId>itextpdf</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>fontbox</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>
