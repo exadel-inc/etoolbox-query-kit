@@ -1,5 +1,6 @@
 package com.exadel.etoolbox.querykit.core.models.qom;
 
+import com.exadel.etoolbox.querykit.core.models.query.ParsedQueryInfo;
 import com.exadel.etoolbox.querykit.core.utils.serialization.JsonExportable;
 import com.exadel.etoolbox.querykit.core.utils.serialization.JsonExportUtil;
 import com.google.gson.JsonElement;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Getter
-public class QomAdapterBundle implements JsonExportable {
+public class QomAdapterBundle implements ParsedQueryInfo, JsonExportable {
 
     private final List<QomAdapter> adapters;
 
@@ -42,27 +43,28 @@ public class QomAdapterBundle implements JsonExportable {
         return new QomAdapterBundle(newAdapters);
     }
 
+    @Override
     public String toJson() {
         return JsonExportUtil.export(this);
     }
 
-    public String toFormattedString() {
+    @Override
+    public JsonElement toJson(JsonSerializationContext serializer) {
+        return serializer.serialize(adapters);
+    }
+
+    public String toSqlString() {
         if (CollectionUtils.isEmpty(adapters)) {
             return StringUtils.EMPTY;
         }
         StringBuilder result = new StringBuilder();
         for (QomAdapter adapter : adapters) {
-            String newChunk = adapter.toFormattedString();
+            String newChunk = adapter.toSqlString();
             if (StringUtils.isEmpty(newChunk)) {
                 continue;
             }
             result.append(result.length() > 0 ? " UNION " : StringUtils.EMPTY).append(newChunk);
         }
         return result.toString();
-    }
-
-    @Override
-    public JsonElement toJson(JsonSerializationContext serializer) {
-        return serializer.serialize(adapters);
     }
 }

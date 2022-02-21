@@ -8,8 +8,8 @@ import com.exadel.etoolbox.querykit.core.utils.Constants;
 import com.exadel.etoolbox.querykit.core.utils.TryBiFunction;
 import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +35,7 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 public abstract class ConstraintAdapter {
 
@@ -131,6 +131,15 @@ public abstract class ConstraintAdapter {
         if (convertedInConstraint == null) {
             return new ComparisonAdapter(original);
         }
-        return new OrAdapter((Or) convertedInConstraint, context);
+
+        context.reportChange();
+        ConstraintAdapter result = null;
+
+        if (convertedInConstraint instanceof Or) {
+            result = new OrAdapter((Or) convertedInConstraint, context);
+        } else if (convertedInConstraint instanceof Comparison) {
+            result = new ComparisonAdapter((Comparison) convertedInConstraint);
+        }
+        return result;
     }
 }

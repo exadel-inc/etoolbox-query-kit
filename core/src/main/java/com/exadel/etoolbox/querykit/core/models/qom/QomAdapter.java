@@ -1,6 +1,7 @@
 package com.exadel.etoolbox.querykit.core.models.qom;
 
 import com.exadel.etoolbox.querykit.core.models.qom.constraints.ConstraintAdapter;
+import com.exadel.etoolbox.querykit.core.models.query.ParsedQueryInfo;
 import com.exadel.etoolbox.querykit.core.utils.serialization.JsonExportable;
 import com.exadel.etoolbox.querykit.core.utils.serialization.JsonExportUtil;
 import com.google.gson.JsonElement;
@@ -20,10 +21,13 @@ import javax.jcr.query.qom.QueryObjectModel;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Source;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-public class QomAdapter implements JsonExportable {
+public class QomAdapter implements ParsedQueryInfo, JsonExportable {
+
+    private static final Pattern ESCAPED_PATH = Pattern.compile("\\[(/[^]]+)]");
 
     private final transient QueryObjectModel original;
 
@@ -59,23 +63,9 @@ public class QomAdapter implements JsonExportable {
         return new QomAdapter(newModel, getConstraintAdapter());
     }
 
+    @Override
     public String toJson() {
         return JsonExportUtil.export(this);
-    }
-
-    public String toFormattedString() {
-        try {
-            return QOMFormatter.format(this.getModel());
-        } catch (RepositoryException e) {
-            log.error("Could not convert to a string", e);
-        }
-        return StringUtils.EMPTY;
-    }
-
-    public static QomAdapter from(QueryObjectModel original, QomAdapterContext context) {
-        return new QomAdapter(
-                original,
-                ConstraintAdapter.from(original.getConstraint(), context));
     }
 
     @Override
@@ -85,6 +75,25 @@ public class QomAdapter implements JsonExportable {
         result.add("constraint", serializer.serialize(getConstraintAdapter()));
         result.add("orderings", serializer.serialize(getOrderings()));
         result.add("columns", serializer.serialize(getColumns()));
+        return result;
+    }
+
+    public String toSqlString() {
+        try {
+            String result = QOMFormatter.format(this.getModel());
+            return ESCAPED_PATH.matcher(result).replaceAll("'$1'");
+        } catch (RepositoryException e) {
+            log.error("Could not convert to a string", e);
+        }
+        return StringUtils.EMPTY;
+    }
+
+    public static QomAdapter from(QueryObjectModel original, QomAdapterContext context) throws RepositoryException {
+        ConstraintAdapter newConstraintAdapter = ConstraintAdapter.from(original.getConstraint(), context);
+        QomAdapter result = new QomAdapter(original, newConstraintAdapter);
+        if (context.isChanged()) {
+            return from(result.buildWith(context.getModelFactory()).getModel(), QomAdapterContext.from(context));
+        }
         return result;
     }
 }
