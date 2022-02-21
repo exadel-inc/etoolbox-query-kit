@@ -1,0 +1,10 @@
+<tr selectable is="coral-table-row" class="foundation-collection-navigator"
+    data-foundation-collection-navigator-href="#">
+    <sly data-sly-list="${properties}">
+        <td class="result-table-cell" is="coral-table-cell" data-name="${item}" data-path="${properties.path}">
+        <span>
+           ${properties[item]}
+        </span>
+        </td>
+    </sly>
+</tr>
