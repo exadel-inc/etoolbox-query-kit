@@ -1,14 +1,14 @@
-<coral-dialog class="foundation-toggleable" closable="on" id="querySavedDialog">
+<coral-dialog class="foundation-toggleable eqk-dialog" closable="on" id="querySavedDialog">
     <coral-dialog-header>Saved queries</coral-dialog-header>
     <coral-dialog-content>
         <div class="coral-Form coral-Form--vertical foundation-layout-util-maximized-container">
-            <table is="coral-table" id="savedQueriesTable" selectable>
+            <table is="coral-table" id="tableSavedQueries" selectable>
                 <tbody is="coral-table-body"></tbody>
             </table>
-            <div class="saved-button-group">
-                <button class="executeQueryButton" type="button" is="coral-button" variant="primary" disabled>Open</button>
-                <button class="deleteQueryButton" type="button" is="coral-button" variant="quiet" icon="delete" iconsize="M" disabled></button>
-            </div>
         </div>
     </coral-dialog-content>
+    <coral-dialog-footer>
+        <button class="executeQueryButton" type="button" is="coral-button" variant="primary" disabled>Open</button>
+        <button class="deleteQueryButton" type="button" is="coral-button" variant="quiet" icon="delete" iconsize="M" disabled></button>
+    </coral-dialog-footer>
 </coral-dialog>
