@@ -1,5 +1,6 @@
 package com.exadel.etoolbox.querykit.core.models.qom.columns;
 
+import com.exadel.etoolbox.querykit.core.utils.Constants;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class ColumnAdapter implements Column {
     private transient boolean isDefault;
 
     ColumnAdapter(String selector, String property) {
-        this(selector, property, selector + "." + property);
+        this(selector, property, selector + Constants.DOT + property);
     }
 
     ColumnAdapter(Column source) {
@@ -44,7 +45,7 @@ public class ColumnAdapter implements Column {
 
     public String getUniquePropertyName() {
         return useQualifiedProperty && StringUtils.isNotBlank(property)
-                ? selector + "." + property
+                ? selector + Constants.DOT + property
                 : property;
     }
 

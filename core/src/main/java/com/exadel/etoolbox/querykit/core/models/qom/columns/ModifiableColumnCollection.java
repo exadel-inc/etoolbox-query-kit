@@ -98,11 +98,11 @@ public class ModifiableColumnCollection implements ColumnCollection, JsonExporta
 
         Map<String, List<String>> selectorsToProperties = new HashMap<>();
         for (String name : names) {
-            if (!name.contains(".")) {
+            if (!name.contains(Constants.DOT)) {
                 continue;
             }
-            String selector = StringUtils.substringBefore(name, ".");
-            String property = StringUtils.substringAfter(name, ".");
+            String selector = StringUtils.substringBefore(name, Constants.DOT);
+            String property = StringUtils.substringAfter(name, Constants.DOT);
             selectorsToProperties.computeIfAbsent(selector, sel -> new ArrayList<>()).add(property);
         }
 

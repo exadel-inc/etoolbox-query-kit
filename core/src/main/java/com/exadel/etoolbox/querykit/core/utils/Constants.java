@@ -10,6 +10,7 @@ public class Constants {
     public static final String ATTRIBUTE_TOTAL = "eqk-total";
 
     public static final String CONTENT_TYPE_JSON = "application/json";
+    public static final String CONTENT_TYPE_TEXT = "text/html";
 
     public static final String NODE_DATASOURCE = "datasource";
 
@@ -29,7 +30,7 @@ public class Constants {
 
     public static final String CLOSING_BRACKET = ")";
     public static final String COMMA = ",";
+    public static final String DOT = ".";
     public static final String OPENING_BRACKET = "(";
     public static final String QUOTE = "'";
-    public static final String QUOTE_ESCAPED = "&#39;";
 }

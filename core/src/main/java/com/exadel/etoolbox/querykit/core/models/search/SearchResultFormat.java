@@ -3,7 +3,7 @@ package com.exadel.etoolbox.querykit.core.models.search;
 import org.apache.commons.lang3.EnumUtils;
 
 public enum SearchResultFormat {
-    JSON, HTML, CSV;
+    UNDEFINED, JSON, HTML, CSV;
 
     static SearchResultFormat from(String value) {
         return EnumUtils
@@ -11,7 +11,7 @@ public enum SearchResultFormat {
                 .stream()
                 .filter(item -> item.toString().equalsIgnoreCase(value))
                 .findFirst()
-                .orElse(JSON);
+                .orElse(UNDEFINED);
     }
 
 }
