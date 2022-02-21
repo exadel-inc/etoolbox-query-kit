@@ -1,0 +1,40 @@
+.foundation-layout-panel-content {
+    overflow: hidden;
+}
+
+.foundation-layout-util-vmargin {
+    margin: 0.625rem 0;
+}
+
+.eqk-ui .column {
+    display: inline-block;
+    margin: 0 0.31rem;
+}
+
+.eqk-ui .column-left {
+    width: 38%;
+}
+
+.eqk-ui .column-right {
+    width: 60%;
+}
+
+.eqk-ui .editor-buttons {
+    text-align: right;
+}
+
+.eqk-ui .editor-buttons .coral3-Button {
+    margin: 0 0 0 0.31rem;
+}
+
+.coral-Table-wrapper--sticky .coral-Table-wrapper-container {
+    border: none;
+}
+
+.CodeMirror, #tableResult {
+    width: auto;
+    height: 82vh;
+    background-color: #fff;
+    border: 1px solid #e9e9e9;
+    border-radius: 0.25rem;
+}
