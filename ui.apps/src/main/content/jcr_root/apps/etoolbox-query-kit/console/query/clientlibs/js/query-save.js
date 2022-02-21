@@ -3,17 +3,22 @@
 
     const SAVED_QUERIES_KEY = 'eqk-saved-queries';
     const LATEST_QUERIES_KEY = 'eqk-latest-queries';
+    const foundationUi = $(window).adaptTo('foundation-ui');
 
     let executeAction = null;
     let deleteAction = null;
+    let shareAction = null;
 
     function saveSavedQueriesToLocalStorage() {
         const queryValue = getQueryValue();
         const savedQueries = getQueriesFromLocalStorage(SAVED_QUERIES_KEY);
 
-        if (queryValue && queryValue.trim().length > 0) {
+        if (savedQueries.indexOf(queryValue) !== -1) {
+            foundationUi.notify('', 'Query already exist in saved', 'error');
+        } else if (queryValue && queryValue.trim().length > 0) {
             savedQueries.push(queryValue);
             saveQueriesToLocalStorage(SAVED_QUERIES_KEY, savedQueries);
+            foundationUi.notify('Query successfully saved');
         }
     }
 
@@ -81,6 +86,15 @@
         };
     }
 
+    function shareCallBack(selectedItem) {
+        var  query = selectedItem.querySelector('td').innerText;
+        return function () {
+            foundationUi.notify('URL copied to clipboard');
+            const urlWithoutParams = window.location.origin + window.location.pathname;
+            navigator.clipboard.writeText(urlWithoutParams + '?query=' + encodeURIComponent(query));
+        };
+    }
+
     function clearTable(table) {
         table && table.empty();
     }
@@ -91,8 +105,9 @@
     }
 
     function toggleActionButtonsState(value) {
-        $('.deleteQueryButton').prop('disabled', value);
-        $('.executeQueryButton').prop('disabled', value);
+        $('.delete-query-button').prop('disabled', value);
+        $('.execute-query-button').prop('disabled', value);
+        $('.share-query-button').prop('disabled', value);
     }
 
     $(document).on('coral-overlay:beforeopen', '#querySavedDialog', function () {
@@ -111,6 +126,7 @@
             toggleActionButtonsState(false);
             executeAction = executeCallBack(selectedItem);
             deleteAction = deleteCallBack(selectedItem);
+            shareAction = shareCallBack(selectedItem);
         } else {
             toggleActionButtonsState(true);
         }
@@ -121,6 +137,7 @@
         clearTable($('#tableLastQueries tbody'));
         executeAction = null;
         deleteAction = null;
+        shareAction = null;
         toggleActionButtonsState(true);
     });
 
@@ -132,17 +149,15 @@
         saveSavedQueriesToLocalStorage();
     });
 
-    function openDialog(dialogSelector) {
-        const dialog = document.querySelector(dialogSelector);
-        dialog.center();
-        dialog.show();
-    }
-
-    $(document).on('click', '.executeQueryButton', function () {
+    $(document).on('click', '.execute-query-button', function () {
         executeAction && executeAction();
     });
 
-    $(document).on('click', '.deleteQueryButton', function () {
+    $(document).on('click', '.delete-query-button', function () {
         deleteAction && deleteAction();
+    });
+
+    $(document).on('click', '.share-query-button', function () {
+        shareAction && shareAction();
     });
 })(document, Granite.$);

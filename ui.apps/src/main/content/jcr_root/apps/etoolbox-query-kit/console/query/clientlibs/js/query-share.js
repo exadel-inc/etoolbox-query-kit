@@ -1,21 +1,8 @@
 'use strict';
 
 $(document).ready(function () {
-    const $shareButton = $('#shareButton');
-    const $queryForm = $('#queryForm');
-    const $executeButton = $('#btnExecute');
-
-    const successTooltip = new Coral.Tooltip().set({
-        content: {
-            innerHTML: 'URL copied to clipboard'
-        },
-        variant: 'success',
-        target: '#shareButton',
-        placement: 'bottom',
-        interaction: 'off'
-    });
-
-    $shareButton.append(successTooltip);
+    const $shareButton = $('#btnShare');
+    const foundationUi = $(window).adaptTo('foundation-ui');
 
     function updateQueryFromUrl() {
         const urlParams = decodeQueryUrlParams();
@@ -30,7 +17,7 @@ $(document).ready(function () {
         return {
             query: urlParameters.query
         };
-    };
+    }
 
     function getUrlParameters() {
         const urlParameters = {};
@@ -52,12 +39,9 @@ $(document).ready(function () {
         const editor = document.querySelector('.CodeMirror').CodeMirror;
         const query = editor.getValue();
         if (query) {
-            successTooltip.open = true;
+            foundationUi.notify('URL copied to clipboard');
             const urlWithoutParams = window.location.origin + window.location.pathname;
             navigator.clipboard.writeText(urlWithoutParams + '?query=' + encodeURIComponent(query));
-            setTimeout(function () {
-                successTooltip.open = false;
-            }, 2000);
         }
     });
 

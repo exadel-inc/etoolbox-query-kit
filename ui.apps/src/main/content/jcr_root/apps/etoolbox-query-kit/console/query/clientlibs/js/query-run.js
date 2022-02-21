@@ -35,6 +35,7 @@ $(function () {
                 foundationUi.wait();
             },
             success: function (data) {
+                $(document).trigger('query-kit:success-response', query);
                 $('.navigation-button').removeAttr('disabled');
                 if (currentPage === 1) {
                     $('.previous').prop('disabled', true);

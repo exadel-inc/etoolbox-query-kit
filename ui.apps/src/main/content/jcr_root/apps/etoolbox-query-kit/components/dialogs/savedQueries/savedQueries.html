@@ -8,7 +8,12 @@
         </div>
     </coral-dialog-content>
     <coral-dialog-footer>
-        <button class="executeQueryButton" type="button" is="coral-button" variant="primary" disabled>Open</button>
-        <button class="deleteQueryButton" type="button" is="coral-button" variant="quiet" icon="delete" iconsize="M" disabled></button>
+        <button class="execute-query-button" type="button" is="coral-button" variant="primary" disabled>Open</button>
+        <button type="button" autocomplete="off" is="coral-button" icon="share" variant="secondary" trackingfeature="" trackingelement="" tracking="ON" class="share-query-button coral3-Button coral3-Button--secondary" size="M" disabled>
+            <coral-icon class="coral3-Icon coral3-Icon--sizeS coral3-Icon--share" icon="share" size="S" autoarialabel="on" role="img" aria-label="share"></coral-icon>
+            <coral-button-label>
+            </coral-button-label>
+        </button>
+        <button class="delete-query-button" type="button" is="coral-button" variant="quiet" icon="delete" iconsize="M" disabled></button>
     </coral-dialog-footer>
 </coral-dialog>
