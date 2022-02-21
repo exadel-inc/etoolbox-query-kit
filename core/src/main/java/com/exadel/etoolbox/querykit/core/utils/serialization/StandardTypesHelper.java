@@ -18,6 +18,7 @@ import javax.jcr.query.qom.LowerCase;
 import javax.jcr.query.qom.NodeLocalName;
 import javax.jcr.query.qom.NodeName;
 import javax.jcr.query.qom.SameNodeJoinCondition;
+import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.UpperCase;
 
 @UtilityClass
@@ -33,6 +34,7 @@ class StandardTypesHelper {
         addForNodeLocalName(builder);
         addForNodeName(builder);
         addForSameNodeJoinCondition(builder);
+        addForSelector(builder);
         addForUpperCase(builder);
         addForValue(builder);
     }
@@ -133,6 +135,16 @@ class StandardTypesHelper {
                                 "selector2", value.getSelector2Name(),
                                 Constants.PROPERTY_PATH, value.getSelector2Path(),
                                 Constants.PROPERTY_TYPE, "ISSAMENODE"
+                        ));
+    }
+
+    private static void addForSelector(GsonBuilder builder) {
+        builder.registerTypeHierarchyAdapter(
+                Selector.class,
+                (JsonSerializer<Selector>) (value, type, context) ->
+                        getJsonObject(
+                                "selector", value.getSelectorName(),
+                                "nodeType", value.getNodeTypeName()
                         ));
     }
 
