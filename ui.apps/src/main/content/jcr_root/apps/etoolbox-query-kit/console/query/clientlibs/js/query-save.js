@@ -3,6 +3,7 @@
 
     const SAVED_QUERIES_KEY = 'eqk-saved-queries';
     const LATEST_QUERIES_KEY = 'eqk-latest-queries';
+
     const foundationUi = $(window).adaptTo('foundation-ui');
 
     let executeAction = null;
@@ -110,6 +111,7 @@
         $('.share-query-button').prop('disabled', value);
     }
 
+    // TODO to data service
     $(document).on('coral-overlay:beforeopen', '#querySavedDialog', function () {
         const savedQueries = getQueriesFromLocalStorage(SAVED_QUERIES_KEY);
         populateTableValues(savedQueries, $('#tableSavedQueries tbody'), SAVED_QUERIES_KEY);
@@ -149,14 +151,18 @@
         saveSavedQueriesToLocalStorage();
     });
 
+    // TODO this is Open button
+    // TODO To Granite Foundation actions
     $(document).on('click', '.execute-query-button', function () {
         executeAction && executeAction();
     });
 
+    // TODO second action
     $(document).on('click', '.delete-query-button', function () {
         deleteAction && deleteAction();
     });
 
+    // TODO third action
     $(document).on('click', '.share-query-button', function () {
         shareAction && shareAction();
     });

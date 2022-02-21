@@ -1,7 +1,8 @@
-'use strict';
+(function (ns, $) {
 
-$(document).ready(function () {
-    const textArea = document.querySelector('#textQuery');
+    'use strict';
+
+    const textArea = $('#textQuery')[0];
     const editor = CodeMirror.fromTextArea(textArea, {
         mode: 'text/sql2',
         matchBrackets: true,
@@ -13,4 +14,10 @@ $(document).ready(function () {
             CodeMirror.commands.autocomplete(cm, null, { completeSingle: false });
         }
     });
-});
+    editor.on('blur', function() {
+        ns.DataStore.setQuery(editor.getValue());
+    });
+    editor.setValue(ns.DataStore.getQuery())
+
+
+})(Granite.Eqk = (Granite.Eqk || {}),  Granite.$);

@@ -60,7 +60,7 @@
         if (!action) {
             return;
         }
-        const profile = ns.getProfileName();
+        const profile = ns.DataStore.getProfileName();
         const url = new URL(config.data.src, window.location);
         url.searchParams.set('profile', profile);
         const newConfig = {

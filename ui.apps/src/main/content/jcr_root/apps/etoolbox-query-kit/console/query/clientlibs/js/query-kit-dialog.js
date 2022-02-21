@@ -1,3 +1,4 @@
+/*
 (function (window, document, $, URITemplate) {
     'use strict';
 
@@ -63,3 +64,4 @@
         }
     });
 })(window, document, Granite.$, Granite.URITemplate);
+*/
