@@ -29,10 +29,22 @@ public class QueryServiceImpl implements QueryService {
 
     @Override
     public SearchResult execute(SearchRequest request) {
+        return execute(request, ((req, exec) -> exec.execute(req)));
+    }
+
+    @Override
+    public SearchResult dryRun(SearchRequest request) {
+        return execute(request, ((req, exec) -> exec.dryRun(req)));
+    }
+
+    private SearchResult execute(SearchRequest request, TryBiFunction<SearchRequest, Executor, SearchResult> supplier) {
+        if (!request.isValid()) {
+            return SearchResult.error(request, "Invalid request");
+        }
         try {
             SearchRequest effectiveRequest = convertToSql2IfNeeded(request);
-            Executor queryExecutor = pickQueryExecutor(effectiveRequest);
-            return queryExecutor.execute(request);
+            Executor queryExecutor = pickExecutor(effectiveRequest);
+            return supplier.apply(request, queryExecutor);
         } catch (Exception e) {
             log.error("Could not execute query {}", request.getStatement(), e);
             return SearchResult.error(request, "Could not execute: " + e.getMessage());

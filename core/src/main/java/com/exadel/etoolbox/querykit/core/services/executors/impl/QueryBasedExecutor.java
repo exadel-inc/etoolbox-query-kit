@@ -47,11 +47,16 @@ abstract class QueryBasedExecutor extends ExecutorImpl {
         return resultBuilder.build();
     }
 
-    private QueryResult executeMeasured(SearchRequest request, Query query) throws Exception {
-        if (!request.isShowTotal()) {
-            return new MeasuredQueryResult(query.execute());
-        }
-        return MeasuredExecutorHelper.execute(request, query);
+    @Override
+    public SearchResult dryRun(SearchRequest request) throws Exception {
+        Query query = compileAndSetUp(request);
+        ModifiableColumnCollection columnCollection = (ModifiableColumnCollection) getColumnCollection(request, query);
+        return SearchResult
+                .builder()
+                .request(request)
+                .info("Via " + getClass().getSimpleName())
+                .columns(columnCollection)
+                .build();
     }
 
     abstract Query getBasicQuery(SearchRequest request) throws RepositoryException, ConverterException;
