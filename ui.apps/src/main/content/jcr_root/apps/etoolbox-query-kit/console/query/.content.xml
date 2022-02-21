@@ -31,7 +31,7 @@
                         text="New"
                         variant="primary">
                     <datasource jcr:primaryType="nt:unstructured"
-                                sling:resourceType="/apps/etoolbox-query-kit/datasources/dialog"/>
+                                sling:resourceType="/apps/etoolbox-query-kit/datasources/dialogs"/>
                 </new>
                 <open
                         jcr:primaryType="nt:unstructured"
@@ -100,7 +100,7 @@
                         sling:resourceType="granite/ui/components/coral/foundation/button"
                         granite:id="btnExportCsv"
                         icon="fileExcel"
-                        text="Spreadsheet"
+                        text="CSV"
                         variant="actionBar"/>
                 <exportJson
                         jcr:primaryType="nt:unstructured"
@@ -109,6 +109,14 @@
                         icon="fileJson"
                         text="JSON"
                         variant="actionBar"/>
+                <profiles
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                        name="profile">
+                    <datasource
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="/apps/etoolbox-query-kit/datasources/profiles"/>
+                </profiles>
             </secondary>
         </actions>
         <content
@@ -122,86 +130,80 @@
                         granite:class="eqk-ui"
                         margin="{Boolean}true">
                     <items jcr:primaryType="nt:unstructured">
-                        <form
-                                jcr:primaryType="nt:unstructured"
-                                sling:resourceType="granite/ui/components/foundation/form"
-                                granite:class="in-row"
-                                granite:id="queryForm"
-                                autocomplete="{Boolean}true"
-                                method="post"
-                                action="/apps/etoolbox-query-kit/services/query"
-                                foundationForm="{Boolean}true">
+                        <query jcr:primaryType="nt:unstructured"
+                               sling:resourceType="granite/ui/components/coral/foundation/container"
+                               granite:class="column column-left">
                             <items jcr:primaryType="nt:unstructured">
-                                <mode-container
-                                        jcr:primaryType="nt:unstructured"
-                                        sling:resourceType="granite/ui/components/coral/foundation/container"
-                                        granite:class="buttons-query-editor">
-                                    <items jcr:primaryType="nt:unstructured">
-                                        <modes
-                                                jcr:primaryType="nt:unstructured"
-                                                sling:resourceType="granite/ui/components/coral/foundation/form/buttongroup"
-                                                required="{Boolean}true"
-                                                selectionMode="single">
-                                            <items jcr:primaryType="nt:unstructured">
-                                                <editor
-                                                        jcr:primaryType="nt:unstructured"
-                                                        text="Editor"
-                                                        value="editor"/>
-                                                <constructor
-                                                        jcr:primaryType="nt:unstructured"
-                                                        text="Constructor"
-                                                        value="constructor"/>
-                                            </items>
-                                        </modes>
-                                    </items>
-                                </mode-container>
-                                <query
+                                <text
                                         jcr:primaryType="nt:unstructured"
                                         sling:resourceType="granite/ui/components/coral/foundation/form/textarea"
                                         granite:class="codemirror-textarea"
-                                        granite:id="queryTextArea"
+                                        granite:id="textQuery"
                                         autocomplete="on"
                                         name="q_query"/>
-                                <offset
-                                        jcr:primaryType="nt:unstructured"
-                                        sling:resourceType="granite/ui/components/foundation/form/hidden"
-                                        name="q_offset"
-                                        value="0"/>
-                                <limit
-                                        jcr:primaryType="nt:unstructured"
-                                        sling:resourceType="granite/ui/components/foundation/form/hidden"
-                                        granite:id="limitInput"
-                                        name="q_limit"
-                                        value="10"/>
                                 <buttons
                                         jcr:primaryType="nt:unstructured"
                                         sling:resourceType="granite/ui/components/coral/foundation/container"
-                                        granite:class="buttons-query-editor"
+                                        granite:class="editor-buttons"
                                         margin="{Boolean}true">
                                     <items jcr:primaryType="nt:unstructured">
-                                        <submit
+                                        <execute
                                                 jcr:primaryType="nt:unstructured"
-                                                sling:resourceType="granite/ui/components/foundation/button"
-                                                granite:id="executeButton"
+                                                sling:resourceType="granite/ui/components/coral/foundation/button"
+                                                granite:id="btnExecute"
                                                 type="submit"
                                                 variant="primary"
                                                 text="Execute"/>
                                         <save
                                                 jcr:primaryType="nt:unstructured"
-                                                sling:resourceType="granite/ui/components/foundation/button"
-                                                granite:id="saveButton"
-                                                variant="secondary"
-                                                text="Save"/>
+                                                sling:resourceType="granite/ui/components/coral/foundation/button"
+                                                granite:id="btnSave"
+                                                icon="save"
+                                                variant="secondary"/>
+                                        <share
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/button"
+                                                granite:id="btnSave"
+                                                icon="share"
+                                                variant="secondary"/>
                                     </items>
                                 </buttons>
                             </items>
-                        </form>
-                        <result-table
+                        </query>
+                        <results
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/container"
-                                granite:id="resultContainer"
-                                granite:class="in-row">
-                        </result-table>
+                                granite:class="column column-right"
+                                granite:id="columnResult"
+                                margin="{Boolean}true">
+                            <items jcr:primaryType="nt:unstructured">
+                                <table
+                                        granite:rel="granite-uptime-collection"
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/table"
+                                        granite:id="tableResult"
+                                        stateId="shell.collectionpage">
+                                    <granite:data
+                                            jcr:primaryType="nt:unstructured"
+                                            query="${param.query}"
+                                            limit="${param.limit ? param.limit : 10}"
+                                            offset="${param.offset ? param.offset : 0}"/>
+                                    <datasource
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="/apps/etoolbox-query-kit/datasources/queryItems"
+                                            itemResourceType="/apps/etoolbox-query-kit/components/console/tableRow"/>
+                                    <columnsdatasource
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="/apps/etoolbox-query-kit/datasources/queryColumns"/>
+                                </table>
+                                <reqReader
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="etoolbox-query-kit/components/console/requestReader"/>
+                                <pagination
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="etoolbox-query-kit/components/console/pagination"/>
+                            </items>
+                        </results>
                     </items>
                 </columns>
             </items>
