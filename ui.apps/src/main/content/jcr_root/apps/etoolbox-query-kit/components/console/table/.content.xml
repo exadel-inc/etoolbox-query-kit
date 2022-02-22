@@ -13,12 +13,9 @@
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="granite/ui/components/coral/foundation/table"
                 granite:id="tableResult"
-                stateId="shell.collectionpage">
-            <granite:data
-                    jcr:primaryType="nt:unstructured"
-                    query="${param.query}"
-                    limit="${param.limit ? param.limit : 10}"
-                    offset="${param.offset ? param.offset : 0}"/>
+                stateId="shell.collectionpage"
+                selectionCount="single"
+                selectionMode="row">
             <datasource
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="/apps/etoolbox-query-kit/datasources/queryItems"
