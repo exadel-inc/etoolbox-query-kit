@@ -4,7 +4,7 @@ $(function () {
 
     const TABLE_URL = '/apps/etoolbox-query-kit/components/console/dataTable/jcr:content/data.html';
 
-    const DEFAULT_LIMIT = 10;
+    const DEFAULT_LIMIT = 2;
 
     const foundationUi = $(window).adaptTo('foundation-ui');
     const $executeButton = $('#btnExecute');
@@ -28,7 +28,7 @@ $(function () {
         $.ajax({
             url: TABLE_URL,
             type: "GET",
-            data: {'-query': query, '-offset': offset, '-limit': limit, '-measure': !totalCount},
+            data: {'-query': query, '-offset': offset, '-pageSize': limit, '-measure': !totalCount},
             beforeSend: function(){
                 foundationUi.wait();
             },
@@ -50,6 +50,7 @@ $(function () {
 
     function updateTable($table) {
         $('#tableResult').remove();
+        $('.pagination').remove();
         $('#columnResult').prepend($table);
     }
 
@@ -69,16 +70,15 @@ $(function () {
         updateResult(query)
     });
 
-    $('.nav-button').on('click', function (e) {
-        currentPage = e.target.value;
+    $(document).on('click', '.nav-button', function (e) {
         if ($(e.target).is('.next')) {
             offset = currentPage * limit;
             currentPage++;
         } else {
             currentPage--;
-            offset = currentPage * limit;
+            offset = (currentPage - 1) * limit;
         }
         const query = $('.CodeMirror')[0].CodeMirror.getValue();
-        updateTable(query)
+        updateResult(query)
     });
 });

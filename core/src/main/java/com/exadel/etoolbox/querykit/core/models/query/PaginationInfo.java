@@ -28,7 +28,7 @@ public class PaginationInfo {
         this.computedTotal = computedTotal;
         this.pageSize = pageSize;
 
-        currentPage = pageSize != 0 ? offset / pageSize : 0;
+        currentPage = pageSize != 0 ? offset / pageSize + 1: 1;
 
         if (getPagesCount() <= 5){
             rangePagesPagination = getRangesPages(1, getPagesCount());
@@ -50,6 +50,6 @@ public class PaginationInfo {
     }
 
     public List<Integer> getRangesPages(int start, int end) {
-        return Stream.iterate(start, s -> s++).limit(end - start + 1).collect(Collectors.toList());
+        return Stream.iterate(start, s -> ++s).limit(end - start + 1).collect(Collectors.toList());
     }
 }

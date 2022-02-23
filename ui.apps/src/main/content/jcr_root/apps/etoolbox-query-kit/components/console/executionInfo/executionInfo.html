@@ -1,18 +1,16 @@
 <sly data-sly-use.info="com.exadel.etoolbox.querykit.core.models.query.QueryExecutionInfo"/>
-<div class="coral-FixedColumn-column">
-    <div hidden class="pagination" >
-        <button class="nav-button previous" ${info.paginationInfo.currentPage == 1 ? 'disabled' : ''}>« Previous</button>
-        <div id="pagesContainer" class="pages-container">
-            <sly data-sly-test="${info.paginationInfo.startPaginationNeeded}">
-                <button  ${info.paginationInfo.currentPage == 1 ? 'disabled' : ''} class='first-button'>1</button><i class='first'>...</i>
-            </sly>
-            <sly data-sly-list.page="${info.paginationInfo.rangePagesPagination}">
-                <button class='nav-page-button' value='${page}' ${page == info.paginationInfo.currentPage ? 'disabled' : ''}>${page}</button>
-            </sly>
-            <sly data-sly-test="${info.paginationInfo.endPaginationNeeded}">
-                <i class='last'>...</i><button ${info.paginationInfo.pagesCount == info.paginationInfo.currentPage ? 'disabled' : ''} class='last-button'>${info.paginationInfo.pagesCount}</button>
-            </sly>
-        </div>
-        <button class="nav-button next" ${info.paginationInfo.currentPage == info.paginationInfo.pagesCount ? 'disabled' : ''}>Next »</button>
+<div class="coral-FixedColumn-column pagination">
+    <button class="nav-button previous" data-sly-attribute.disabled="${info.paginationInfo.currentPage == 1}">« Previous</button>
+    <div id="pagesContainer" class="pages-container">
+        <sly data-sly-test="${info.paginationInfo.startPaginationNeeded}">
+            <button data-sly-attribute.disabled="${info.paginationInfo.currentPage == 1}" class='first-button'>1</button><i class='first'>...</i>
+        </sly>
+        <sly data-sly-list.page="${info.paginationInfo.rangePagesPagination}">
+            <button class='nav-page-button' value='${page}' data-sly-attribute.disabled="${page == info.paginationInfo.currentPage}">${page}</button>
+        </sly>
+        <sly data-sly-test="${info.paginationInfo.endPaginationNeeded}">
+            <i class='last'>...</i><button data-sly-attribute.disabled="${info.paginationInfo.pagesCount == info.paginationInfo.currentPage}" class='last-button'>${info.paginationInfo.pagesCount}</button>
+        </sly>
     </div>
+    <button class="nav-button next" data-sly-attribute.disabled="${info.paginationInfo.currentPage == info.paginationInfo.pagesCount}">Next »</button>
 </div>

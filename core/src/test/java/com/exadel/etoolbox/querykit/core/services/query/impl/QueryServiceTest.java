@@ -47,7 +47,7 @@ public class QueryServiceTest {
                 "SELECT * FROM [cq:PageContent] AS e WHERE ISDESCENDANTNODE(e, '/content')");
         aemContext.request().addRequestParameter("-measure", "true");
         aemContext.request().addRequestParameter("-offset", "1");
-        aemContext.request().addRequestParameter("-limit", "1");
+        aemContext.request().addRequestParameter("-pageSize", "1");
 
         SearchRequest request = SearchRequest.from(aemContext.request());
         SearchResult result = queryService.execute(request);
@@ -65,7 +65,7 @@ public class QueryServiceTest {
                 "SELECT * FROM [cq:Page] AS e WHERE ISCHILDNODE(e, '/content/site')");
         aemContext.request().addRequestParameter("-measure", "iterating");
         aemContext.request().addRequestParameter("-offset", "3");
-        aemContext.request().addRequestParameter("-limit", "5");
+        aemContext.request().addRequestParameter("-pageSize", "5");
 
         SearchRequest request = SearchRequest.from(aemContext.request());
         SearchResult result = queryService.execute(request);
