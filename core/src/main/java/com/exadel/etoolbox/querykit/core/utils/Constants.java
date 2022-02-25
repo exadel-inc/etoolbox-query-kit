@@ -25,6 +25,7 @@ public class Constants {
     public static final String PROPERTY_TEXT = "text";
     public static final String PROPERTY_TYPE = "type";
     public static final String PROPERTY_VALUE = "value";
+    public static final String PROPERTY_NAME = "name";
 
     public static final String TITLE_PATH = "Path";
 

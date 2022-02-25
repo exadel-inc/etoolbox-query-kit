@@ -2,12 +2,13 @@ $(function () {
 
     'use strict';
 
-    const TABLE_URL = '/apps/etoolbox-query-kit/components/console/dataTable/jcr:content/data.html';
+    const TABLE_URL = '/apps/etoolbox-query-kit/components/console/tableHost/jcr:content/data.html';
 
     const DEFAULT_LIMIT = 2;
 
     const foundationUi = $(window).adaptTo('foundation-ui');
     const $executeButton = $('#btnExecute');
+    const $editRowForm = $('#editRowDialogForm');
 
     let currentPage = 1;
     let offset = 0;
@@ -28,7 +29,7 @@ $(function () {
         $.ajax({
             url: TABLE_URL,
             type: "GET",
-            data: {'-query': query, '-offset': offset, '-pageSize': limit, '-measure': !totalCount},
+            data: {'-query': query, '-offset': offset, '-pageSize': limit, '-measure': !totalCount, '-typeaware':true},
             beforeSend: function(){
                 foundationUi.wait();
             },
@@ -81,4 +82,57 @@ $(function () {
         const query = $('.CodeMirror')[0].CodeMirror.getValue();
         updateResult(query)
     });
+
+    $editRowForm.submit(function (e) {
+        e.preventDefault();
+        var form = $(this);
+        var url = form.attr('action');
+        var data = form.serialize();
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: data,
+            success: function (data) {
+                console.log('success');
+            },
+            error: function (error) {
+                console.log('LOL');
+            }
+        })
+    });
+
+    $(document).on("dblclick", ".result-table-cell", function(e) {
+        var property = e.target.getAttribute('data-name')
+        var type = e.target.getAttribute('data-type');
+        var path = e.target.getAttribute('data-path');
+
+        $.ajax({
+            url: '/apps/etoolbox-query-kit/console/dialogs/editCell.html.html',
+            type: 'GET',
+            data: {'path': path, 'property': property, 'type': type},
+            beforeSend: function(){
+                foundationUi.wait();
+            },
+            success: function (data) {
+                var action = $(data).find('input[name="path"]')[0].value;
+                var dialogContent = $(data).find('div[id="editCellDialogContainer"]')
+                $('#editCellDialog form').attr('action', action);
+                $('#editCellDialog div[id="editCellDialogContainer"]').remove();
+                $('#editCellDialog div.coral-FixedColumn').append(dialogContent);
+                openDialog('#editCellDialog');
+            },
+            error: function (error) {
+                console.log('LOL');
+            },
+            complete: function () {
+                foundationUi.clearWait();
+            }
+        })
+    });
+
+    function openDialog(dialogSelector) {
+        const dialog = document.querySelector(dialogSelector);
+        dialog.center();
+        dialog.show();
+    }
 });
