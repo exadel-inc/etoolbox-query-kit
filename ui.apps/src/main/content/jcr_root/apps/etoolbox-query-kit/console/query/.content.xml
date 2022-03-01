@@ -91,21 +91,21 @@
                 <exportHtml
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/button"
-                        granite:id="btnExportHtml"
+                        granite:id="htmlExportBtn"
                         icon="fileHTML"
                         text="HTML"
                         variant="actionBar"/>
                 <exportCsv
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/button"
-                        granite:id="btnExportCsv"
+                        granite:id="csvExportBtn"
                         icon="fileExcel"
                         text="CSV"
                         variant="actionBar"/>
                 <exportJson
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/button"
-                        granite:id="btnExportJson"
+                        granite:id="jsonExportBtn"
                         icon="fileJson"
                         text="JSON"
                         variant="actionBar"/>
@@ -138,7 +138,7 @@
                                         jcr:primaryType="nt:unstructured"
                                         sling:resourceType="granite/ui/components/coral/foundation/form/textarea"
                                         granite:class="codemirror-textarea"
-                                        granite:id="textQuery"
+                                        granite:id="queryEditor"
                                         autocomplete="on"
                                         name="-query"/>
                                 <buttons
@@ -150,20 +150,20 @@
                                         <execute
                                                 jcr:primaryType="nt:unstructured"
                                                 sling:resourceType="granite/ui/components/coral/foundation/button"
-                                                granite:id="btnExecute"
+                                                granite:id="executeBtn"
                                                 type="submit"
                                                 variant="primary"
                                                 text="Execute"/>
                                         <save
                                                 jcr:primaryType="nt:unstructured"
                                                 sling:resourceType="granite/ui/components/coral/foundation/button"
-                                                granite:id="btnSave"
+                                                granite:id="saveBtn"
                                                 icon="save"
                                                 variant="secondary"/>
                                         <share
                                                 jcr:primaryType="nt:unstructured"
                                                 sling:resourceType="granite/ui/components/coral/foundation/button"
-                                                granite:id="btnShare"
+                                                granite:id="shareBtn"
                                                 icon="share"
                                                 variant="secondary"/>
                                     </items>
@@ -181,7 +181,7 @@
                                         granite:rel="granite-uptime-collection"
                                         jcr:primaryType="nt:unstructured"
                                         sling:resourceType="granite/ui/components/coral/foundation/table"
-                                        granite:id="tableResult"
+                                        granite:id="resultsTable"
                                         stateId="shell.collectionpage">
                                     <granite:data
                                             jcr:primaryType="nt:unstructured"

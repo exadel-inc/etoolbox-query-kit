@@ -1,37 +1,46 @@
-$(function () {
-
+(function (document, $, ns) {
     'use strict';
 
     const TABLE_URL = '/apps/etoolbox-query-kit/console/query/jcr:content/content/items/columns/items/results/items/table.html';
-
     const DEFAULT_LIMIT = 10;
     const NUM_VISIBLE_PAGES = 5;
 
-    const foundationUi = $(window).adaptTo('foundation-ui');
-    const $executeButton = $('#btnExecute');
-
     let currentPage = 1;
     let offset = 0;
-    let limit = DEFAULT_LIMIT;
+    const limit = DEFAULT_LIMIT;
 
     let totalCount;
     let pageCount;
+
+    const foundationUi = $(window).adaptTo('foundation-ui');
+
+    $(document).ready(function () {
+        const $executeButton = $('#executeBtn');
+        $executeButton.on('click', function () {
+            const query = ns.getEditorValue();
+            updateUrlParams(query);
+            currentPage = 1;
+            totalCount = 0;
+            offset = 0;
+            updateResult(query);
+        });
+    });
 
     function updateUrlParams(query) {
         if (query && query.trim().length > 0 && history.pushState) {
             const url = new URL(window.location);
             url.searchParams.set('-query', encodeURIComponent(query));
             url.searchParams.set('-measure', 'true');
-            window.history.pushState({}, '', url);
+            window.history.pushState({}, '', url.toString());
         }
     }
 
     function updateResult(query) {
         $.ajax({
             url: TABLE_URL,
-            type: "GET",
-            data: {'-query': query, '-offset': offset, '-limit': limit, '-measure': !totalCount},
-            beforeSend: function(){
+            type: 'GET',
+            data: { '-query': query, '-offset': offset, '-limit': limit, '-measure': !totalCount },
+            beforeSend: function () {
                 foundationUi.wait();
             },
             success: function (data) {
@@ -49,7 +58,7 @@ $(function () {
                 totalCount = $table.attr('data-foundation-layout-table-guesstotal');
                 pageCount = totalCount / limit;
                 updateTable($table);
-                addPagination();
+                updatePagination();
             },
             error: function (error) {
                 foundationUi.alert('EToolbox Query Kit', 'Could not retrieve results' + (error.responseText ? ': ' + error.responseText : ''), 'error');
@@ -57,15 +66,15 @@ $(function () {
             complete: function () {
                 foundationUi.clearWait();
             }
-        })
+        });
     }
 
     function updateTable($table) {
-        $('#tableResult').remove();
+        $('#resultsTable').remove();
         $('#columnResult').prepend($table);
     }
 
-    function addPagination() {
+    function updatePagination() {
         let htmlContent = '';
         if (pageCount <= NUM_VISIBLE_PAGES) {
             htmlContent += getPageRangeElement(1, pageCount);
@@ -96,20 +105,11 @@ $(function () {
         return `<i class='last'>...</i><button ${pageCount === currentPage ? 'disabled' : ''} class='last-button'>${pageCount}</button>`;
     }
 
-    $executeButton.on("click", (function () {
-        const query = $('.CodeMirror')[0].CodeMirror.getValue();
-        updateUrlParams(query);
-        currentPage = 1;
-        totalCount = 0;
-        offset = 0;
-        updateResult(query);
-    }));
-
     $(document).on('click', '.nav-page-button', function (e) {
         currentPage = e.target.value;
-        const query = $('.CodeMirror')[0].CodeMirror.getValue();
+        const query = ns.getEditorValue();
         offset = (currentPage - 1) * limit;
-        updateResult(query)
+        updateResult(query);
     });
 
     $('.nav-button').on('click', function (e) {
@@ -121,7 +121,7 @@ $(function () {
             currentPage--;
             offset = currentPage * limit;
         }
-        const query = $('.CodeMirror')[0].CodeMirror.getValue();
-        updateTable(query)
+        const query = ns.getEditorValue();
+        updateTable(query);
     });
-});
+})(document, Granite.$, Granite.Eqk = (Granite.Eqk || {}));

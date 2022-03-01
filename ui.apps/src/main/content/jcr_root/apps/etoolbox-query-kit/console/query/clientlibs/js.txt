@@ -7,11 +7,13 @@ addon/hint/show-hint.js
 #base=js
 editor/editor-init.js
 editor/sql2-init.js
-datastore.js
+utils/datastore.js
 actions.js
 export.js
 profiles.js
 query-dialog.js
-query-run.js
-query-save.js
-query-share.js
+
+#base=js/actions
+execute.js
+save.js
+share.js

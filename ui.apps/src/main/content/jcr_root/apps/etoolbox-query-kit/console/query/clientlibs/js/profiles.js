@@ -1,15 +1,14 @@
-(function (document, ns, $) {
+(function (document, $, ns) {
     'use strict';
 
-    $(document).on('foundation-contentloaded', function(e) {
+    $(document).on('foundation-contentloaded', function (e) {
         const $profile = $('[name="profile"]', e.target);
-        Coral.commons.ready($profile[0], function(target) {
+        Coral.commons.ready($profile[0], function (target) {
             const $target = $(target);
             $target.val(ns.DataStore.getProfileName);
-            $target.on('change', function() {
+            $target.on('change', function () {
                 ns.DataStore.setProfileName($target.val());
             });
         });
     });
-
-})(document, Granite.Eqk = (Granite.Eqk || {}), Granite.$);
+})(document, Granite.$, Granite.Eqk = (Granite.Eqk || {}));
