@@ -127,14 +127,19 @@ class TypeAwareSearchItem implements SearchItem {
             String propName = column instanceof ColumnAdapter
                     ? ((ColumnAdapter) column).getUniquePropertyName()
                     : column.getPropertyName();
-            String propPath = StringUtils.endsWith(propName, Constants.PROPERTY_JCR_PATH)
+            String propPath = StringUtils.endsWith(propName, Constants.PROPERTY_JCR_PATH) || MapUtils.isEmpty(properties)
                     ? StringUtils.EMPTY
                     : StringUtils.defaultString(properties.get(propName).getPath(), getPath());
-            String propType = StringUtils.endsWith(propName, Constants.PROPERTY_JCR_PATH)
+            String propType = StringUtils.endsWith(propName, Constants.PROPERTY_JCR_PATH) || MapUtils.isEmpty(properties)
                     ? PropertyType.nameFromValue(PropertyType.STRING)
                     : PropertyType.nameFromValue(properties.get(propName).getType());
-            serviceProperties.put(propName + Constants.DOUBLE_AT + Constants.PROPERTY_PATH, propPath);
-            serviceProperties.put(propName + Constants.DOUBLE_AT + Constants.PROPERTY_TYPE, propType);
+
+            if (StringUtils.isNotEmpty(propPath)) {
+                serviceProperties.put(propName + Constants.DOUBLE_AT + Constants.PROPERTY_PATH, propPath);
+            }
+            if (StringUtils.isNotEmpty(propType)) {
+                serviceProperties.put(propName + Constants.DOUBLE_AT + Constants.PROPERTY_TYPE, propType);
+            }
         }
 
         allProperties.putAll(serviceProperties);
