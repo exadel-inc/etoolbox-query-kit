@@ -102,27 +102,27 @@ $(function () {
     });
 
     $(document).on("dblclick", ".result-table-cell", function(e) {
-        var property = e.target.getAttribute('data-name')
-        var type = e.target.getAttribute('data-type');
-        var path = e.target.getAttribute('data-path');
+        const property = e.target.getAttribute('data-name')
+        const type = e.target.getAttribute('data-type');
+        const path = e.target.getAttribute('data-path');
 
         $.ajax({
-            url: '/apps/etoolbox-query-kit/console/dialogs/editCell.html.html',
+            url: '/apps/etoolbox-query-kit/console/dialogs/editCell.html',
             type: 'GET',
             data: {'path': path, 'property': property, 'type': type},
             beforeSend: function(){
                 foundationUi.wait();
             },
             success: function (data) {
-                var action = $(data).find('input[name="path"]')[0].value;
-                var dialogContent = $(data).find('div[id="editCellDialogContainer"]')
+                const action = $(data).find('input[name="path"]')[0].value;
+                const dialogContent = $(data).find('div[id="editCellDialogContainer"]')
                 $('#editCellDialog form').attr('action', action);
                 $('#editCellDialog div[id="editCellDialogContainer"]').remove();
                 $('#editCellDialog div.coral-FixedColumn').append(dialogContent);
                 openDialog('#editCellDialog');
             },
             error: function (error) {
-                console.log('LOL');
+                foundationUi.alert('EToolbox Query Kit', 'Could not retrieve results' + (error.responseText ? ': ' + error.responseText : ''), 'error');
             },
             complete: function () {
                 foundationUi.clearWait();

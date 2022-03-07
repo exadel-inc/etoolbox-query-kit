@@ -14,11 +14,11 @@
         const savedQueries = getQueriesFromLocalStorage(SAVED_QUERIES_KEY);
 
         if (savedQueries.indexOf(queryValue) !== -1) {
-            foundationUi.notify('', 'Query already exist in saved', 'error');
+            foundationUi.notify('', 'Query has already been saved', 'notice');
         } else if (queryValue && queryValue.trim().length > 0) {
             savedQueries.push(queryValue);
             saveQueriesToLocalStorage(SAVED_QUERIES_KEY, savedQueries);
-            foundationUi.notify('Query successfully saved');
+            foundationUi.notify('Query saved');
         }
     }
 
