@@ -26,24 +26,24 @@ public class TableRowInfo {
         cells = new LinkedHashMap<>();
         for(String key : resource.getValueMap().keySet()) {
             if (!StringUtils.contains(key, Constants.DOUBLE_AT)) {
-                cells.put(key, new TableCellInfo());
+                cells.put(key, new TableCellInfo(resource.getValueMap().get(key)));
             } else if (StringUtils.endsWith(key, Constants.DOUBLE_AT + Constants.PROPERTY_PATH)) {
-                String propertyName = extractPropertyKey(key);
+                String propertyName = extractPropertyName(key);
                 cells.computeIfPresent(propertyName, (k, cell) -> {
-                    cell.setPath(resource.getValueMap().get(propertyName, String.class));
+                    cell.setPath(resource.getValueMap().get(key, String.class));
                     return cell;
                 });
             } else if (StringUtils.endsWith(key, Constants.DOUBLE_AT + Constants.PROPERTY_TYPE)) {
-                String propertyName = extractPropertyKey(key);
+                String propertyName = extractPropertyName(key);
                 cells.computeIfPresent(propertyName, (k, cell) -> {
-                    cell.setType(resource.getValueMap().get(propertyName, String.class));
+                    cell.setType(resource.getValueMap().get(key, String.class));
                     return cell;
                 });
             }
         }
     }
 
-    private static String extractPropertyKey(String value) {
+    private static String extractPropertyName(String value) {
         return StringUtils.substringBefore(value, Constants.DOUBLE_AT);
     }
 }

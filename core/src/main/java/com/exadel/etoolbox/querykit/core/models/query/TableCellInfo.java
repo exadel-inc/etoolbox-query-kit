@@ -2,14 +2,18 @@ package com.exadel.etoolbox.querykit.core.models.query;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
-@Setter(AccessLevel.PACKAGE)
 public class TableCellInfo {
+
+    private final Object value;
+
+    @Setter(AccessLevel.PACKAGE)
     private String path;
+
+    @Setter(AccessLevel.PACKAGE)
     private String type;
-    private Object value;
 }

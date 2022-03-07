@@ -1,5 +1,7 @@
 package com.exadel.etoolbox.querykit.core.models.search;
 
+import com.adobe.granite.ui.components.ds.ValueMapResource;
+import com.exadel.etoolbox.querykit.core.models.qom.columns.ColumnAdapter;
 import com.exadel.etoolbox.querykit.core.models.qom.columns.ColumnCollection;
 import com.exadel.etoolbox.querykit.core.utils.Constants;
 import com.exadel.etoolbox.querykit.core.utils.ValueUtil;
@@ -20,9 +22,11 @@ import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 
 import javax.jcr.PropertyType;
+import javax.jcr.query.qom.Column;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +46,10 @@ class TypeAwareSearchItem implements SearchItem {
     public TypeAwareSearchItem(String path, Map<String, Object> properties) {
         this(path, properties, path);
     }
+
+    /* ------------------------
+       Common interface methods
+       ------------------------ */
 
     public TypeAwareSearchItem(String rootPath, Map<String, Object> properties, String propertiesPath) {
         this.path = rootPath;
@@ -108,6 +116,36 @@ class TypeAwareSearchItem implements SearchItem {
     /* -------------
        Serialization
        ------------- */
+
+    @Override
+    public Resource toVirtualResource(ResourceResolver resourceResolver, ColumnCollection columns, String resourceType) {
+        Map<String, Object> valueProperties = SearchItem.super.toVirtualResource(resourceResolver, columns, resourceType).getValueMap();
+        Map<String, Object> allProperties = new LinkedHashMap<>(valueProperties);
+
+        Map<String, Object> serviceProperties = new HashMap<>();
+        for (Column column : columns.getItems()) {
+            String propName = column instanceof ColumnAdapter
+                    ? ((ColumnAdapter) column).getUniquePropertyName()
+                    : column.getPropertyName();
+            String propPath = StringUtils.endsWith(propName, Constants.PROPERTY_JCR_PATH)
+                    ? StringUtils.EMPTY
+                    : StringUtils.defaultString(properties.get(propName).getPath(), getPath());
+            String propType = StringUtils.endsWith(propName, Constants.PROPERTY_JCR_PATH)
+                    ? PropertyType.nameFromValue(PropertyType.STRING)
+                    : PropertyType.nameFromValue(properties.get(propName).getType());
+            serviceProperties.put(propName + Constants.DOUBLE_AT + Constants.PROPERTY_PATH, propPath);
+            serviceProperties.put(propName + Constants.DOUBLE_AT + Constants.PROPERTY_TYPE, propType);
+        }
+
+        allProperties.putAll(serviceProperties);
+
+        ValueMap valueMap = new ValueMapDecorator(allProperties);
+        return new ValueMapResource(
+                resourceResolver,
+                getPath(),
+                resourceType,
+                valueMap);
+    }
 
     @Override
     public JsonElement toJson(JsonSerializationContext serializer, ColumnCollection data) {

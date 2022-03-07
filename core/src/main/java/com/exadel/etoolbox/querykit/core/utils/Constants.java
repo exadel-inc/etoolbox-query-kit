@@ -32,6 +32,7 @@ public class Constants {
     public static final String CLOSING_BRACKET = ")";
     public static final String COMMA = ",";
     public static final String DOT = ".";
+    public static final String DOUBLE_AT = "@@";
     public static final String OPENING_BRACKET = "(";
     public static final String QUOTE = "'";
 }
