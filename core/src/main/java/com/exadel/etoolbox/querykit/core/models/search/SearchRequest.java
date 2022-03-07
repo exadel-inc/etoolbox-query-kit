@@ -32,7 +32,7 @@ public class SearchRequest {
     private static final String PARAMETER_ITEM_FILTERS = PARAMETER_PREFIX + "filters";
     private static final String PARAMETER_ITEM_CONVERTERS = PARAMETER_PREFIX + "converters";
     private static final String PARAMETER_OFFSET = PARAMETER_PREFIX + "offset";
-    private static final String PARAMETER_LIMIT = PARAMETER_PREFIX + "limit";
+    private static final String PARAMETER_LIMIT = PARAMETER_PREFIX + "pageSize";
     private static final String PARAMETER_QUERY = PARAMETER_PREFIX + "query";
     private static final String PARAMETER_SHOW_TOTAL = PARAMETER_PREFIX + "measure";
     private static final String PARAMETER_TYPE_AWARE = PARAMETER_PREFIX + "typeaware";

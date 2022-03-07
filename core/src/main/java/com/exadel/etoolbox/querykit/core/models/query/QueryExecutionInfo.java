@@ -25,6 +25,9 @@ public class QueryExecutionInfo {
     private int pageSize;
 
     @Getter
+    private int offset;
+
+    @Getter
     private long executionTime;
 
     @Getter
@@ -33,13 +36,19 @@ public class QueryExecutionInfo {
     @Getter
     private Map<Integer, Integer> pages;
 
+    @Getter
+    private PaginationInfo paginationInfo;
+
     @PostConstruct
     private void init() {
         computedTotal = getNumericAttribute(request, Constants.ATTRIBUTE_TOTAL);
         passedTotal = getNumericParameter(request,"-total");
         pageSize = (int) getNumericParameter(request,"-pageSize");
+        offset = (int) getNumericParameter(request, "-offset");
         executionTime = getNumericAttribute(request, Constants.ATTRIBUTE_EXECUTION_TIME);
         errorMessage = getStringAttribute(request, Constants.ATTRIBUTE_ERROR_MESSAGE);
+
+        paginationInfo = new PaginationInfo(computedTotal, offset, pageSize);
     }
 
     public long getTotal() {
@@ -69,6 +78,4 @@ public class QueryExecutionInfo {
         }
         return value.toString();
     }
-
-
 }
