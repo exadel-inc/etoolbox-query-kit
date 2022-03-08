@@ -1,60 +1,51 @@
 (function (document, $, ns) {
     'use strict';
 
-    const SAVED_QUERIES_KEY = 'eqk-saved-queries';
-    const LATEST_QUERIES_KEY = 'eqk-latest-queries';
+    const FAVOURITE_QUERIES = 'eqk-saved-queries';
+    const LATEST_QUERIES = 'eqk-latest-queries';
 
     const foundationUi = $(window).adaptTo('foundation-ui');
 
     let $selectedQuery = null;
 
     $(document).ready(function () {
-        $(document).on('query-kit:success-response', saveLatestQueriesToLocalStorage);
-        $('#saveQueryButton').on('click', saveSavedQueriesToLocalStorage);
+        $(document).on('query-kit:success-response', saveLatestQueries);
+        $('#saveQueryButton').on('click', saveFavouriteQueries);
     });
 
-    function saveSavedQueriesToLocalStorage() {
+    function saveFavouriteQueries() {
         const query = ns.getEditorValue();
-        const savedQueries = getQueriesFromLocalStorage(SAVED_QUERIES_KEY);
+        const favouriteQueries = ns.DataStore.getQueries(FAVOURITE_QUERIES);
 
-        if (savedQueries.includes(query)) {
+        if (favouriteQueries.includes(query)) {
             foundationUi.notify('', 'Query already exist in saved', 'error');
         } else if (query && query.trim().length > 0) {
-            savedQueries.push(query);
-            saveQueriesToLocalStorage(SAVED_QUERIES_KEY, savedQueries);
+            favouriteQueries.push(query);
+            ns.DataStore.setQueries(FAVOURITE_QUERIES, favouriteQueries);
             foundationUi.notify('Query successfully saved');
         }
     }
 
-    function saveLatestQueriesToLocalStorage() {
+    function saveLatestQueries() {
         const query = ns.getEditorValue();
-        const latestQueries = getQueriesFromLocalStorage(LATEST_QUERIES_KEY);
+        const latestQueries = ns.DataStore.getQueries(LATEST_QUERIES);
 
         latestQueries.unshift(query);
         if (latestQueries.length > 10) {
             latestQueries.pop();
         }
-        saveQueriesToLocalStorage(LATEST_QUERIES_KEY, latestQueries);
-    }
-
-    function saveQueriesToLocalStorage(key, queries) {
-        localStorage.setItem(key, JSON.stringify(queries));
-    }
-
-    function getQueriesFromLocalStorage(key) {
-        const storageItem = localStorage.getItem(key);
-        return storageItem ? JSON.parse(storageItem) : [];
+        ns.DataStore.setQueries(LATEST_QUERIES, latestQueries);
     }
 
     function deleteQueryInLocalStorage(key, index) {
-        const queries = getQueriesFromLocalStorage(key);
+        const queries = ns.DataStore.getQueries(key);
         queries.length > 0 && queries.splice(index, 1);
-        saveQueriesToLocalStorage(key, queries);
-        const table = key === SAVED_QUERIES_KEY ? $('#savedQueriesTable tbody') : $('#lastQueriesTable tbody');
-        populateTableValues(queries, table, key);
+        ns.DataStore.setQueries(key, queries);
+        const table = key === FAVOURITE_QUERIES ? $('#savedQueriesTable tbody') : $('#lastQueriesTable tbody');
+        populateTable(queries, table, key);
     }
 
-    function populateTableValues(queries, table, key) {
+    function populateTable(queries, table, key) {
         clearTable(table);
         queries && queries.length > 0 && queries.forEach(
             function (query, i) {
@@ -101,14 +92,14 @@
 
     $(document).on('coral-overlay:beforeopen', '#querySavedDialog', function () {
         $selectedQuery = null;
-        const savedQueries = getQueriesFromLocalStorage(SAVED_QUERIES_KEY);
-        populateTableValues(savedQueries, $('#savedQueriesTable tbody'), SAVED_QUERIES_KEY);
+        const savedQueries = ns.DataStore.getQueries(FAVOURITE_QUERIES);
+        populateTable(savedQueries, $('#savedQueriesTable tbody'), FAVOURITE_QUERIES);
     });
 
     $(document).on('coral-overlay:beforeopen', '#querySuccessfulDialog', function () {
         $selectedQuery = null;
-        const latestQueries = getQueriesFromLocalStorage(LATEST_QUERIES_KEY);
-        populateTableValues(latestQueries, $('#lastQueriesTable tbody'), LATEST_QUERIES_KEY);
+        const latestQueries = ns.DataStore.getQueries(LATEST_QUERIES);
+        populateTable(latestQueries, $('#lastQueriesTable tbody'), LATEST_QUERIES);
     });
 
     $(document).on('coral-table:change', '#savedQueriesTable, #lastQueriesTable', function (e) {

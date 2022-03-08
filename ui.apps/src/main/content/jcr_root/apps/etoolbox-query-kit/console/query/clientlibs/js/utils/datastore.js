@@ -33,6 +33,15 @@
         static setPageLimit(value) {
             localStorage.setItem(KEY_PAGE_LIMIT, value);
         };
+
+        static getQueries(key) {
+            const storageItem = localStorage.getItem(key);
+            return storageItem ? JSON.parse(storageItem) : [];
+        };
+
+        static setQueries(key, queries) {
+            localStorage.setItem(key, JSON.stringify(queries));
+        }
     }
 
     ns.DataStore = DataStore;
