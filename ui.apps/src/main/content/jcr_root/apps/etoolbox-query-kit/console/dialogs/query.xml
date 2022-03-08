@@ -40,7 +40,7 @@
                 variant="silent"/>
         <find
                 jcr:primaryType="nt:unstructured"
-                sling:resourceType="granite/ui/components/coral/foundation/button"
+                sling:resourceType="granite/ui/components/coral/foundation/collection/action"
                 granite:id="findButton"
                 action="eqk.query.toEditorAndRun"
                 text="Find"

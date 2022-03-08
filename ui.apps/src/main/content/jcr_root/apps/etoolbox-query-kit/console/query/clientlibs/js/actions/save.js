@@ -23,11 +23,11 @@
         const favouriteQueries = ns.DataStore.getQueries(FAVOURITE_QUERIES);
 
         if (favouriteQueries.includes(query)) {
-            foundationUi.notify('', 'Query already exist in saved', 'error');
+            foundationUi.notify('', 'Query has already been saved', 'notice');
         } else if (query && query.trim().length > 0) {
             favouriteQueries.push(query);
             ns.DataStore.setQueries(FAVOURITE_QUERIES, favouriteQueries);
-            foundationUi.notify('Query successfully saved');
+            foundationUi.notify('Query saved');
         }
     }
 
@@ -78,11 +78,9 @@
 
     function shareQuery() {
         const query = $selectedQuery.find('td')[0].innerText;
-        return function () {
-            foundationUi.notify('URL copied to clipboard');
-            const urlWithoutParams = window.location.origin + window.location.pathname;
-            navigator.clipboard.writeText(urlWithoutParams + '?query=' + encodeURIComponent(query));
-        };
+        foundationUi.notify('URL copied to clipboard');
+        const urlWithoutParams = window.location.origin + window.location.pathname;
+        navigator.clipboard.writeText(urlWithoutParams + '?query=' + encodeURIComponent(query));
     }
 
     function clearTable(table) {

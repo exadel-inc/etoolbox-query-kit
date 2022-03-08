@@ -5,8 +5,6 @@
 
     const DEFAULT_LIMIT = 2;
 
-    const foundationUi = $(window).adaptTo('foundation-ui');
-    const $executeButton = $('#btnExecute');
     const $editRowForm = $('#editRowDialogForm');
 
     let currentPage = 1;
@@ -22,6 +20,7 @@
         name: 'eqk.query.executeQuery',
         handler: function () {
             const query = ns.getEditorValue();
+            if (!query) return;
             updateUrlParams(query);
             currentPage = 1;
             totalCount = 0;
@@ -43,8 +42,8 @@
         $.ajax({
             url: TABLE_URL,
             type: 'GET',
-            data: {'-query': query, '-offset': offset, '-pageSize': limit, '-measure': !totalCount, '-typeaware':true},
-            beforeSend: function(){
+            data: { '-query': query, '-offset': offset, '-pageSize': limit, '-measure': !totalCount, '-typeaware': true },
+            beforeSend: function () {
                 foundationUi.wait();
             },
             success: function (data) {
@@ -85,42 +84,42 @@
             offset = (currentPage - 1) * limit;
         }
         const query = ns.getEditorValue();
-        updateResult(query)
+        updateResult(query);
     });
 
     $editRowForm.submit(function (e) {
         e.preventDefault();
-        var form = $(this);
-        var url = form.attr('action');
-        var data = form.serialize();
+        const form = $(this);
+        const url = form.attr('action');
+        const data = form.serialize();
         $.ajax({
             url: url,
-            type: "POST",
+            type: 'POST',
             data: data,
-            success: function (data) {
-                console.log('success');
+            success: function () {
+                foundationUi.notify('Row successfully edited');
             },
             error: function (error) {
-                console.log('LOL');
+                foundationUi.alert('EToolbox Query Kit', 'Edit row error' + (error.responseText ? ': ' + error.responseText : ''), 'error');
             }
-        })
+        });
     });
 
-    $(document).on("dblclick", ".result-table-cell", function(e) {
-        const property = e.target.getAttribute('data-name')
+    $(document).on('dblclick', '.result-table-cell', function (e) {
+        const property = e.target.getAttribute('data-name');
         const type = e.target.getAttribute('data-type');
         const path = e.target.getAttribute('data-path');
 
         $.ajax({
             url: '/apps/etoolbox-query-kit/console/dialogs/editCell.html',
             type: 'GET',
-            data: {'path': path, 'property': property, 'type': type},
-            beforeSend: function(){
+            data: { path: path, property: property, type: type },
+            beforeSend: function () {
                 foundationUi.wait();
             },
             success: function (data) {
                 const action = $(data).find('input[name="path"]')[0].value;
-                const dialogContent = $(data).find('div[id="editCellDialogContainer"]')
+                const dialogContent = $(data).find('div[id="editCellDialogContainer"]');
                 $('#editCellDialog form').attr('action', action);
                 $('#editCellDialog div[id="editCellDialogContainer"]').remove();
                 $('#editCellDialog div.coral-FixedColumn').append(dialogContent);
@@ -132,7 +131,7 @@
             complete: function () {
                 foundationUi.clearWait();
             }
-        })
+        });
     });
 
     function openDialog(dialogSelector) {
