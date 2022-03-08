@@ -27,7 +27,7 @@
                 <new
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/pulldown"
-                        granite:id="pulldownNew"
+                        granite:id="newPulldown"
                         text="New"
                         variant="primary">
                     <datasource jcr:primaryType="nt:unstructured"
@@ -36,39 +36,39 @@
                 <open
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/pulldown"
-                        granite:id="pulldownOpen"
+                        granite:id="openPulldown"
                         icon="open"
                         text="Open"
                         variant="actionBar">
                     <items jcr:primaryType="nt:unstructured">
-                        <saved
+                        <favourites
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
-                                granite:id="btnOpenSaved"
+                                granite:id="openFavouritesQueriesButton"
                                 target=".eqk-ui"
                                 action="foundation.dialog"
                                 text="Saved...">
                             <data jcr:primaryType="nt:unstructured"
                                   nesting="hide"
                                   src.url="/mnt/overlay/etoolbox-query-kit/console/dialogs/saved-queries.html"/>
-                        </saved>
-                        <lastSuccessful
+                        </favourites>
+                        <latest
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
-                                granite:id="btnOpenLastSuccessful"
+                                granite:id="openLatestQueriesButton"
                                 target=".eqk-ui"
                                 action="foundation.dialog"
                                 text="Last Successful...">
                             <data jcr:primaryType="nt:unstructured"
                                   nesting="hide"
                                   src.url="/mnt/overlay/etoolbox-query-kit/console/dialogs/successful-queries.html"/>
-                        </lastSuccessful>
+                        </latest>
                     </items>
                 </open>
                 <tools
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/pulldown"
-                        granite:id="pulldownTools"
+                        granite:id="toolsPulldown"
                         icon="actions"
                         text="Tools"
                         variant="actionBar">
@@ -76,7 +76,7 @@
                         <settings
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
-                                granite:id="btnOpenSettings"
+                                granite:id="openSettingsButton'"
                                 target=".eqk-ui"
                                 action="foundation.dialog"
                                 text="Settings...">
@@ -150,20 +150,20 @@
                                         <execute
                                                 jcr:primaryType="nt:unstructured"
                                                 sling:resourceType="granite/ui/components/coral/foundation/button"
-                                                granite:id="executeBtn"
+                                                granite:id="executeQueryButton"
                                                 type="submit"
                                                 variant="primary"
                                                 text="Execute"/>
                                         <save
                                                 jcr:primaryType="nt:unstructured"
                                                 sling:resourceType="granite/ui/components/coral/foundation/button"
-                                                granite:id="saveBtn"
+                                                granite:id="saveQueryButton"
                                                 icon="save"
                                                 variant="secondary"/>
                                         <share
                                                 jcr:primaryType="nt:unstructured"
                                                 sling:resourceType="granite/ui/components/coral/foundation/button"
-                                                granite:id="shareBtn"
+                                                granite:id="shareQueryButton"
                                                 icon="share"
                                                 variant="secondary"/>
                                     </items>
@@ -174,7 +174,7 @@
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/container"
                                 granite:class="column column-right"
-                                granite:id="columnResult"
+                                granite:id="resultsColumn"
                                 margin="{Boolean}true">
                             <items jcr:primaryType="nt:unstructured">
                                 <table

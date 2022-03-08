@@ -15,7 +15,7 @@
     const foundationUi = $(window).adaptTo('foundation-ui');
 
     $(document).ready(function () {
-        const $executeButton = $('#executeBtn');
+        const $executeButton = $('#executeQueryButton');
         $executeButton.on('click', function () {
             const query = ns.getEditorValue();
             updateUrlParams(query);
@@ -71,7 +71,7 @@
 
     function updateTable($table) {
         $('#resultsTable').remove();
-        $('#columnResult').prepend($table);
+        $('#resultsColumn').prepend($table);
     }
 
     function updatePagination() {

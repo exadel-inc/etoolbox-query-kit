@@ -4,7 +4,7 @@
     const foundationUi = $(window).adaptTo('foundation-ui');
 
     $(document).ready(function () {
-        $('#shareBtn').on('click', function () {
+        $('#shareQueryButton').on('click', function () {
             const query = ns.getEditorValue();
             if (query) {
                 foundationUi.notify('URL copied to clipboard');

@@ -10,7 +10,7 @@
 
     $(document).ready(function () {
         $(document).on('query-kit:success-response', saveLatestQueriesToLocalStorage);
-        $('#saveBtn').on('click', saveSavedQueriesToLocalStorage);
+        $('#saveQueryButton').on('click', saveSavedQueriesToLocalStorage);
     });
 
     function saveSavedQueriesToLocalStorage() {
