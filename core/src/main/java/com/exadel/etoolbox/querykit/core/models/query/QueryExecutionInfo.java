@@ -9,6 +9,7 @@ import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.SlingObject;
 
 import javax.annotation.PostConstruct;
+import java.util.Map;
 
 @Model(adaptables = SlingHttpServletRequest.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public class QueryExecutionInfo {
@@ -16,8 +17,15 @@ public class QueryExecutionInfo {
     @SlingObject
     private SlingHttpServletRequest request;
 
+    private long computedTotal;
+
+    private long passedTotal;
+
     @Getter
-    private long total;
+    private int pageSize;
+
+    @Getter
+    private int offset;
 
     @Getter
     private long executionTime;
@@ -25,23 +33,43 @@ public class QueryExecutionInfo {
     @Getter
     private String errorMessage;
 
+    @Getter
+    private PaginationInfo paginationInfo;
+
     @PostConstruct
     private void init() {
-        total = getNumericValue(request, Constants.ATTRIBUTE_TOTAL);
-        executionTime = getNumericValue(request, Constants.ATTRIBUTE_EXECUTION_TIME);
-        errorMessage = getStringValue(request, Constants.ATTRIBUTE_ERROR_MESSAGE);
+        computedTotal = getNumericAttribute(request, Constants.ATTRIBUTE_TOTAL);
+        passedTotal = getNumericParameter(request,"-total");
+        pageSize = (int) getNumericParameter(request,"-pageSize");
+        offset = (int) getNumericParameter(request, "-offset");
+        executionTime = getNumericAttribute(request, Constants.ATTRIBUTE_EXECUTION_TIME);
+        errorMessage = getStringAttribute(request, Constants.ATTRIBUTE_ERROR_MESSAGE);
+
+        paginationInfo = new PaginationInfo(computedTotal, offset, pageSize);
     }
 
-    private static long getNumericValue(SlingHttpServletRequest request, String attribute) {
-        Object value = request.getAttribute(attribute);
+    public long getTotal() {
+        return computedTotal > 0 ? computedTotal : passedTotal;
+    }
+
+    private static long getNumericAttribute(SlingHttpServletRequest request, String name) {
+        Object value = request.getAttribute(name);
         if (value == null || !StringUtils.isNumeric(value.toString())) {
             return 0L;
         }
         return Long.parseLong(value.toString());
     }
 
-    private static String getStringValue(SlingHttpServletRequest request, String attribute) {
-        Object value = request.getAttribute(attribute);
+    private static long getNumericParameter(SlingHttpServletRequest request, String name) {
+        String value = request.getParameter(name);
+        if (!StringUtils.isNumeric(value)) {
+            return 0L;
+        }
+        return Long.parseLong(value);
+    }
+
+    private static String getStringAttribute(SlingHttpServletRequest request, String name) {
+        Object value = request.getAttribute(name);
         if (value == null) {
             return StringUtils.EMPTY;
         }

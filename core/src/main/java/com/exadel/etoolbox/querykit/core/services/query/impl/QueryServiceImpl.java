@@ -44,7 +44,7 @@ public class QueryServiceImpl extends QueryServiceBase implements QueryService {
         try {
             SearchRequest effectiveRequest = convertToSql2IfNeeded(request);
             Executor queryExecutor = pickExecutor(effectiveRequest);
-            return supplier.apply(request, queryExecutor);
+            return supplier.apply(effectiveRequest, queryExecutor);
         } catch (Exception e) {
             log.error("Could not execute query {}", request.getStatement(), e);
             return SearchResult.error(request, "Could not execute: " + e.getMessage());

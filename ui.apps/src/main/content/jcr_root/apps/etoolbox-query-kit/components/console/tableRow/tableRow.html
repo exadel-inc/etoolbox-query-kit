@@ -1,9 +1,18 @@
-<tr selectable is="coral-table-row" class="foundation-collection-navigator"
+<sly data-sly-use.row="com.exadel.etoolbox.querykit.core.models.query.TableRowInfo"/>
+<tr is="coral-table-row" class="foundation-collection-navigator"
     data-foundation-collection-navigator-href="#">
-    <sly data-sly-list="${properties}">
-        <td class="result-table-cell" is="coral-table-cell" data-name="${item}" data-path="${properties.path}">
+    <td is="coral-table-cell">
+        <coral-checkbox coral-table-rowselect/>
+    </td>
+    <sly data-sly-list.cellName="${row.cells}">
+        <td class="result-table-cell"
+            is="coral-table-cell"
+            data-name="${cellName}"
+            data-path="${row.cells[cellName].path}"
+            data-type="${row.cells[cellName].type}"
+            data-editable="${row.cells[cellName].path} ? 'true' : 'false'">
         <span>
-           ${properties[item]}
+           ${row.cells[cellName].value}
         </span>
         </td>
     </sly>
