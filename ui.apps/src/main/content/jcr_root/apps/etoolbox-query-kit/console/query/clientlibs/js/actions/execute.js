@@ -12,18 +12,19 @@
     let totalCount;
     let pageCount;
 
+    const registry = $(window).adaptTo('foundation-registry');
     const foundationUi = $(window).adaptTo('foundation-ui');
 
-    $(document).ready(function () {
-        const $executeButton = $('#executeQueryButton');
-        $executeButton.on('click', function () {
+    registry.register('foundation.collection.action.action', {
+        name: 'eqk.query.executeQuery',
+        handler: function () {
             const query = ns.getEditorValue();
             updateUrlParams(query);
             currentPage = 1;
             totalCount = 0;
             offset = 0;
             updateResult(query);
-        });
+        }
     });
 
     function updateUrlParams(query) {
@@ -39,7 +40,7 @@
         $.ajax({
             url: TABLE_URL,
             type: 'GET',
-            data: { '-query': query, '-offset': offset, '-limit': limit, '-measure': !totalCount },
+            data: {'-query': query, '-offset': offset, '-limit': limit, '-measure': !totalCount},
             beforeSend: function () {
                 foundationUi.wait();
             },

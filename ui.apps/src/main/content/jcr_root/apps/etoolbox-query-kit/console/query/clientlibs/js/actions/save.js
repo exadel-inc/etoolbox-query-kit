@@ -4,13 +4,18 @@
     const FAVOURITE_QUERIES = 'eqk-saved-queries';
     const LATEST_QUERIES = 'eqk-latest-queries';
 
+    const registry = $(window).adaptTo('foundation-registry');
     const foundationUi = $(window).adaptTo('foundation-ui');
 
     let $selectedQuery = null;
 
+    registry.register('foundation.collection.action.action', {
+        name: 'eqk.query.saveQuery',
+        handler: saveFavouriteQueries
+    });
+
     $(document).ready(function () {
         $(document).on('query-kit:success-response', saveLatestQueries);
-        $('#saveQueryButton').on('click', saveFavouriteQueries);
     });
 
     function saveFavouriteQueries() {
