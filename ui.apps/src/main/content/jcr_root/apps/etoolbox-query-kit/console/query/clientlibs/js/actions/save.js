@@ -46,7 +46,7 @@
         const queries = ns.DataStore.getQueries(key);
         queries.length > 0 && queries.splice(index, 1);
         ns.DataStore.setQueries(key, queries);
-        const table = key === FAVOURITE_QUERIES ? $('#savedQueriesTable tbody') : $('#lastQueriesTable tbody');
+        const table = key === FAVOURITE_QUERIES ? $('#favouriteQueriesTable tbody') : $('#latestQueriesTable tbody');
         populateTable(queries, table, key);
     }
 
@@ -98,16 +98,16 @@
     $(document).on('coral-overlay:beforeopen', '#querySavedDialog', function () {
         $selectedQuery = null;
         const savedQueries = ns.DataStore.getQueries(FAVOURITE_QUERIES);
-        populateTable(savedQueries, $('#savedQueriesTable tbody'), FAVOURITE_QUERIES);
+        populateTable(savedQueries, $('#favouriteQueriesTable tbody'), FAVOURITE_QUERIES);
     });
 
     $(document).on('coral-overlay:beforeopen', '#querySuccessfulDialog', function () {
         $selectedQuery = null;
         const latestQueries = ns.DataStore.getQueries(LATEST_QUERIES);
-        populateTable(latestQueries, $('#lastQueriesTable tbody'), LATEST_QUERIES);
+        populateTable(latestQueries, $('#latestQueriesTable tbody'), LATEST_QUERIES);
     });
 
-    $(document).on('coral-table:change', '#savedQueriesTable, #lastQueriesTable', function (e) {
+    $(document).on('coral-table:change', '#favouriteQueriesTable, #latestQueriesTable', function (e) {
         const selectedItem = e.target.selectedItem;
         if (selectedItem) {
             toggleActionBtnsDisabledState(false);
