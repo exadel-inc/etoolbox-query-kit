@@ -95,13 +95,13 @@
         $('.share-query-button').prop('disabled', value);
     }
 
-    $(document).on('coral-overlay:beforeopen', '#querySavedDialog', function () {
+    $(document).on('coral-overlay:beforeopen', '#favouriteQueriesDialog', function () {
         $selectedQuery = null;
         const savedQueries = ns.DataStore.getQueries(FAVOURITE_QUERIES);
         populateTable(savedQueries, $('#favouriteQueriesTable tbody'), FAVOURITE_QUERIES);
     });
 
-    $(document).on('coral-overlay:beforeopen', '#querySuccessfulDialog', function () {
+    $(document).on('coral-overlay:beforeopen', '#latestQueriesDialog', function () {
         $selectedQuery = null;
         const latestQueries = ns.DataStore.getQueries(LATEST_QUERIES);
         populateTable(latestQueries, $('#latestQueriesTable tbody'), LATEST_QUERIES);
