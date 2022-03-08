@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class Constants {
 
-    public static final String ATTRIBUTE_ERROR_MESSAGE = "eqk-executionTime";
+    public static final String ATTRIBUTE_ERROR_MESSAGE = "eqk-errorMessage";
     public static final String ATTRIBUTE_EXECUTION_TIME = "eqk-executionTime";
     public static final String ATTRIBUTE_TOTAL = "eqk-total";
 

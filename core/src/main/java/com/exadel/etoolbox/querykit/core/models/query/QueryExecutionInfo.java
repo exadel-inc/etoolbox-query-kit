@@ -34,9 +34,6 @@ public class QueryExecutionInfo {
     private String errorMessage;
 
     @Getter
-    private Map<Integer, Integer> pages;
-
-    @Getter
     private PaginationInfo paginationInfo;
 
     @PostConstruct
@@ -65,7 +62,7 @@ public class QueryExecutionInfo {
 
     private static long getNumericParameter(SlingHttpServletRequest request, String name) {
         String value = request.getParameter(name);
-        if (value == null || !StringUtils.isNumeric(value.toString())) {
+        if (!StringUtils.isNumeric(value)) {
             return 0L;
         }
         return Long.parseLong(value);

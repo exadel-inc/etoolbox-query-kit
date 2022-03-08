@@ -18,12 +18,14 @@ public class TableRowInfo {
     @SlingObject
     private Resource resource;
 
-    @Getter
-    private Map<String, TableCellInfo> cells;
+    @Getter(lazy = true)
+    private final Map<String, TableCellInfo> cells = prepareCells();
 
-    @PostConstruct
-    private void init() {
-        cells = new LinkedHashMap<>();
+    private Map<String, TableCellInfo> prepareCells() {
+        Map<String, TableCellInfo> cells = new LinkedHashMap<>();
+        if (resource == null) {
+            return cells;
+        }
         for(String key : resource.getValueMap().keySet()) {
             if (!StringUtils.contains(key, Constants.DOUBLE_AT)) {
                 cells.put(key, new TableCellInfo(resource.getValueMap().get(key)));
@@ -41,6 +43,7 @@ public class TableRowInfo {
                 });
             }
         }
+        return cells;
     }
 
     private static String extractPropertyName(String value) {
