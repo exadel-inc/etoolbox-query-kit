@@ -11,17 +11,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.exadel.etoolbox.querykit.core.models.search;
+package com.exadel.etoolbox.querykit.core.utils;
 
-import org.apache.commons.lang3.StringUtils;
+/**
+ * Triggers when an OSGi component matching the requirements cannot be found
+ */
+public class MissingComponentException extends RuntimeException {
 
-public enum QueryParsingFormat {
-    SQL, JSON;
-
-    public static QueryParsingFormat of(String value) {
-        if (StringUtils.equalsIgnoreCase(value, "json")) {
-            return JSON;
-        }
-        return SQL;
+    /**
+     * Creates a new instance
+     * @param message Exception message
+     */
+    public MissingComponentException(String message) {
+        super(message);
     }
 }
