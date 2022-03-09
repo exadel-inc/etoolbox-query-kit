@@ -44,26 +44,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * A {@link SearchItem} implementation for an item that can be rendered or modified in UI
+ */
 class TypeAwareSearchItem implements SearchItem {
 
+    /**
+     * Accesses the path associated with the current entry
+     */
     @Getter
     @Setter
     private String path;
 
     private Map<String, PropertyDefinition> properties;
 
+    /**
+     * Creates a new {@link TypeAwareSearchItem} instance
+     * @param path Path associated with the current entry
+     */
     public TypeAwareSearchItem(String path) {
         this(path, new HashMap<>());
     }
 
+    /**
+     * Creates a new {@link TypeAwareSearchItem} instance
+     * @param path       Path associated with the current entry
+     * @param properties Properties which the current entry will report
+     */
     public TypeAwareSearchItem(String path, Map<String, Object> properties) {
         this(path, properties, path);
     }
 
-    /* ------------------------
-       Common interface methods
-       ------------------------ */
-
+    /**
+     * Creates a new {@link TypeAwareSearchItem} instance
+     * @param rootPath       JCR path associated with the search item in a whole
+     * @param properties     Properties which the current entry will report
+     * @param propertiesPath JCR path associated with the particular properties of the item
+     */
     public TypeAwareSearchItem(String rootPath, Map<String, Object> properties, String propertiesPath) {
         this.path = rootPath;
         if (MapUtils.isEmpty(properties)) {
@@ -77,11 +94,21 @@ class TypeAwareSearchItem implements SearchItem {
                 ValueUtil.detectType(value), ValueUtil.detectMultivalue(value)));
     }
 
+    /* ------------------------
+       Common interface methods
+       ------------------------ */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<String> getPropertyNames() {
         return properties != null ? properties.keySet() : Collections.emptySet();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T getProperty(String name, Class<T> type) {
         if (name == null || type == null) {
@@ -94,6 +121,9 @@ class TypeAwareSearchItem implements SearchItem {
         return type.cast(result.getValue());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object getProperty(String name) {
         if (name == null) {
@@ -106,11 +136,18 @@ class TypeAwareSearchItem implements SearchItem {
         return result.getValue();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void putProperty(String name, Object value) {
         putProperty(name, value, null, 0, false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void putProperty(String name, Object value, String path, int type, boolean multiple) {
         if (properties == null) {
             properties = new HashMap<>();
@@ -118,6 +155,9 @@ class TypeAwareSearchItem implements SearchItem {
         properties.put(name, new PropertyDefinition(value, path, type, multiple));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void clearProperties() {
         if (properties == null) {
@@ -130,6 +170,9 @@ class TypeAwareSearchItem implements SearchItem {
        Serialization
        ------------- */
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Resource toVirtualResource(ResourceResolver resourceResolver, ColumnCollection columns, String resourceType) {
         Map<String, Object> valueProperties = SearchItem.super.toVirtualResource(resourceResolver, columns, resourceType).getValueMap();
@@ -165,6 +208,9 @@ class TypeAwareSearchItem implements SearchItem {
                 valueMap);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public JsonElement toJson(JsonSerializationContext serializer, ColumnCollection data) {
         JsonObject result = new JsonObject();

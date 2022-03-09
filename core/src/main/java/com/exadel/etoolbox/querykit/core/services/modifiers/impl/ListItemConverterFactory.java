@@ -23,6 +23,10 @@ import org.osgi.service.component.annotations.Component;
 
 import java.util.function.UnaryOperator;
 
+/**
+ * Implements {@link SearchItemConverterFactory} to transform the search results into items that conform to Granite
+ * Select's datasource entries
+ */
 @Component
 public class ListItemConverterFactory implements SearchItemConverterFactory {
 
@@ -31,11 +35,17 @@ public class ListItemConverterFactory implements SearchItemConverterFactory {
     private static final String PREFIX_APPS = "/apps/";
     private static final String FALLBACK_TITLE_FORMAT = "[%s]";
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getName() {
         return NAME;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UnaryOperator<SearchItem> getModifier(SearchRequest request) {
         return new Modifier(request);

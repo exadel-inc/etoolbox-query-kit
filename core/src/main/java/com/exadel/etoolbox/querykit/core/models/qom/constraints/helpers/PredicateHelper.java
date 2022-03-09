@@ -33,12 +33,25 @@ import java.util.Map;
 import static org.apache.jackrabbit.commons.query.qom.Operator.EQ;
 import static org.apache.jackrabbit.commons.query.qom.Operator.LIKE;
 
+/**
+ * Contains utility methods for composing JCR node predicates out of constraint adapters
+ * <p><u>Note</u>: this class is not a part of a public API</p>
+ */
 @UtilityClass
 @Slf4j
 public class PredicateHelper {
 
     private static final String WILDCARD = "%";
 
+    /**
+     * Compares the two operands in the given evaluation context with the provided operator. Returns a boolean value
+     * manifesting the result of the comparison
+     * @param context  {@link EvaluationContext} instance
+     * @param left     Left operand
+     * @param operator A string representing the operator in "real-world" notation
+     * @param right    Right operand
+     * @return True or false
+     */
     public static boolean compare(
             EvaluationContext context,
             DynamicOperandAdapter left,
@@ -49,6 +62,15 @@ public class PredicateHelper {
         return compare(leftValue, operator, right, context.getBindVariables());
     }
 
+    /**
+     * Compares a property selector against a static operand in the given evaluation context with the provided operator.
+     * Returns a boolean value manifesting the result of the comparison
+     * @param context  {@link EvaluationContext} instance
+     * @param selector Property selector
+     * @param operator A string representing the operator in "real-world" notation
+     * @param right    Right (static) operand
+     * @return True or false
+     */
     public static boolean compare(
             EvaluationContext context,
             String selector,
@@ -63,6 +85,15 @@ public class PredicateHelper {
         return compare(leftValue, operator, right, context.getBindVariables());
     }
 
+    /**
+     * Compares an arbitrary value a static operand in the given evaluation context with the provided operator. Returns
+     * a boolean value manifesting the result of the comparison
+     * @param leftValue     Left (arbitrary) operand
+     * @param operator      A string representing the operator in "real-world" notation
+     * @param right         Right (static) operand
+     * @param bindVariables Query's bind variables used to compose the static operand
+     * @return True or false
+     */
     public static boolean compare(
             Object leftValue,
             String operator,

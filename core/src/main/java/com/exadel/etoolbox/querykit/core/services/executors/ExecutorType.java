@@ -13,6 +13,9 @@
  */
 package com.exadel.etoolbox.querykit.core.services.executors;
 
+/**
+ * Enumerates the available query executor types
+ */
 public enum ExecutorType {
     QOM, SQL, TRAVERSAL
 }

@@ -15,6 +15,9 @@ package com.exadel.etoolbox.querykit.core.utils;
 
 import lombok.experimental.UtilityClass;
 
+/**
+ * Contains literal values used across the application
+ */
 @UtilityClass
 public class Constants {
 

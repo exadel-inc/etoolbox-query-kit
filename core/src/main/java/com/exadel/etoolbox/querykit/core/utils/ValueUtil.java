@@ -26,9 +26,18 @@ import javax.jcr.ValueFactory;
 import java.util.Calendar;
 import java.util.Collection;
 
+/**
+ * Contains utility methods for manipulating JCR values
+ */
 @UtilityClass
 public class ValueUtil {
 
+    /**
+     * Retrieves an arbitrary value out of the given JCR {@link Property}
+     * @param source {@code Property} instance
+     * @return Nullable object
+     * @throws RepositoryException If the value retrieval failed
+     */
     public static Object extractValue(Property source) throws RepositoryException {
         if (source == null) {
             return null;
@@ -44,24 +53,44 @@ public class ValueUtil {
         return result;
     }
 
+    /**
+     * Retrieves an arbitrary value out of the given JCR {@link Value}
+     * @param source {@code Value} instance
+     * @return Nullable object
+     * @throws RepositoryException If the value retrieval failed
+     */
     public static Object extractValue(Value source) throws RepositoryException {
         if (source == null) {
             return null;
         }
         int type = source.getType();
         switch (type) {
-            case PropertyType.BINARY: return source.getBinary();
-            case PropertyType.BOOLEAN: return source.getBoolean();
-            case PropertyType.DATE: return source.getDate();
-            case PropertyType.DECIMAL: return source.getDecimal();
-            case PropertyType.DOUBLE: return source.getDouble();
-            case PropertyType.LONG: return source.getLong();
+            case PropertyType.BINARY:
+                return source.getBinary();
+            case PropertyType.BOOLEAN:
+                return source.getBoolean();
+            case PropertyType.DATE:
+                return source.getDate();
+            case PropertyType.DECIMAL:
+                return source.getDecimal();
+            case PropertyType.DOUBLE:
+                return source.getDouble();
+            case PropertyType.LONG:
+                return source.getLong();
             case PropertyType.STRING:
-            case PropertyType.NAME: return source.getString();
-            default: return null;
+            case PropertyType.NAME:
+                return source.getString();
+            default:
+                return null;
         }
     }
 
+    /**
+     * Retrieves the type of the provided object. The type is selected among the managed {@link PropertyType}-s
+     * @param value Arbitrary value
+     * @return Int value; one og the {@code PropertyType}-s
+     * @see PropertyType
+     */
     public static int detectType(Object value) {
         if (value == null) {
             return PropertyType.UNDEFINED;
@@ -84,6 +113,11 @@ public class ValueUtil {
         return PropertyType.UNDEFINED;
     }
 
+    /**
+     * Gets whether the provided object is a multi-value, i.e., an array-like type
+     * @param value Arbitrary value
+     * @return True or false
+     */
     public static boolean detectMultivalue(Object value) {
         if (value == null) {
             return false;
@@ -92,6 +126,12 @@ public class ValueUtil {
                 || value.getClass().isArray();
     }
 
+    /**
+     * Creates a new <u>not</u> array-like {@link Value} out of the provided arbitrary object
+     * @param source       Arbitrary value
+     * @param valueFactory {@link ValueFactory} instance
+     * @return Non-null {@code Value} object
+     */
     public static Value createFlatValue(Object source, ValueFactory valueFactory) {
         if (source == null) {
             return valueFactory.createValue(StringUtils.EMPTY);
@@ -105,6 +145,12 @@ public class ValueUtil {
         return valueFactory.createValue(StringUtils.EMPTY);
     }
 
+    /**
+     * Creates a new {@link Value} out of the provided arbitrary object
+     * @param source       Arbitrary value
+     * @param valueFactory {@link ValueFactory} instance
+     * @return Non-null {@code Value} object
+     */
     public static Value createValue(Object source, ValueFactory valueFactory) {
         if (source == null) {
             return valueFactory.createValue(StringUtils.EMPTY);

@@ -13,7 +13,21 @@
  */
 package com.exadel.etoolbox.querykit.core.utils;
 
+/**
+ * Represents a functional monad based upon a {@code BiFunction} that throws an exception
+ * @param <T> Type of the first argument
+ * @param <U> Type of the second argument
+ * @param <R> Type of the returned value
+ */
 @FunctionalInterface
 public interface TryBiFunction<T, U, R> {
+
+    /**
+     * Executes a bi-argument function
+     * @param t First argument
+     * @param u Second argument
+     * @return {@code R}-typed value
+     * @throws Exception If the enclosed code produces an exception
+     */
     R apply(T t, U u) throws Exception;
 }

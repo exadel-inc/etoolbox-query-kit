@@ -24,25 +24,42 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+/**
+ * Represents a {@link ConstraintAdapter} for the negation operator
+ */
 public class NotAdapter extends ConstraintAdapter {
 
     private final ConstraintAdapter constraint;
 
+    /**
+     * Creates a new constraint adapter instance
+     * @param original Original {@link Constraint} instance
+     * @param context  {@link QomAdapterContext} used for creating the adapters tree
+     */
     NotAdapter(Not original, QomAdapterContext context) {
         super(original, "NOT");
         constraint = ConstraintAdapter.from(original.getConstraint(), context);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Constraint getConstraint(QueryObjectModelFactory factory, Map<String, Object> arguments) throws RepositoryException {
         return constraint.getConstraint(factory, arguments);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Predicate<EvaluationContext> getPredicate() {
         return context -> !constraint.getPredicate().test(context);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void visit(Consumer<ConstraintAdapter> consumer) {
         consumer.accept(this);

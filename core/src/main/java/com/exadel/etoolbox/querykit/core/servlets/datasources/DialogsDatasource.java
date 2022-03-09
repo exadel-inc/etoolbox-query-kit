@@ -29,6 +29,9 @@ import java.util.List;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_PATHS;
 
+/**
+ * Serves requests for a list of available query dialogs
+ */
 @Component(
         service = Servlet.class,
         property = {
@@ -40,6 +43,12 @@ public class DialogsDatasource extends SlingSafeMethodsServlet {
     private static final String FOLDER_DIALOGS = "/conf/etoolbox-query-kit/settings/dialogs";
     private static final String FOLDER_CUSTOM_DIALOGS = "/conf/etoolbox-query-kit/settings/custom-dialogs";
 
+    /**
+     * Processes HTTP {@code GET} requests. Sets the list of retrieved dialogs as a request attribute per the format of
+     * Granite items datasource
+     * @param request  {@code SlingHttpServletRequest} object
+     * @param response {@code slingHttpServletResponse} object
+     */
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) {
         List<Resource> components = new ArrayList<>();

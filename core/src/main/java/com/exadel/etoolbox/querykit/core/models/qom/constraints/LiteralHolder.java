@@ -13,7 +13,14 @@
  */
 package com.exadel.etoolbox.querykit.core.models.qom.constraints;
 
+/**
+ * Represents a constraint that contains a literal
+ */
 public interface LiteralHolder {
 
+    /**
+     * Retrieves the stringified literal
+     * @return String value
+     */
     String getLiteralValue();
 }

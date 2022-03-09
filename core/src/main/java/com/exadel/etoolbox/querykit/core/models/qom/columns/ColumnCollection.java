@@ -20,12 +20,28 @@ import javax.jcr.query.qom.Column;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Presents a collection of {@link Column} objects used to populate query results together with utility accessors to the
+ * columns' main properties
+ */
 public interface ColumnCollection {
 
+    /**
+     * Retrieves a list of {@code Column} objects
+     * @return {@code List} instance; might be an empty non-null list
+     */
     List<Column> getItems();
 
+    /**
+     * Retrieves a list of strings representing selectors of columns that are presented in this collection
+     * @return {@code List} instance; might be an empty non-null list
+     */
     List<String> getSelectors();
 
+    /**
+     * Retrieves a list of strings representing names of columns that are presented in this collection
+     * @return {@code List} instance; might be an empty non-null list
+     */
     default List<String> getColumnNames() {
         return CollectionUtils.emptyIfNull(getItems())
                 .stream()
@@ -34,6 +50,9 @@ public interface ColumnCollection {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves a list of strings representing names of columns that are presented in this collection
+     * @return {@code List} instance; might be an empty non-null list
+     */
     List<String> getPropertyNames();
-
 }

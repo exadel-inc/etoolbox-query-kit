@@ -18,15 +18,32 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Contains the data needed to render the query results table cell
+ */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
 public class TableCellInfo {
 
+    /**
+     * Gets the {@code name} attribute of the cell
+     */
+    private final String name;
+
+    /**
+     * Gets the value of the cell
+     */
     private final Object value;
 
+    /**
+     * Gets or sets the {@code path} attribute of the cell
+     */
     @Setter(AccessLevel.PACKAGE)
     private String path;
 
+    /**
+     * Gets or sets the {@code type} attribute of the cell
+     */
     @Setter(AccessLevel.PACKAGE)
     private String type;
 }

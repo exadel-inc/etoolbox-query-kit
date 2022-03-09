@@ -13,9 +13,20 @@
  */
 package com.exadel.etoolbox.querykit.core.models.query;
 
+/**
+ * Provides a string representation of a parsed query in one of the common formats
+ */
 public interface ParsedQueryInfo {
 
+    /**
+     * Retrieves a JSON representation of the query
+     * @return String value
+     */
     String toJson();
 
+    /**
+     * Retrieves a representation of the query in the form of JCR-SQL2 string
+     * @return String value
+     */
     String toSqlString();
 }

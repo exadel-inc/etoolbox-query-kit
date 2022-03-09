@@ -17,10 +17,25 @@ import com.exadel.etoolbox.querykit.core.models.search.QueryType;
 import com.exadel.etoolbox.querykit.core.utils.ConverterException;
 import org.apache.sling.api.resource.ResourceResolver;
 
+/**
+ * Converts a query statement into the requested format
+ */
 public interface QueryConverter {
 
+    /**
+     * Retrieves the {@link QueryType} the current converter supports
+     * @return One of the {@code QueryType} values
+     */
     QueryType getSourceType();
 
+    /**
+     * Converts the provided query statement
+     * @param statement        Statements string; a non-blank value is expected
+     * @param resourceResolver {@code ResourceResolver} object used to process queries
+     * @param type             {@code Class<?>} reference manifesting the class of the conversion result
+     * @param <T>              Type of result
+     * @return {@code T}-typed value or null (implementation-dependent)
+     * @throws ConverterException In case the conversion failed
+     */
     <T> T convert(String statement, ResourceResolver resourceResolver, Class<T> type) throws ConverterException;
-
 }

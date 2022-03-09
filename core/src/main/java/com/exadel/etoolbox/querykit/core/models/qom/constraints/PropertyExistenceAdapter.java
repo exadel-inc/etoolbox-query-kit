@@ -22,24 +22,37 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import java.util.Map;
 import java.util.function.Predicate;
 
+/**
+ * Represents a {@link ConstraintAdapter} for the {@code IS NULL} / {@code IS NOT NULL} operators
+ */
 @Getter
 public class PropertyExistenceAdapter extends ConstraintAdapter {
 
     private final String selector;
     private final String property;
 
+    /**
+     * Creates a new constraint adapter instance
+     * @param original Original {@link Constraint} instance
+     */
     PropertyExistenceAdapter(PropertyExistence original) {
         super(original, "EXIST");
         selector = original.getSelectorName();
         property = original.getPropertyName();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Constraint getConstraint(QueryObjectModelFactory factory, Map<String, Object> arguments) {
         // No interpolation required
         return getConstraint();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Predicate<EvaluationContext> getPredicate() {
         return context -> context.getProperty(selector, property) != null;

@@ -17,13 +17,39 @@ import com.exadel.etoolbox.querykit.core.models.query.ParsedQueryInfo;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.models.search.SearchResult;
 
+/**
+ * Parses and/or executes the query statement as defined by the provided {@link SearchRequest}
+ */
 public interface Executor {
 
+    /**
+     * Retrieves the type of the current executor
+     * @return One of {@link ExecutorType} values
+     */
     ExecutorType getType();
 
+    /**
+     * Parses the query statement as defined by the provided {@link SearchRequest}
+     * @param request {@code SearchRequest} object that contains the data for parsing
+     * @return {@link ParsedQueryInfo} instance
+     * @throws Exception In case of a failed parsing
+     */
     ParsedQueryInfo parse(SearchRequest request) throws Exception;
 
+    /**
+     * Parses and executes the query statement as defined by the provided {@link SearchRequest}
+     * @param request {@code SearchRequest} object that contains the data for parsing
+     * @return {@link SearchResult} instance
+     * @throws Exception In case of a failed parsing or execution
+     */
     SearchResult execute(SearchRequest request) throws Exception;
 
+    /**
+     * Parses the query statement as defined by the provided {@link SearchRequest} and imitates execution without actual
+     * results retrieving (can be useful for clearing out query model, retrieving available columns, etc.)
+     * @param request {@code SearchRequest} object that contains the data for parsing
+     * @return {@link SearchResult} instance
+     * @throws Exception In case of a failed parsing or execution
+     */
     SearchResult dryRun(SearchRequest request) throws Exception;
 }

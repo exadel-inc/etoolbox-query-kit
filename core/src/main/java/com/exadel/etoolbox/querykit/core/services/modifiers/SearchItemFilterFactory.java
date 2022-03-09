@@ -19,9 +19,22 @@ import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import javax.jcr.query.Row;
 import java.util.function.Predicate;
 
+/**
+ * Provides search item filters
+ */
 public interface SearchItemFilterFactory {
 
+    /**
+     * Retrieves the name associated with the current implementation
+     * @return String value, non-blank
+     */
     String getName();
 
+    /**
+     * Retrieves a filter instance
+     * @param request {@link SearchRequest} object
+     * @param columns {@link ColumnCollection} object
+     * @return A {@code Predicate} instance used to filter query result entries
+     */
     Predicate<Row> getFilter(SearchRequest request, ColumnCollection columns);
 }

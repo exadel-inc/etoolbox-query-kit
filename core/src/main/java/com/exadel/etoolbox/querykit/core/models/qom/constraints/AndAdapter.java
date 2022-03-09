@@ -25,18 +25,29 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+/**
+ * Represents a {@link ConstraintAdapter} for the logical {@code And} operator
+ */
 @Getter
 public class AndAdapter extends ConstraintAdapter implements JunctionConstraint {
 
     private final ConstraintAdapter constraint1;
     private final ConstraintAdapter constraint2;
 
+    /**
+     * Creates a new constraint adapter instance
+     * @param original Original {@link Constraint} instance
+     * @param context  {@link QomAdapterContext} used for creating the adapters tree
+     */
     AndAdapter(And original, QomAdapterContext context) {
         super(original, "AND");
         constraint1 = from(original.getConstraint1(), context);
         constraint2 = from(original.getConstraint2(), context);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Constraint getConstraint(QueryObjectModelFactory factory, Map<String, Object> arguments) throws RepositoryException {
         return factory.and(
@@ -44,11 +55,17 @@ public class AndAdapter extends ConstraintAdapter implements JunctionConstraint 
                 constraint2.getConstraint(factory, arguments));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Predicate<EvaluationContext> getPredicate() {
         return constraint1.getPredicate().and(constraint2.getPredicate());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void visit(Consumer<ConstraintAdapter> consumer) {
         consumer.accept(this);

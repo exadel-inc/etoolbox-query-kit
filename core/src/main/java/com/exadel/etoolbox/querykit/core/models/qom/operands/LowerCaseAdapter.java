@@ -14,18 +14,29 @@
 package com.exadel.etoolbox.querykit.core.models.qom.operands;
 
 import com.exadel.etoolbox.querykit.core.models.qom.EvaluationContext;
+import com.exadel.etoolbox.querykit.core.models.qom.constraints.ConstraintAdapter;
 
 import javax.jcr.query.qom.LowerCase;
 
+/**
+ * Represents a {@link DynamicOperandAdapter} for the {@code LOWER} function
+ */
 public class LowerCaseAdapter extends DynamicOperandAdapter {
 
     private final DynamicOperandAdapter operand;
 
+    /**
+     * Creates a new dynamic operand adapter instance
+     * @param original Original {@code DynamicOperand} object
+     */
     LowerCaseAdapter(LowerCase original) {
         super(original,"LOWER");
         operand = from(original.getOperand());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object getValue(EvaluationContext context) {
         Object result = operand.getValue(context);

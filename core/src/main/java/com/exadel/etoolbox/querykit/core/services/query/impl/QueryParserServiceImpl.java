@@ -29,18 +29,29 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 
 import java.util.List;
 
+/**
+ * Basic {@link QueryParserService} implementation
+ */
 @Component(service = QueryParserService.class)
-@Slf4j
 public class QueryParserServiceImpl extends QueryServiceBase implements QueryParserService {
 
+    /**
+     * {@inheritDoc}
+     */
     @Reference
     @Getter(AccessLevel.PACKAGE)
     private List<QueryConverter> converters;
 
+    /**
+     * {@inheritDoc}
+     */
     @Reference(cardinality = ReferenceCardinality.MULTIPLE)
     @Getter(AccessLevel.PACKAGE)
     private List<Executor> executors;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String parse(SearchRequest request) throws Exception {
         if (!request.isValid()) {
@@ -49,7 +60,7 @@ public class QueryParserServiceImpl extends QueryServiceBase implements QueryPar
         SearchRequest effectiveRequest = convertToSql2IfNeeded(request);
         Executor queryExecutor = pickExecutor(effectiveRequest);
         ParsedQueryInfo parsedQuery = queryExecutor.parse(effectiveRequest);
-        return request.getParsingFormat() == QueryParsingFormat.SQL
+        return request.getRenderingFormat() == QueryRenderingFormat.SQL
                 ? parsedQuery.toSqlString()
                 : parsedQuery.toJson();
     }

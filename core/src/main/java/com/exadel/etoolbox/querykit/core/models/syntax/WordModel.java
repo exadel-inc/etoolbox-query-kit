@@ -14,8 +14,8 @@
 package com.exadel.etoolbox.querykit.core.models.syntax;
 
 import com.exadel.etoolbox.querykit.core.utils.Constants;
+import com.exadel.etoolbox.querykit.core.utils.EscapingUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -26,10 +26,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
+/**
+ * Represents an arbitrary string as a sequence of delimited tokens. Used to extract particular sub-sequences honoring
+ * spaces and other delimiter symbols, as well as escaped literals that may contain delimiters inside
+ */
 @Slf4j
 public class WordModel {
     private static final int CHARACTER_COLON = ':';
@@ -40,12 +41,10 @@ public class WordModel {
     private static final int CHARACTER_SPACE = ' ';
     private static final int CHARACTER_UNDERSCORE = '_';
 
-    private static final Pattern ESCAPED_CHAR_PATTERN = Pattern.compile("__(\\d+)__");
-
     private static final Predicate<String> IS_NON_WORD = str -> StringUtils.isBlank(str) || Constants.COMMA.equals(str);
     private static final Predicate<String> IS_WORD = IS_NON_WORD.negate();
 
-    private static final String[] UNWANTED_SEQUENCES = new String[] {"''"};
+    private static final String[] UNWANTED_SEQUENCES = new String[]{"''"};
 
     private final List<String> elements;
 
@@ -53,44 +52,87 @@ public class WordModel {
 
     private int endPosition;
 
+    /**
+     * Creates a new {@link WordModel} instance
+     * @param value String to build this world model from
+     */
     public WordModel(String value) {
         this(getElements(value), 0, 0);
     }
 
+    /**
+     * Creates a new {@link WordModel} instance
+     * @param elements      Existing tokens, probably originating from another word model
+     * @param startPosition Start position in the list of tokens to pass into the new word model
+     * @param endPosition   End position in the list of tokens to pass into the new word model
+     */
     private WordModel(List<String> elements, int startPosition, int endPosition) {
         this.elements = elements;
         this.startPosition = startPosition;
         this.endPosition = endPosition > startPosition ? endPosition : elements.size();
     }
 
+    /**
+     * Gets the start position in the list of tokens associated with this word model
+     * @return Int value
+     */
     public int getStartPosition() {
         return Math.max(startPosition, 0);
     }
 
+    /**
+     * Gets the end position in the list of tokens associated with this word model
+     * @return Int value
+     */
     public int getEndPosition() {
         return Math.min(endPosition, elements.size());
     }
 
+    /**
+     * Moves the start and end positions in the list of tokens associated with this word model
+     * @param startDelta Amount of steps to move the start position
+     * @param endDelta   Amount of steps to move the end position
+     */
     public void inflate(int startDelta, int endDelta) {
         startPosition = Math.max(startPosition + startDelta, 0);
         endPosition = Math.min(endPosition + endDelta, elements.size());
     }
 
+    /**
+     * Gets whether the current word model is valid
+     * @return True or false
+     */
     public boolean isValid() {
         return elements != null
                 && getEndPosition() > getStartPosition();
     }
 
+    /**
+     * Gets whether the current word model contains <u>any</u> of the provided tokens
+     * @param value A variadic array of words
+     * @return True or false
+     */
     public boolean hasToken(String... value) {
         return hasToken(elt -> StringUtils.equalsAnyIgnoreCase(elt, value));
     }
 
+    /**
+     * Gets whether the current word model contains <u>any</u> tokens that satisfy the provided filter
+     * @param filter {@code Predicate} instance
+     * @return True or false
+     */
     public boolean hasToken(Predicate<String> filter) {
         return elements.subList(getStartPosition(), getEndPosition())
                 .stream()
                 .anyMatch(filter);
     }
 
+    /**
+     * Retrieves the nearest <u>word</u> (a non-blank string, or an escaped sling literal) situated at or <b>after</b>
+     * the given position
+     * @param position Int value
+     * @return New {@link WordModel} instance
+     */
     public WordModel extractWord(int position) {
         if (position >= getEndPosition() || position < getStartPosition()) {
             return null;
@@ -108,6 +150,12 @@ public class WordModel {
         return new WordModel(elements, currentPos, endPos);
     }
 
+    /**
+     * Retrieves the nearest <u>word</u> (a non-blank string, or an escaped sling literal) situated at or <b>before</b>
+     * the given position
+     * @param position Int value
+     * @return New {@link WordModel} instance
+     */
     public WordModel extractWordBackwards(int position) {
         if (position >= getEndPosition() || position <= getStartPosition()) {
             return null;
@@ -125,10 +173,23 @@ public class WordModel {
         return new WordModel(elements, endPos + 1, currentPos + 1);
     }
 
+    /**
+     * Extracts the sequence of words matching the pattern of a function situated anywhere within the current word
+     * model
+     * @param name Name of the function, a non-blank string is expected
+     * @return New {@link WordModel} instance
+     */
     public WordModel extractFunction(String name) {
         return extractFunction(name, getStartPosition());
     }
 
+    /**
+     * Extracts the sequence of words matching the pattern of a function situated within the current word model at or
+     * <u>after</u> the given position
+     * @param name     Name of the function, a non-blank string is expected
+     * @param position Int value
+     * @return New {@link WordModel} instance
+     */
     public WordModel extractFunction(String name, int position) {
         if (elements.isEmpty() || StringUtils.isBlank(name) || position >= getEndPosition()) {
             return null;
@@ -137,7 +198,7 @@ public class WordModel {
         if (hitPos == -1) {
             return null;
         }
-        WordModel closestBrackets = extractBrackets( hitPos + 1);
+        WordModel closestBrackets = extractBrackets(hitPos + 1);
         if (closestBrackets == null) {
             return null;
         }
@@ -166,6 +227,12 @@ public class WordModel {
         return null;
     }
 
+    /**
+     * Extracts the sequence of tokens situated between the provided "delimiting" tokens (such as brackets)
+     * @param opening Opening token
+     * @param closing Closing token
+     * @return New {@link WordModel} instance
+     */
     public WordModel extractBetween(String opening, String closing) {
         return extractBetween(opening, closing, getStartPosition());
     }
@@ -185,6 +252,11 @@ public class WordModel {
         return new WordModel(elements, startPosition + 1, endPosition);
     }
 
+    /**
+     * Splits the sequence of tokens with the provided splitting token
+     * @param splitter String value; a non-blank string is expected
+     * @return New {@link WordModel} instance
+     */
     public List<WordModel> split(String splitter) {
         if (elements.isEmpty()) {
             return Collections.emptyList();
@@ -207,10 +279,22 @@ public class WordModel {
         return result;
     }
 
+    /**
+     * Substitutes within the current instance all entries of the provided "nested" {@link WordModel} with the given
+     * replacement string
+     * @param searchPart  {@code WordModel} object representing the replaceable inner part
+     * @param replacement Replacement string
+     */
     public void replace(WordModel searchPart, String replacement) {
         replace(searchPart, new WordModel(replacement));
     }
 
+    /**
+     * Substitutes within the current instance all entries of the provided "nested" {@link WordModel} with the given
+     * replacement model
+     * @param searchPart  {@code WordModel} object representing the replaceable inner part
+     * @param replacement Replacement model
+     */
     public void replace(WordModel searchPart, WordModel replacement) {
         if (searchPart == null || !Objects.equals(elements, searchPart.elements) || !searchPart.isValid()) {
             return;
@@ -255,6 +339,10 @@ public class WordModel {
         return startPosition == 0 && endPosition == elements.size();
     }
 
+    /**
+     * Provides the string representation of the current word model
+     * @return String value
+     */
     @Override
     public String toString() {
         return String.join(StringUtils.EMPTY, elements.subList(getStartPosition(), getEndPosition()));
@@ -304,7 +392,7 @@ public class WordModel {
             return result;
         }
 
-        String escapedValue = escape(value, UNWANTED_SEQUENCES);
+        String escapedValue = EscapingUtil.escape(value, UNWANTED_SEQUENCES);
         boolean hasEscaping = !escapedValue.equals(value);
 
         StringReader reader = new StringReader(escapedValue);
@@ -331,7 +419,7 @@ public class WordModel {
 
         if (hasEscaping) {
             for (int i = 0; i < result.size(); i++) {
-                result.set(i, unescape(result.get(i)));
+                result.set(i, EscapingUtil.unescape(result.get(i)));
             }
         }
         return result;

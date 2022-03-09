@@ -17,17 +17,27 @@ import com.exadel.etoolbox.querykit.core.models.qom.EvaluationContext;
 
 import javax.jcr.query.qom.PropertyValue;
 
+/**
+ * Represents a {@link DynamicOperandAdapter} for retrieving the value of a property
+ */
 public class PropertyValueAdapter extends DynamicOperandAdapter {
 
     private final String selector;
     private final String property;
 
+    /**
+     * Creates a new dynamic operand adapter instance
+     * @param original Original {@code DynamicOperand} object
+     */
     PropertyValueAdapter(PropertyValue original) {
         super(original,null);
         selector = original.getSelectorName();
         property = original.getPropertyName();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object getValue(EvaluationContext context) {
         if (!context.hasResource(selector)) {

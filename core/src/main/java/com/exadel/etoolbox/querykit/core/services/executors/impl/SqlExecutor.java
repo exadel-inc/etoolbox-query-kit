@@ -41,6 +41,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Implements {@link Executor} for running queries based on SQL statements
+ */
 @Component(service = Executor.class)
 public class SqlExecutor extends QueryBasedExecutor  {
 
@@ -50,19 +53,31 @@ public class SqlExecutor extends QueryBasedExecutor  {
     @Reference(target = "(converter.output=QOM)", policyOption = ReferencePolicyOption.GREEDY)
     private QueryConverter queryConverterService;
 
+    /**
+     * {@inheritDoc}
+     */
     @Getter(AccessLevel.PACKAGE)
     @Reference
     private List<SearchItemFilterFactory> itemFilters;
 
+    /**
+     * {@inheritDoc}
+     */
     @Getter(AccessLevel.PACKAGE)
     @Reference
     private List<SearchItemConverterFactory> itemConverters;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ExecutorType getType() {
         return ExecutorType.SQL;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ParsedQueryInfo parse(SearchRequest request) throws Exception {
 
@@ -91,15 +106,21 @@ public class SqlExecutor extends QueryBasedExecutor  {
         };
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     Query compile(SearchRequest request) throws Exception {
         return request.getQueryManager().createQuery(parse(request).toSqlString(), Query.JCR_SQL2);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    ColumnCollection getColumnCollection(SearchRequest request, Query source) throws ConverterException {
+    ColumnCollection getColumnCollection(SearchRequest request, Query query) throws ConverterException {
         QueryObjectModel qom = queryConverterService.convert(
-                prepareSelectExtract(source.getStatement()),
+                prepareSelectExtract(query.getStatement()),
                 request.getResourceResolver(),
                 QomAdapter.class)
                 .getModel();

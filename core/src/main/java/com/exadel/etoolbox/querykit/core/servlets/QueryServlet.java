@@ -30,6 +30,9 @@ import java.io.IOException;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_PATHS;
 
+/**
+ * Serves requests for running queries
+ */
 @Component(
         service = Servlet.class,
         property = {
@@ -41,11 +44,23 @@ public class QueryServlet extends SlingAllMethodsServlet {
     @Reference
     private QueryService queryService;
 
+    /**
+     * Processes HTTP {@code GET} requests
+     * @param request {@code SlingHttpServletRequest} object
+     * @param response {@code slingHttpServletResponse} object
+     * @throws IOException If the request processing failed
+     */
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
         doPost(request, response);
     }
 
+    /**
+     * Processes HTTP {@code POST} requests
+     * @param request {@code SlingHttpServletRequest} object
+     * @param response {@code slingHttpServletResponse} object
+     * @throws IOException If the request processing failed
+     */
     @Override
     protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
         SearchRequest searchRequest = SearchRequest.from(request);

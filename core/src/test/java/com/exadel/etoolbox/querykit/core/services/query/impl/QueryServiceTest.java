@@ -68,7 +68,7 @@ public class QueryServiceTest {
         Assert.assertTrue(result.isSuccess());
         Assert.assertTrue(result.getTotal() > 0);
         Assert.assertEquals(1, result.getItems().size());
-        Assert.assertTrue(result.getInfo().contains(QomExecutor.class.getSimpleName()));
+        Assert.assertTrue(result.getMetadata().contains(QomExecutor.class.getSimpleName()));
     }
 
     @Test
@@ -86,7 +86,7 @@ public class QueryServiceTest {
         Assert.assertTrue(result.isSuccess());
         Assert.assertEquals(10, result.getTotal());
         Assert.assertEquals(5, result.getItems().size());
-        Assert.assertTrue(result.getInfo().contains(QomExecutor.class.getSimpleName()));
+        Assert.assertTrue(result.getMetadata().contains(QomExecutor.class.getSimpleName()));
     }
 
     @Test
@@ -103,7 +103,7 @@ public class QueryServiceTest {
 
         Assert.assertTrue(result.isSuccess());
         Assert.assertTrue(result.getTotal() > 0);
-        Assert.assertTrue(result.getInfo().contains(SqlExecutor.class.getSimpleName()));
+        Assert.assertTrue(result.getMetadata().contains(SqlExecutor.class.getSimpleName()));
     }
 
     @Test

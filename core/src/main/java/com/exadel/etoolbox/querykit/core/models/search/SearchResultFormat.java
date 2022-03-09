@@ -15,9 +15,17 @@ package com.exadel.etoolbox.querykit.core.models.search;
 
 import org.apache.commons.lang3.EnumUtils;
 
+/**
+ * Enumerates possible formats of search results
+ */
 public enum SearchResultFormat {
     UNDEFINED, JSON, HTML, CSV;
 
+    /**
+     * Retrieves a {@link SearchResultFormat} value out of the provided string
+     * @param value String value
+     * @return Enum element
+     */
     static SearchResultFormat from(String value) {
         return EnumUtils
                 .getEnumList(SearchResultFormat.class)

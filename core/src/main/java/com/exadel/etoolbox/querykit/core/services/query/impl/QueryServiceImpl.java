@@ -28,23 +28,38 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 
 import java.util.List;
 
+/**
+ * Basic {@link QueryService} implementation
+ */
 @Component(service = QueryService.class)
 @Slf4j
 public class QueryServiceImpl extends QueryServiceBase implements QueryService {
 
+    /**
+     * {@inheritDoc}
+     */
     @Reference
     @Getter(AccessLevel.PACKAGE)
     private List<QueryConverter> converters;
 
+    /**
+     * {@inheritDoc}
+     */
     @Reference(cardinality = ReferenceCardinality.MULTIPLE)
     @Getter(AccessLevel.PACKAGE)
     private List<Executor> executors;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SearchResult execute(SearchRequest request) {
         return execute(request, ((req, exec) -> exec.execute(req)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SearchResult dryRun(SearchRequest request) {
         return execute(request, ((req, exec) -> exec.dryRun(req)));

@@ -31,17 +31,26 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Properties;
 
+/**
+ * {@link QueryConverter implementation} used to transform {@code QueryBuilder} queries into {@code JCR-SQL2} format
+ */
 @Component(service = QueryConverter.class, property = "converter.output=SQL")
 public class QueryBuilderToSqlConverter extends XPathToSqlConverter {
 
     @Reference
     private QueryBuilder queryBuilder;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public QueryType getSourceType() {
         return QueryType.QUERY_BUILDER;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T convert(String statement, ResourceResolver resourceResolver, Class<T> type) throws ConverterException {
         Properties props;

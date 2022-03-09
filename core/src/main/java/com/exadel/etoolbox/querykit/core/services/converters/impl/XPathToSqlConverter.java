@@ -23,15 +23,24 @@ import org.osgi.service.component.annotations.Component;
 
 import java.text.ParseException;
 
+/**
+ * {@link QueryConverter implementation} used to transform {@code XPath} queries into {@code JCR-SQL2} format
+ */
 @Component(service = QueryConverter.class, property = "converter.output=SQL")
 public class XPathToSqlConverter implements QueryConverter {
     static final String ERROR_MESSAGE_PARSE = "Could not parse statement ";
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public QueryType getSourceType() {
         return QueryType.XPATH;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T convert(String statement, ResourceResolver resourceResolver, Class<T> type) throws ConverterException {
         XPathToSQL2Converter converter = new XPathToSQL2Converter();

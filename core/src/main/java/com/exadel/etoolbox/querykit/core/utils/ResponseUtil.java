@@ -19,33 +19,74 @@ import org.apache.sling.api.SlingHttpServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Contains utility methods for preparing formatted HTTP responses
+ */
 @UtilityClass
+@SuppressWarnings("unused")
 public class ResponseUtil {
 
     private static final String OUTPUT_MESSAGE_TEMPLATE = "{\"%s\":\"%s\"}";
 
+    /**
+     * Retrieves a formatted JSON response out of the provided key-value pair
+     * @param key   String value; a non-blank string is expected
+     * @param value String value; a non-blank string is expected
+     * @return JSON string
+     */
     public static String getJsonMessage(String key, String value) {
         return String.format(OUTPUT_MESSAGE_TEMPLATE, key, value);
     }
 
+    /**
+     * Sends the provided content as a simple text response
+     * @param response {@code SlingHttpServletResponse} object
+     * @param content  Text to send
+     * @throws IOException If response preparation or sending failed
+     */
     public static void sendString(SlingHttpServletResponse response, String content) throws IOException {
         sendContent(response, HttpServletResponse.SC_OK, Constants.CONTENT_TYPE_TEXT, content);
     }
 
-    public static void sendStringError(SlingHttpServletResponse response, String value) throws IOException {
-        sendContent(response, HttpServletResponse.SC_BAD_REQUEST, Constants.CONTENT_TYPE_TEXT, value);
+    /**
+     * Sends the provided content as a simple text response with the "error" status
+     * @param response {@code SlingHttpServletResponse} object
+     * @param content  Text to send
+     * @throws IOException If response preparation or sending failed
+     */
+    public static void sendStringError(SlingHttpServletResponse response, String content) throws IOException {
+        sendContent(response, HttpServletResponse.SC_BAD_REQUEST, Constants.CONTENT_TYPE_TEXT, content);
     }
 
+    /**
+     * Sends the provided content as a JSON response
+     * @param response {@code SlingHttpServletResponse} object
+     * @param content  JSON string to send
+     * @throws IOException If response preparation or sending failed
+     */
     public static void sendJson(SlingHttpServletResponse response, String content) throws IOException {
         sendJson(response, HttpServletResponse.SC_OK, content);
     }
 
+    /**
+     * Sends the provided key and value as a JSON response
+     * @param response {@code SlingHttpServletResponse} object
+     * @param key      String value; a non-blank string is expected
+     * @param value    String value; a non-blank string is expected
+     * @throws IOException If response preparation or sending failed
+     */
     public static void sendJsonMessage(SlingHttpServletResponse response, String key, String value) throws IOException {
         sendJson(response, getJsonMessage(key, value));
     }
 
-    public static void sendJsonError(SlingHttpServletResponse response, String value) throws IOException {
-        sendJson(response, HttpServletResponse.SC_BAD_REQUEST, getJsonMessage("error", value));
+    /**
+     * Sends the provided content as a JSON response with the "error" status
+     * @param response {@code SlingHttpServletResponse} object
+     * @param content  JSON string to send
+     * @throws IOException If response preparation or sending failed
+     */
+    public static void sendJsonError(SlingHttpServletResponse response, String content) throws IOException {
+        sendJson(response, HttpServletResponse.SC_BAD_REQUEST, getJsonMessage("error", content));
     }
 
     private static void sendJson(SlingHttpServletResponse response, int status, String content) throws IOException {

@@ -30,13 +30,23 @@ import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+/**
+ * Helper class that facilitates running parallel queries for retrieving results and measuring the total number of
+ * results
+ */
 @Builder
 class MeasuredExecutorHelper {
 
     private final SearchRequest request;
     private final Query query;
 
-
+    /**
+     * Implements parallel queries for retrieving results and measuring the total number of results
+     * @param request {@link SearchRequest} instance
+     * @param query   {@link Query} instance
+     * @return {@link MeasuredQueryResult} object, non-null
+     * @throws Exception In case query running failed
+     */
     public static MeasuredQueryResult execute(SearchRequest request, Query query) throws Exception {
         CompletableFuture<ValueOrException<QueryResult>> resultSupplier =
                 CompletableFuture.supplyAsync(() -> executeMainQuery(query));

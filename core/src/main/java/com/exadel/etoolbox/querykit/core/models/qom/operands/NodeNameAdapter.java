@@ -17,15 +17,25 @@ import com.exadel.etoolbox.querykit.core.models.qom.EvaluationContext;
 
 import javax.jcr.query.qom.NodeName;
 
+/**
+ * Represents a {@link DynamicOperandAdapter} for retrieving the name of a node
+ */
 public class NodeNameAdapter extends DynamicOperandAdapter {
 
     private final String selector;
 
+    /**
+     * Creates a new dynamic operand adapter instance
+     * @param original Original {@code DynamicOperand} object
+     */
     NodeNameAdapter(NodeName original) {
         super(original,"NAME");
         selector = original.getSelectorName();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object getValue(EvaluationContext context) {
         if (!context.hasResource(selector)) {

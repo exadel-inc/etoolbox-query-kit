@@ -22,17 +22,27 @@ import javax.jcr.query.qom.SameNode;
 import java.util.Map;
 import java.util.function.Predicate;
 
+/**
+ * Represents a {@link ConstraintAdapter} for the {@code ISSAMENODE} function
+ */
 public class SameNodeAdapter extends ConstraintAdapter implements LiteralHolder {
 
     private final String selector;
     private final String path;
 
+    /**
+     * Creates a new constraint adapter instance
+     * @param original Original {@link Constraint} instance
+     */
     SameNodeAdapter(SameNode original) {
         super(original, "ISSAMENODE");
         selector = original.getSelectorName();
         path = original.getPath();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Constraint getConstraint(QueryObjectModelFactory factory, Map<String, Object> arguments) {
         return InterpolationHelper.interpolate(
@@ -43,11 +53,17 @@ public class SameNodeAdapter extends ConstraintAdapter implements LiteralHolder 
                 (qomFactory, str) -> qomFactory.sameNode(selector, str));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Predicate<EvaluationContext> getPredicate() {
         return context -> context.getPath(selector).equals(path);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getLiteralValue() {
         return path;

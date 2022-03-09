@@ -33,13 +33,25 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Implements {@link ColumnCollection} to provide a collection of {@code Column} objects that can be modified, e.g. by
+ * replacing wildcard columns with property-bound ones
+ * <p><u>Note</u>: this class is not a part of a public API</p>
+ */
 public class ModifiableColumnCollection implements ColumnCollection, JsonExportable {
 
     private static final Column PATH_COLUMN = new PathColumn();
 
+    /**
+     * {@inheritDoc}
+     */
     @Getter
     private final List<Column> items = new ArrayList<>();
 
+    /**
+     * Creates a new {@link ModifiableColumnCollection} instance based upon the given query object model
+     * @param model {@code QueryObjectModel} instance used as the source of columns
+     */
     public ModifiableColumnCollection(QueryObjectModel model) {
         items.add(PATH_COLUMN);
         initColumns(model);
@@ -85,6 +97,9 @@ public class ModifiableColumnCollection implements ColumnCollection, JsonExporta
        Interface methods
        ----------------- */
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getSelectors() {
         return items
@@ -95,6 +110,9 @@ public class ModifiableColumnCollection implements ColumnCollection, JsonExporta
                 .collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getPropertyNames() {
         return getAdapters()
@@ -104,6 +122,11 @@ public class ModifiableColumnCollection implements ColumnCollection, JsonExporta
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Replaces wildcard columns present in the collection (those that correspond to the asterisk in {@code SELECT *
+     * FROM...} or {@code SELECT foo.* FROM...} statement) with the columns matching the given names
+     * @param names An array of names used in replacement
+     */
     public void injectNamesForWildcards(String[] names) {
         if (ArrayUtils.isEmpty(names)) {
             return;
@@ -137,7 +160,7 @@ public class ModifiableColumnCollection implements ColumnCollection, JsonExporta
                 continue;
             }
             int insertionPosition = items.indexOf(wildcardColumn) + 1;
-            for (String  propertyToInsert : propertiesToInsert) {
+            for (String propertyToInsert : propertiesToInsert) {
                 items.add(insertionPosition++, new ColumnAdapter(selector, propertyToInsert));
             }
             items.remove(wildcardColumn);
@@ -152,6 +175,9 @@ public class ModifiableColumnCollection implements ColumnCollection, JsonExporta
        Output
        ------ */
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public JsonElement toJson(JsonSerializationContext context) {
         JsonObject result = new JsonObject();
@@ -170,6 +196,10 @@ public class ModifiableColumnCollection implements ColumnCollection, JsonExporta
        Service classes
        --------------- */
 
+    /**
+     * Represents the mandatory default column in a query result responsible for displaying {@code jcr:path} of a
+     * particular result hit
+     */
     private static class PathColumn implements Column, JsonExportable {
 
         @Override
@@ -189,7 +219,7 @@ public class ModifiableColumnCollection implements ColumnCollection, JsonExporta
 
         @Override
         public JsonElement toJson(JsonSerializationContext context) {
-            JsonObject jsonObject = new  JsonObject();
+            JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("title", Constants.TITLE_PATH);
             jsonObject.addProperty("property", Constants.PROPERTY_JCR_PATH);
             return jsonObject;

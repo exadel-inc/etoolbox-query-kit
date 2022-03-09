@@ -40,6 +40,9 @@ import java.util.stream.Collectors;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_PATHS;
 
+/**
+ * Serves requests for a list of query results
+ */
 @Component(
         service = Servlet.class,
         property = {
@@ -52,6 +55,12 @@ public class ListingDatasource extends SlingSafeMethodsServlet {
     @Reference
     private QueryService queryService;
 
+    /**
+     * Processes HTTP {@code GET} requests. Depending on the request parameters, sets the list of retrieved query result
+     * entries as a request attribute per the format of Granite Table datasource, or outputs in a a JSON value
+     * @param request  {@code SlingHttpServletRequest} object
+     * @param response {@code slingHttpServletResponse} object
+     */
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
         SearchRequest searchRequest = SearchRequest.from(request, request.getResource().getChild(Constants.NODE_DATASOURCE));

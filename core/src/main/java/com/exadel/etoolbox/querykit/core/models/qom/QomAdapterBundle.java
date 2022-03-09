@@ -31,20 +31,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a bundle (collection) of adapters for query object models. Usually, this one stands behind a {@code
+ * UNION-joined} complex query
+ */
 @RequiredArgsConstructor
 @Getter
 public class QomAdapterBundle implements ParsedQueryInfo, JsonExportable {
 
     private final List<QomAdapter> adapters;
 
+    /**
+     * Retrieves the list of original query object models used as the source of this adapter
+     * @return {@code List} of models; might be an empty non-null list
+     */
     public List<QueryObjectModel> getModels() {
         return CollectionUtils.emptyIfNull(adapters).stream().map(QomAdapter::getModel).collect(Collectors.toList());
     }
 
+    /**
+     * Re-creates the current instance with the given factory. This method can be used to "compile" changes that were
+     * introduced into constraints, etc. as a result of user-defined templates interpolation
+     * @param factory {@link QueryObjectModelFactory} instance
+     * @return A new {@link QomAdapter} instance; not equal to the original object
+     * @throws RepositoryException If instance creation failed
+     */
     public QomAdapterBundle buildWith(QueryObjectModelFactory factory) throws RepositoryException {
         return buildWith(factory, null);
     }
 
+    /**
+     * Re-creates the current instance with the given factory. This method can be used to "compile" changes that were
+     * introduced into constraints etc. as a result of user-defined templates interpolation
+     * @param factory   {@link QueryObjectModelFactory} instance
+     * @param arguments User-provided arguments that can be used for the interpolation
+     * @return A new {@link QomAdapter} instance; not equal to the original object
+     * @throws RepositoryException If instance creation failed
+     */
     public QomAdapterBundle buildWith(QueryObjectModelFactory factory, Map<String, Object> arguments) throws RepositoryException {
         if (CollectionUtils.isEmpty(adapters)) {
             return this;
@@ -56,16 +79,26 @@ public class QomAdapterBundle implements ParsedQueryInfo, JsonExportable {
         return new QomAdapterBundle(newAdapters);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toJson() {
         return JsonExportUtil.export(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public JsonElement toJson(JsonSerializationContext serializer) {
         return serializer.serialize(adapters);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String toSqlString() {
         if (CollectionUtils.isEmpty(adapters)) {
             return StringUtils.EMPTY;

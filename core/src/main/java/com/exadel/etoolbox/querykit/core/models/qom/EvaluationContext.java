@@ -20,35 +20,68 @@ import org.apache.sling.api.resource.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represents a context for filtering JCR nodes with {@link com.exadel.etoolbox.querykit.core.models.qom.constraints.ConstraintAdapter}'s
+ * in a non-query manner
+ */
 public class EvaluationContext {
     private final Map<String, Resource> resources = new HashMap<>();
 
+    /**
+     * Retrieves the collection of query bind variables
+     */
     @Getter
     private final Map<String, Object> bindVariables = new HashMap<>();
 
-    public boolean hasResource(String selector) {
-        return getResource(selector) != null;
+    /**
+     * Gets whether there exists a resource that corresponds to the given identifier
+     * @param identifier String value
+     * @return True or false
+     */
+    public boolean hasResource(String identifier) {
+        return getResource(identifier) != null;
     }
 
-    public Resource getResource(String selector) {
-        return resources.get(selector);
+    /**
+     * Retrieves a resource that corresponds to the given selector
+     * @param identifier String value
+     * @return Nullable {@code Resource} object
+     */
+    public Resource getResource(String identifier) {
+        return resources.get(identifier);
     }
 
-    public String getPath(String selector) {
-        return getResource(selector) != null ? getResource(selector).getPath() : StringUtils.EMPTY;
+    /**
+     * Retrieves the path to a resource that corresponds to the given identifier
+     * @param identifier String value
+     * @return String value; might be an empty string
+     */
+    public String getPath(String identifier) {
+        return getResource(identifier) != null ? getResource(identifier).getPath() : StringUtils.EMPTY;
     }
 
-    public String getName(String selector) {
-        return getResource(selector) != null ? getResource(selector).getName() : StringUtils.EMPTY;
+    /**
+     * Retrieves the name of a resource that corresponds to the given identifier
+     * @param identifier String value
+     * @return String value; might be an empty string
+     */
+    public String getName(String identifier) {
+        return getResource(identifier) != null ? getResource(identifier).getName() : StringUtils.EMPTY;
     }
 
-    public Object getProperty(String selector, String name) {
-        if (!hasResource(selector)) {
+    /**
+     * Retrieves the property value of a resource that corresponds to the given identifier
+     * @param identifier Resource identifier
+     * @param name       Name of the property to look for
+     * @return A nullable object
+     */
+    public Object getProperty(String identifier, String name) {
+        if (!hasResource(identifier)) {
             return null;
         }
         if ("jcr:path".equals(name)) {
-            return getResource(selector).getPath();
+            return getResource(identifier).getPath();
         }
-        return getResource(selector).getValueMap().get(name);
+        return getResource(identifier).getValueMap().get(name);
     }
 }

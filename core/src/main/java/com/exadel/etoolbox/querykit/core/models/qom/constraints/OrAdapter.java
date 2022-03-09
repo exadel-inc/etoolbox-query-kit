@@ -25,18 +25,29 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+/**
+ * Represents a {@link ConstraintAdapter} for the logical {@code Or} operator
+ */
 @Getter
 public class OrAdapter extends ConstraintAdapter implements JunctionConstraint {
 
     private final ConstraintAdapter constraint1;
     private final ConstraintAdapter constraint2;
 
+    /**
+     * Creates a new constraint adapter instance
+     * @param original Original {@link Constraint} instance
+     * @param context  {@link QomAdapterContext} used for creating the adapters tree
+     */
     OrAdapter(Or original, QomAdapterContext context) {
         super(original, "OR");
         constraint1 = ConstraintAdapter.from(original.getConstraint1(), context);
         constraint2 = ConstraintAdapter.from(original.getConstraint2(), context);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Constraint getConstraint(QueryObjectModelFactory factory, Map<String, Object> arguments) throws RepositoryException {
         return factory.or(
@@ -44,11 +55,17 @@ public class OrAdapter extends ConstraintAdapter implements JunctionConstraint {
                 constraint2.getConstraint(factory, arguments));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Predicate<EvaluationContext> getPredicate() {
         return constraint1.getPredicate().or(constraint2.getPredicate());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void visit(Consumer<ConstraintAdapter> consumer) {
         consumer.accept(this);

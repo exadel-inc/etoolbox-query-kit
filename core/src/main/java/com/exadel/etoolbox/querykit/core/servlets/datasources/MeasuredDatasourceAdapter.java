@@ -20,6 +20,9 @@ import org.apache.sling.api.resource.Resource;
 
 import java.util.Iterator;
 
+/**
+ * Augments the standard {@link DataSource} by providing the total number of query result entries
+ */
 @RequiredArgsConstructor
 @Getter
 class MeasuredDatasourceAdapter implements DataSource {
@@ -28,11 +31,19 @@ class MeasuredDatasourceAdapter implements DataSource {
 
     private final long total;
 
+    /**
+     * Retrieves the iterator of datasource entries
+     * @return {@code Iterator} instance
+     */
     @Override
     public Iterator<Resource> iterator() {
         return original.iterator();
     }
 
+    /**
+     * Retrieves the total number of query result entries
+     * @return Long value
+     */
     @Override
     public Long getGuessTotal() {
         return total;

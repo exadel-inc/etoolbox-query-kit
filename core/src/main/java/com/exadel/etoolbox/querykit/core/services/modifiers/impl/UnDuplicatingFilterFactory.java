@@ -26,17 +26,26 @@ import javax.jcr.query.Row;
 import java.util.List;
 import java.util.function.Predicate;
 
+/**
+ * Implements {@link SearchItemFilterFactory} to make sure query result entries are not duplicated by path
+ */
 @Component(service = SearchItemFilterFactory.class)
 @Slf4j
 public class UnDuplicatingFilterFactory implements SearchItemFilterFactory {
 
     private static final String SLASH_JCR_CONTENT = "/jcr:content";
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getName() {
         return "no-duplicate-pages";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Predicate<Row> getFilter(SearchRequest request, ColumnCollection columns) {
         return new Filter(columns);

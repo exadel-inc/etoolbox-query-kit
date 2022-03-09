@@ -21,10 +21,19 @@ import javax.jcr.RepositoryException;
 import javax.jcr.query.qom.Literal;
 import javax.jcr.query.qom.Operand;
 
+/**
+ * Contains utility methods for handling query object model operands
+ * <p><u>Note</u>: this class is not a part of a public API</p>
+ */
 @UtilityClass
 @Slf4j
 public class OperandHelper {
 
+    /**
+     * Extracts a literal value from the given {@code Operand}
+     * @param operand {@code Operand} instance
+     * @return String value; might be a non-null empty string
+     */
     public static String getLiteralValue(Operand operand) {
         if (!(operand instanceof Literal)) {
             return StringUtils.EMPTY;

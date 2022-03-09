@@ -22,26 +22,35 @@ import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.SlingObject;
 
 import javax.annotation.PostConstruct;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+/**
+ * Contains the data needed to render the query results table row
+ */
 @Model(adaptables = Resource.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public class TableRowInfo {
 
     @SlingObject
+    @SuppressWarnings("unused") // Assigned via injection
     private Resource resource;
 
+    /**
+     * Retrieves the collection of cells to be rendered within the current table row
+     */
     @Getter(lazy = true)
-    private final Map<String, TableCellInfo> cells = prepareCells();
+    private final Collection<TableCellInfo> cells = prepareCells();
 
-    private Map<String, TableCellInfo> prepareCells() {
+    private Collection<TableCellInfo> prepareCells() {
         Map<String, TableCellInfo> cells = new LinkedHashMap<>();
         if (resource == null) {
-            return cells;
+            return cells.values();
         }
         for(String key : resource.getValueMap().keySet()) {
             if (!StringUtils.contains(key, Constants.DOUBLE_AT)) {
-                cells.put(key, new TableCellInfo(resource.getValueMap().get(key)));
+                cells.put(key, new TableCellInfo(key, resource.getValueMap().get(key)));
             } else if (StringUtils.endsWith(key, Constants.DOUBLE_AT + Constants.PROPERTY_PATH)) {
                 String propertyName = extractPropertyName(key);
                 cells.computeIfPresent(propertyName, (k, cell) -> {
@@ -56,7 +65,7 @@ public class TableRowInfo {
                 });
             }
         }
-        return cells;
+        return cells.values();
     }
 
     private static String extractPropertyName(String value) {

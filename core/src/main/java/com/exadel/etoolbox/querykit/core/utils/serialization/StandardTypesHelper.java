@@ -34,9 +34,16 @@ import javax.jcr.query.qom.SameNodeJoinCondition;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.UpperCase;
 
+/**
+ * Contains utility methods for facilitating the export of standard query entities into formatted JSON
+ */
 @UtilityClass
 class StandardTypesHelper {
 
+    /**
+     * Feeds the prepared JSON serializers (formatters) into the given JSON builder
+     * @param builder {@link GsonBuilder} instance
+     */
     public static void feedToGsonBuilder(GsonBuilder builder) {
         addForColumn(builder);
         addForChildNodeJoinCondition(builder);

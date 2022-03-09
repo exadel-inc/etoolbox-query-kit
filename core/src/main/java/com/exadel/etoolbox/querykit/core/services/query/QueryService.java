@@ -16,9 +16,23 @@ package com.exadel.etoolbox.querykit.core.services.query;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.models.search.SearchResult;
 
+/**
+ * Provides generic query execution facilities
+ */
 public interface QueryService {
 
+    /**
+     * Executes the query as defined by the provided {@link SearchRequest}
+     * @param request {@link SearchRequest} instance
+     * @return Non-null {@link SearchResult} object
+     */
     SearchResult execute(SearchRequest request);
 
+    /**
+     * Imitates execution of the query as defined by the provided {@link SearchRequest} (can be useful for clearing out
+     * query model, retrieving available columns, etc.)
+     * @param request {@link SearchRequest} instance
+     * @return Non-null {@link SearchResult} object
+     */
     SearchResult dryRun(SearchRequest request);
 }

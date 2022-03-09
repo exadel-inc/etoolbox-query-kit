@@ -24,6 +24,9 @@ import org.apache.sling.models.annotations.injectorspecific.SlingObject;
 import javax.annotation.PostConstruct;
 import java.util.Map;
 
+/**
+ * Contains the metadata characterizing the retrieved query result
+ */
 @Model(adaptables = SlingHttpServletRequest.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public class QueryExecutionInfo {
 
@@ -34,20 +37,43 @@ public class QueryExecutionInfo {
 
     private long passedTotal;
 
+    /**
+     * Retrieves the page size in UI
+     */
     @Getter
     private int pageSize;
 
+    /**
+     * Retrieves the results offset
+     */
     @Getter
     private int offset;
 
+    /**
+     * Retrieves the query execution time
+     */
     @Getter
     private long executionTime;
 
+    /**
+     * Retrieves the optional error message received while executing the query
+     */
     @Getter
     private String errorMessage;
 
+    /**
+     * Retrieves the {@link PaginationInfo} for the display of the current query
+     */
     @Getter
     private PaginationInfo paginationInfo;
+
+    /**
+     * Retrieves the total number of entries for the current query
+     * @return Long value
+     */
+    public long getTotal() {
+        return computedTotal > 0 ? computedTotal : passedTotal;
+    }
 
     @PostConstruct
     private void init() {
@@ -58,11 +84,7 @@ public class QueryExecutionInfo {
         executionTime = getNumericAttribute(request, Constants.ATTRIBUTE_EXECUTION_TIME);
         errorMessage = getStringAttribute(request, Constants.ATTRIBUTE_ERROR_MESSAGE);
 
-        paginationInfo = new PaginationInfo(computedTotal, offset, pageSize);
-    }
-
-    public long getTotal() {
-        return computedTotal > 0 ? computedTotal : passedTotal;
+        paginationInfo = new PaginationInfo(getTotal(), offset, pageSize);
     }
 
     private static long getNumericAttribute(SlingHttpServletRequest request, String name) {

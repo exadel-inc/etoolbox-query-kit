@@ -22,30 +22,48 @@ import javax.jcr.RepositoryException;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.RowIterator;
 
+/**
+ * Implements {@link QueryResult} to provide the result bundled with the total number of entries
+ */
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class MeasuredQueryResult implements QueryResult {
 
     private final QueryResult original;
 
+    /**
+     * Retrieves the total number of entries for the current query
+     */
     @Getter
     private long total;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String[] getColumnNames() throws RepositoryException {
         return original.getColumnNames();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RowIterator getRows() throws RepositoryException {
         return original.getRows();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public NodeIterator getNodes() throws RepositoryException {
         return original.getNodes();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String[] getSelectorNames() throws RepositoryException {
         return original.getSelectorNames();

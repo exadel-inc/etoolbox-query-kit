@@ -17,13 +17,21 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.regex.Pattern;
 
+/**
+ * Enumerates possible query types
+ */
 public enum QueryType {
     JCR_SQL2, XPATH, QUERY_BUILDER, UNSUPPORTED;
 
-    private static final Pattern QUERYBUILDER_NEWLINE = Pattern.compile("[\\n\\r]");
+    private static final Pattern QUERY_BUILDER_NEWLINE = Pattern.compile("[\\n\\r]");
 
-    private static final Pattern QUERYBUILDER_ASSERT = Pattern.compile("^\\w+(?:\\.\\w+)*\\s*=");
+    private static final Pattern QUERY_BUILDER_ASSERT = Pattern.compile("^\\w+(?:\\.\\w+)*\\s*=");
 
+    /**
+     * Retrieves a {@link QueryType} value out of the provided statement
+     * @param statement String value
+     * @return Enum element
+     */
     static QueryType from(String statement) {
         if (StringUtils.isBlank(statement)) {
             return UNSUPPORTED;
@@ -34,7 +42,7 @@ public enum QueryType {
         if (statement.startsWith("/")) {
             return XPATH;
         }
-        if (QUERYBUILDER_NEWLINE.splitAsStream(statement).map(String::trim).allMatch(line -> QUERYBUILDER_ASSERT.matcher(line).find())) {
+        if (QUERY_BUILDER_NEWLINE.splitAsStream(statement).map(String::trim).allMatch(line -> QUERY_BUILDER_ASSERT.matcher(line).find())) {
             return QUERY_BUILDER;
         }
         return UNSUPPORTED;

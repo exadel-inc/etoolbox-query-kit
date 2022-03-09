@@ -35,6 +35,9 @@ import javax.servlet.Servlet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Serves requests for a collection of query results table columns
+ */
 @Component(
         service = Servlet.class,
         property = {
@@ -47,6 +50,12 @@ public class QueryColumnsDatasource extends SlingSafeMethodsServlet {
     @Reference
     private transient QueryService queryService;
 
+    /**
+     * Processes HTTP {@code GET} requests. Sets the list of retrieved dialogs as a request attribute per the format of
+     * Granite Table columns datasource
+     * @param request  {@code SlingHttpServletRequest} object
+     * @param response {@code slingHttpServletResponse} object
+     */
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) {
         SearchRequest searchRequest = SearchRequest.from(request);
@@ -68,8 +77,6 @@ public class QueryColumnsDatasource extends SlingSafeMethodsServlet {
         Resource selectableCell = new ValueMapResource(request.getResourceResolver(), StringUtils.EMPTY, StringUtils.EMPTY, new ValueMapDecorator(ImmutableMap.<String, Object>of("select", true)));
         resources.add(0, selectableCell);
 
-        if (!resources.isEmpty()) {
-            request.setAttribute(DataSource.class.getName(), new SimpleDataSource(resources.iterator()));
-        }
+        request.setAttribute(DataSource.class.getName(), new SimpleDataSource(resources.iterator()));
     }
 }

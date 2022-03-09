@@ -41,25 +41,40 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Implements {@link Executor} for running queries based on query object models
+ */
 @Component(service = Executor.class)
 public class QomExecutor extends QueryBasedExecutor {
 
     @Reference(target = "(converter.output=QOM)", policyOption = ReferencePolicyOption.GREEDY)
     private QueryConverter queryConverterService;
 
+    /**
+     * {@inheritDoc}
+     */
     @Getter(AccessLevel.PACKAGE)
     @Reference
     private List<SearchItemFilterFactory> itemFilters;
 
+    /**
+     * {@inheritDoc}
+     */
     @Getter(AccessLevel.PACKAGE)
     @Reference
     private List<SearchItemConverterFactory> itemConverters;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ExecutorType getType() {
         return ExecutorType.QOM;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ParsedQueryInfo parse(SearchRequest request) throws Exception {
         return parse(request, true);
@@ -85,15 +100,21 @@ public class QomExecutor extends QueryBasedExecutor {
                 QomAdapterContext.from(request.getQueryManager().getQOMFactory(), request.getValueFactory()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     Query compile(SearchRequest request) throws Exception {
         QomAdapter qomAdapter = (QomAdapter) parse(request, false);
         return qomAdapter.getModel();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    ColumnCollection getColumnCollection(SearchRequest request, Query source) {
-        return new ModifiableColumnCollection((QueryObjectModel) source);
+    ColumnCollection getColumnCollection(SearchRequest request, Query query) {
+        return new ModifiableColumnCollection((QueryObjectModel) query);
     }
 
     private static boolean hasInterpolateableFieldsOrModifications(ConstraintAdapter constraintAdapter, Set<String> candidateVariables) {

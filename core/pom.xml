@@ -12,7 +12,7 @@
     <artifactId>etoolbox-query-kit.core</artifactId>
 
     <name>EToolbox Query Kit - Bundle</name>
-    <description>Contains classes and interfaces required to facilitate Exadel Query Kit for AEM server-side functionality</description>
+    <description>Contains classes and interfaces required to facilitate EToolbox Query Kit server-side functionality</description>
 
     <packaging>bundle</packaging>
 

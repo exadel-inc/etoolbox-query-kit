@@ -22,17 +22,27 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import java.util.Map;
 import java.util.function.Predicate;
 
+/**
+ * Represents a {@link ConstraintAdapter} for the {@code ISCHILDNODE} function
+ */
 public class ChildNodeAdapter extends ConstraintAdapter implements LiteralHolder {
 
     private final String selector;
     private final String path;
 
+    /**
+     * Creates a new constraint adapter instance
+     * @param original Original {@link Constraint} instance
+     */
     ChildNodeAdapter(ChildNode original) {
         super(original, "ISCHILDNODE");
         selector = original.getSelectorName();
         path = original.getParentPath();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Constraint getConstraint(QueryObjectModelFactory factory, Map<String, Object> arguments) {
         return InterpolationHelper.interpolate(
@@ -43,11 +53,17 @@ public class ChildNodeAdapter extends ConstraintAdapter implements LiteralHolder
                 (qomFactory, str) -> qomFactory.childNode(selector, str));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Predicate<EvaluationContext> getPredicate() {
         return context -> context.getPath(selector).equals(path + "/" + context.getResource(selector).getName());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getLiteralValue() {
         return path;

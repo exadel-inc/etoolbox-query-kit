@@ -35,6 +35,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+/**
+ * Serves requests for rendering query results cell editor UI
+ */
 @Component(
         service = Servlet.class,
         property = {
@@ -44,6 +47,12 @@ import java.util.List;
 )
 public class EditorCellServlet extends SlingSafeMethodsServlet {
 
+    /**
+     * Processes HTTP {@code GET} requests
+     * @param request {@code SlingHttpServletRequest} object
+     * @param response {@code slingHttpServletResponse} object
+     * @throws IOException If the request processing failed
+     */
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
         ResourceResolver resourceResolver = request.getResourceResolver();

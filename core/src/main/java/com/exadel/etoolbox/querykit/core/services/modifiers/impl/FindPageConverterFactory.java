@@ -24,14 +24,24 @@ import org.osgi.service.component.annotations.Component;
 
 import java.util.function.UnaryOperator;
 
+/**
+ * Implements {@link SearchItemConverterFactory} to convert the search results matching the retrieved pages' {@code
+ * jcr:content} sub-nodes into items matching pages themselves
+ */
 @Component
 public class FindPageConverterFactory implements SearchItemConverterFactory {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getName() {
         return "find-page";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UnaryOperator<SearchItem> getModifier(SearchRequest request) {
         return new Modifier(request, request.getResourceResolver().adaptTo(PageManager.class));

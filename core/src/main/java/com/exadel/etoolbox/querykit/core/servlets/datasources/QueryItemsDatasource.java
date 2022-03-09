@@ -33,6 +33,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Serves requests for query result entries
+ */
 @Component(
         service = Servlet.class,
         property = {
@@ -47,6 +50,12 @@ public class QueryItemsDatasource extends SlingSafeMethodsServlet {
     @Reference
     private transient QueryService queryService;
 
+    /**
+     * Processes HTTP {@code GET} requests. Sets the list of retrieved dialogs as a request attribute per the format of
+     * Granite Table rows datasource
+     * @param request  {@code SlingHttpServletRequest} object
+     * @param response {@code slingHttpServletResponse} object
+     */
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
         SearchRequest searchRequest = SearchRequest.from(request);

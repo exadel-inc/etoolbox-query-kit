@@ -16,12 +16,26 @@ package com.exadel.etoolbox.querykit.core.utils.serialization;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 
+/**
+ * Manifests an entity that can be exported to JSON via an augmented routine that accepts an additional typed argument
+ * as the "context" for exporting
+ * @param <T> Type of the data context
+ */
 public interface JsonExportableWithContext<T> extends JsonExportable {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default JsonElement toJson(JsonSerializationContext serializer) {
         return toJson(serializer, null);
     }
 
+    /**
+     * Retrieves the JSON representation of the current object
+     * @param serializer {@link JsonSerializationContext} object used to produce JSON
+     * @param data       Additional data used as the "context" for exporting
+     * @return {@link JsonElement} representing the current entity
+     */
     JsonElement toJson(JsonSerializationContext serializer, T data);
 }

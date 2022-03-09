@@ -37,6 +37,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+/**
+ * Serves requests for a list of available profiles
+ */
 @Component(
         service = Servlet.class,
         property = {
@@ -48,6 +51,12 @@ public class ProfilesDatasource extends SlingSafeMethodsServlet {
 
     private static final String PROFILES_ROOT = "/conf/etoolbox-query-kit/settings/profiles/jcr:content";
 
+    /**
+     * Processes HTTP {@code GET} requests. Sets the list of retrieved dialogs as a request attribute per the format of
+     * Granite items datasource
+     * @param request  {@code SlingHttpServletRequest} object
+     * @param response {@code slingHttpServletResponse} object
+     */
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
         ResourceResolver resourceResolver = request.getResourceResolver();

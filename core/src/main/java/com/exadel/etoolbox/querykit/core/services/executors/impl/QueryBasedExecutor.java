@@ -17,11 +17,9 @@ import com.exadel.etoolbox.querykit.core.models.query.MeasuredQueryResult;
 import com.exadel.etoolbox.querykit.core.models.qom.columns.ModifiableColumnCollection;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.models.search.SearchResult;
-import com.exadel.etoolbox.querykit.core.utils.ConverterException;
 import com.exadel.etoolbox.querykit.core.utils.ValueUtil;
 import org.apache.commons.lang3.ArrayUtils;
 
-import javax.jcr.RepositoryException;
 import javax.jcr.ValueFactory;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
@@ -47,7 +45,7 @@ abstract class QueryBasedExecutor extends ExecutorImpl {
                 .builder()
                 .request(request)
                 .executionTime(executionTime)
-                .info("Via " + getClass().getSimpleName())
+                .metadata("Via " + getClass().getSimpleName())
                 .columns(columnCollection);
 
         if (request.isIterating()) {
@@ -67,7 +65,7 @@ abstract class QueryBasedExecutor extends ExecutorImpl {
         return SearchResult
                 .builder()
                 .request(request)
-                .info("Via " + getClass().getSimpleName())
+                .metadata("Via " + getClass().getSimpleName())
                 .columns(columnCollection)
                 .build();
     }

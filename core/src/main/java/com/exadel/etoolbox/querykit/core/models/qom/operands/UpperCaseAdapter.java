@@ -17,15 +17,25 @@ import com.exadel.etoolbox.querykit.core.models.qom.EvaluationContext;
 
 import javax.jcr.query.qom.UpperCase;
 
+/**
+ * Represents a {@link DynamicOperandAdapter} for the {@code UPPER} function
+ */
 public class UpperCaseAdapter extends DynamicOperandAdapter {
 
     private final DynamicOperandAdapter operand;
 
+    /**
+     * Creates a new dynamic operand adapter instance
+     * @param original Original {@code DynamicOperand} object
+     */
     UpperCaseAdapter(UpperCase original) {
         super(original,"UPPER");
         operand = from(original.getOperand());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object getValue(EvaluationContext context) {
         Object result = operand.getValue(context);

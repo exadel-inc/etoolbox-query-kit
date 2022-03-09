@@ -13,12 +13,24 @@
  */
 package com.exadel.etoolbox.querykit.core.utils;
 
+/**
+ * Triggers when a query conversion operation failed
+ */
 public class ConverterException extends Exception {
 
+    /**
+     * Creates a new instance
+     * @param message Exception message
+     */
     public ConverterException(String message) {
         super(message);
     }
 
+    /**
+     * Creates a new instance
+     * @param message Exception message
+     * @param cause The {@code Throwable} that caused this exception
+     */
     public ConverterException(String message, Throwable cause) {
         super(message, cause);
     }
