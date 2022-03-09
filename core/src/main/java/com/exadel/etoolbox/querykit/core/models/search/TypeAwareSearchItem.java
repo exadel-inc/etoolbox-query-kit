@@ -241,7 +241,7 @@ class TypeAwareSearchItem implements SearchItem {
         @Override
         public JsonElement toJson(JsonSerializationContext serializer) {
             JsonObject result = new JsonObject();
-            JsonExportUtil.submitValue(result, Constants.PROPERTY_VALUE, value);
+            JsonExportUtil.storeValue(result, Constants.PROPERTY_VALUE, value);
             result.addProperty(Constants.PROPERTY_PATH, path);
             if (type > 0) {
                 result.addProperty(Constants.PROPERTY_TYPE, PropertyType.nameFromValue(type) + (multiple ? "[]" : StringUtils.EMPTY));

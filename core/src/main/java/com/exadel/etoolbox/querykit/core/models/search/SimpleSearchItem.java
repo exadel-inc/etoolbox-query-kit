@@ -124,7 +124,7 @@ class SimpleSearchItem implements SearchItem {
                 : data.getPropertyNames();
         for (String propertyName : matchingPropertyNames) {
             Object propertyValue = properties.get(propertyName);
-            JsonExportUtil.submitValue(result, propertyName, propertyValue);
+            JsonExportUtil.storeValue(result, propertyName, propertyValue);
         }
         return result;
     }

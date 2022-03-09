@@ -14,7 +14,7 @@
 package com.exadel.etoolbox.querykit.core.services.query.impl;
 
 import com.exadel.etoolbox.querykit.core.models.query.ParsedQueryInfo;
-import com.exadel.etoolbox.querykit.core.models.search.QueryParsingFormat;
+import com.exadel.etoolbox.querykit.core.models.search.QueryRenderingFormat;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.services.converters.QueryConverter;
 import com.exadel.etoolbox.querykit.core.services.executors.Executor;

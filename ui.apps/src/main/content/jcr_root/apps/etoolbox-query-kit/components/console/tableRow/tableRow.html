@@ -17,15 +17,15 @@
     <td is="coral-table-cell">
         <coral-checkbox coral-table-rowselect/>
     </td>
-    <sly data-sly-list.cellName="${row.cells}">
+    <sly data-sly-list.cell="${row.cells}">
         <td class="result-table-cell"
             is="coral-table-cell"
-            data-name="${cellName}"
-            data-path="${row.cells[cellName].path}"
-            data-type="${row.cells[cellName].type}"
-            data-editable="${row.cells[cellName].path} ? 'true' : 'false'">
+            data-name="${cell.name}"
+            data-path="${cell.path}"
+            data-type="${cell.type}"
+            data-editable="${cell.path} ? 'true' : 'false'">
         <span>
-           ${row.cells[cellName].value}
+           ${cell.value}
         </span>
         </td>
     </sly>

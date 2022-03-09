@@ -15,13 +15,13 @@
 <div class="coral-FixedColumn-column pagination">
     <button class="nav-button previous" data-sly-attribute.disabled="${info.paginationInfo.currentPage == 1}">« Previous</button>
     <div id="pagesContainer" class="pages-container">
-        <sly data-sly-test="${info.paginationInfo.startPaginationNeeded}">
+        <sly data-sly-test="${info.paginationInfo.startElementNeeded}">
             <button data-sly-attribute.disabled="${info.paginationInfo.currentPage == 1}" class='first-button'>1</button><i class='first'>...</i>
         </sly>
-        <sly data-sly-list.page="${info.paginationInfo.rangePagesPagination}">
-            <button class='nav-page-button' value='${page}' data-sly-attribute.disabled="${page == info.paginationInfo.currentPage}">${page}</button>
+        <sly data-sly-list.pageNumber="${info.paginationInfo.middleElements}">
+            <button class='nav-page-button' value='${pageNumber}' data-sly-attribute.disabled="${pageNumber == info.paginationInfo.currentPage}">${pageNumber}</button>
         </sly>
-        <sly data-sly-test="${info.paginationInfo.endPaginationNeeded}">
+        <sly data-sly-test="${info.paginationInfo.endElementNeeded}">
             <i class='last'>...</i><button data-sly-attribute.disabled="${info.paginationInfo.pagesCount == info.paginationInfo.currentPage}" class='last-button'>${info.paginationInfo.pagesCount}</button>
         </sly>
     </div>
