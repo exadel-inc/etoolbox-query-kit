@@ -1,0 +1,104 @@
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License").
+  You may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<jcr:root
+        xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+        xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+        xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        jcr:primaryType="nt:unstructured"
+        jcr:title="Settings"
+        granite:id="dialog-settings"
+        granite:class="coral-Form coral-Form--vertical"
+        sling:resourceType="granite/ui/components/coral/foundation/dialog">
+    <items jcr:primaryType="nt:unstructured">
+        <form jcr:primaryType="nt:unstructured"
+              sling:resourceType="granite/ui/components/coral/foundation/form"
+              style="vertical">
+            <items jcr:primaryType="nt:unstructured">
+                <content jcr:primaryType="nt:unstructured"
+                         sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns">
+                    <items jcr:primaryType="nt:unstructured">
+                        <column jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container">
+                            <items jcr:primaryType="nt:unstructured">
+                                <components
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType = "granite/ui/components/coral/foundation/form/multifield"
+                                        granite:class="settings-multifield"
+                                        granite:id="componentField"
+                                        fieldLabel="Components folders">
+                                    <field
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                                            fieldLabel="Components folder"
+                                            name="componentFolder"
+                                            required="{Boolean}true"
+                                            emptyText="/apps"
+                                            rootPath="/apps"/>
+                                </components>
+                                <templates
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType = "granite/ui/components/coral/foundation/form/multifield"
+                                        granite:class="settings-multifield"
+                                        granite:id="templateField"
+                                        fieldLabel="Templates folders">
+                                    <field
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                                            fieldLabel="Templates folder"
+                                            name="templateFolder"
+                                            required="{Boolean}true"
+                                            emptyText="/conf"
+                                            rootPath="/conf"/>
+                                </templates>
+                                <content
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType = "granite/ui/components/coral/foundation/form/multifield"
+                                        granite:class="settings-multifield"
+                                        granite:id="contentField"
+                                        fieldLabel="Content root">
+                                    <field
+                                            jcr:primaryType="nt:unstructured"
+                                            sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+                                            fieldLabel="Content root"
+                                            name="contentFolder"
+                                            required="{Boolean}true"
+                                            emptyText="/content"
+                                            rootPath="/content"/>
+                                </content>
+                                <resultnumber
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/numberfield"
+                                        granite:id="resultNumberField"
+                                        fieldLabel="Max result number per page"
+                                        value="10"
+                                        max="100000"
+                                        min="1"
+                                        name="resultNumber"
+                                        step="1" />
+                                <save
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/button"
+                                        granite:id="saveSettingsButton"
+                                        text="Save"
+                                        variant="primary"/>
+                            </items>
+                        </column>
+                    </items>
+                </content>
+            </items>
+        </form>
+    </items>
+</jcr:root>
+

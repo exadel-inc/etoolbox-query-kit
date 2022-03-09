@@ -1,0 +1,17 @@
+#base=libs/codemirror
+lib/codemirror.js
+mode/sql/sql.js
+addon/hint/sql-hint.js
+addon/hint/show-hint.js
+
+#base=js
+editor/sql2-init.js
+editor/codemirror-init.js
+export-group.js
+profiles.js
+query-kit-dialog.js
+query-dialog.js
+query-run.js
+query-save.js
+query-share.js
+settings.js

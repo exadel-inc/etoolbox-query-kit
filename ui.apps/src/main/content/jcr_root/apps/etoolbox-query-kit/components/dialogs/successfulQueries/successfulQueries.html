@@ -1,0 +1,33 @@
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License").
+  You may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<coral-dialog class="foundation-toggleable eqk-dialog" closable="on" id="querySuccessfulDialog">
+    <coral-dialog-header>Last 10 Successful Queries</coral-dialog-header>
+    <coral-dialog-content>
+        <div class="coral-Form coral-Form--vertical foundation-layout-util-maximized-container">
+            <table is="coral-table"  id="tableLastQueries" selectable>
+                <tbody is="coral-table-body">
+                </tbody>
+            </table>
+        </div>
+    </coral-dialog-content>
+    <coral-dialog-footer>
+        <button class="execute-query-button" type="button" is="coral-button" variant="primary" disabled>Open</button>
+        <button type="button" autocomplete="off" is="coral-button" icon="share" variant="secondary" trackingfeature="" trackingelement="" tracking="ON" class="share-query-button coral3-Button coral3-Button--secondary" size="M" disabled>
+            <coral-icon class="coral3-Icon coral3-Icon--sizeS coral3-Icon--share" icon="share" size="S" autoarialabel="on" role="img" aria-label="share"></coral-icon>
+            <coral-button-label>
+            </coral-button-label>
+        </button>
+        <button class="delete-query-button" type="button" is="coral-button" variant="quiet" icon="delete" iconsize="M" disabled></button>
+    </coral-dialog-footer>
+</coral-dialog>

@@ -1,0 +1,200 @@
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License").
+  You may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="cq:Page">
+    <jcr:content
+            jcr:mixinTypes="[sling:VanityPath]"
+            jcr:primaryType="nt:unstructured"
+            jcr:title="EToolbox Query Kit"
+            sling:vanityPath="/etoolbox-query-kit"
+            sling:resourceType="granite/ui/components/shell/page"
+            targetCollection=".eqk-ui">
+        <head jcr:primaryType="nt:unstructured">
+            <clientlibs
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/includeclientlibs"
+                    categories="[cq.common.wcm,cq.listview.coral.columns.personalization,cq.siteadmin.admin.page.row,cq.gui.coral.common.admin.references,cq.screens.dcc,etoolbox-query-kit]"/>
+        </head>
+        <title
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/text"
+                text="EToolbox Query Console"/>
+        <actions jcr:primaryType="nt:unstructured">
+            <primary jcr:primaryType="nt:unstructured">
+                <new
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/pulldown"
+                        granite:id="pulldownNew"
+                        text="New"
+                        variant="primary">
+                    <datasource jcr:primaryType="nt:unstructured"
+                                sling:resourceType="/apps/etoolbox-query-kit/datasources/dialogs"/>
+                </new>
+                <open
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/pulldown"
+                        granite:id="pulldownOpen"
+                        icon="open"
+                        text="Open"
+                        variant="actionBar">
+                    <items jcr:primaryType="nt:unstructured">
+                        <saved
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
+                                granite:id="btnOpenSaved"
+                                target=".eqk-ui"
+                                action="foundation.dialog"
+                                text="Saved...">
+                            <data jcr:primaryType="nt:unstructured"
+                                  nesting="hide"
+                                  src.url="/mnt/overlay/etoolbox-query-kit/console/dialogs/saved-queries.html"/>
+                        </saved>
+                        <lastSuccessful
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
+                                granite:id="btnOpenLastSuccessful"
+                                target=".eqk-ui"
+                                action="foundation.dialog"
+                                text="Last Successful...">
+                            <data jcr:primaryType="nt:unstructured"
+                                  nesting="hide"
+                                  src.url="/mnt/overlay/etoolbox-query-kit/console/dialogs/successful-queries.html"/>
+                        </lastSuccessful>
+                    </items>
+                </open>
+                <tools
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/pulldown"
+                        granite:id="pulldownTools"
+                        icon="actions"
+                        text="Tools"
+                        variant="actionBar">
+                    <items jcr:primaryType="nt:unstructured">
+                        <settings
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
+                                granite:id="btnOpenSettings"
+                                target=".eqk-ui"
+                                action="foundation.dialog"
+                                text="Settings...">
+                            <data jcr:primaryType="nt:unstructured"
+                                  nesting="hide"
+                                  src.url="/mnt/overlay/etoolbox-query-kit/console/dialogs/settings.html"/>
+                        </settings>
+                    </items>
+                </tools>
+            </primary>
+            <secondary jcr:primaryType="nt:unstructured">
+                <exportHtml
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/button"
+                        granite:id="btnExportHtml"
+                        icon="fileHTML"
+                        text="HTML"
+                        variant="actionBar"/>
+                <exportCsv
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/button"
+                        granite:id="btnExportCsv"
+                        icon="fileExcel"
+                        text="CSV"
+                        variant="actionBar"/>
+                <exportJson
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/button"
+                        granite:id="btnExportJson"
+                        icon="fileJson"
+                        text="JSON"
+                        variant="actionBar"/>
+                <profiles
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                        name="profile">
+                    <datasource
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="/apps/etoolbox-query-kit/datasources/profiles"/>
+                </profiles>
+            </secondary>
+        </actions>
+        <content
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/container"
+                margin="{Boolean}true">
+            <items jcr:primaryType="nt:unstructured">
+                <columns
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                        granite:class="eqk-ui"
+                        margin="{Boolean}true">
+                    <items jcr:primaryType="nt:unstructured">
+                        <query jcr:primaryType="nt:unstructured"
+                               sling:resourceType="granite/ui/components/coral/foundation/container"
+                               granite:class="column column-left">
+                            <items jcr:primaryType="nt:unstructured">
+                                <text
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textarea"
+                                        granite:class="codemirror-textarea"
+                                        granite:id="textQuery"
+                                        autocomplete="on"
+                                        name="-query"/>
+                                <buttons
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/container"
+                                        granite:class="editor-buttons"
+                                        margin="{Boolean}true">
+                                    <items jcr:primaryType="nt:unstructured">
+                                        <execute
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/button"
+                                                granite:id="btnExecute"
+                                                type="submit"
+                                                variant="primary"
+                                                text="Execute"/>
+                                        <save
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/button"
+                                                granite:id="btnSave"
+                                                icon="save"
+                                                variant="secondary"/>
+                                        <share
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/button"
+                                                granite:id="btnShare"
+                                                icon="share"
+                                                variant="secondary"/>
+                                    </items>
+                                </buttons>
+                            </items>
+                        </query>
+                        <results
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/container"
+                                granite:class="column column-right"
+                                granite:id="columnResult"
+                                margin="{Boolean}true">
+                            <items jcr:primaryType="nt:unstructured">
+                            </items>
+                        </results>
+                    </items>
+                </columns>
+            </items>
+        </content>
+    </jcr:content>
+    <dialogs/>
+</jcr:root>

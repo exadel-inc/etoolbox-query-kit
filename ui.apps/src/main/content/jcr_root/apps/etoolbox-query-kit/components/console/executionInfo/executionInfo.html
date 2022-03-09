@@ -1,0 +1,29 @@
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License").
+  You may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<sly data-sly-use.info="com.exadel.etoolbox.querykit.core.models.query.QueryExecutionInfo"/>
+<div class="coral-FixedColumn-column pagination">
+    <button class="nav-button previous" data-sly-attribute.disabled="${info.paginationInfo.currentPage == 1}">« Previous</button>
+    <div id="pagesContainer" class="pages-container">
+        <sly data-sly-test="${info.paginationInfo.startElementNeeded}">
+            <button data-sly-attribute.disabled="${info.paginationInfo.currentPage == 1}" class='first-button'>1</button><i class='first'>...</i>
+        </sly>
+        <sly data-sly-list.pageNumber="${info.paginationInfo.middleElements}">
+            <button class='nav-page-button' value='${pageNumber}' data-sly-attribute.disabled="${pageNumber == info.paginationInfo.currentPage}">${pageNumber}</button>
+        </sly>
+        <sly data-sly-test="${info.paginationInfo.endElementNeeded}">
+            <i class='last'>...</i><button data-sly-attribute.disabled="${info.paginationInfo.pagesCount == info.paginationInfo.currentPage}" class='last-button'>${info.paginationInfo.pagesCount}</button>
+        </sly>
+    </div>
+    <button class="nav-button next" data-sly-attribute.disabled="${info.paginationInfo.currentPage == info.paginationInfo.pagesCount}">Next »</button>
+</div>
