@@ -348,40 +348,6 @@ public class WordModel {
         return String.join(StringUtils.EMPTY, elements.subList(getStartPosition(), getEndPosition()));
     }
 
-    /* ---------------
-       Utility methods
-       --------------- */
-
-    public static String escape(String value, String... unwanted) {
-        if (org.apache.commons.lang.StringUtils.isEmpty(value) || ArrayUtils.isEmpty(unwanted)) {
-            return value;
-        }
-        String result = value;
-        for (String token : unwanted) {
-            if (result.contains(token)) {
-                result = result.replace(token, prepareEscapedSequence(token));
-            }
-        }
-        return result;
-    }
-
-    public static String unescape(String value) {
-        StringBuilder result = new StringBuilder(value);
-        Matcher matcher = ESCAPED_CHAR_PATTERN.matcher(result);
-        while (matcher.find()) {
-            result.replace(matcher.start(), matcher.end(), Character.toString((char) Integer.parseInt(matcher.group(1))));
-            matcher.reset(result);
-        }
-        return result.toString();
-    }
-
-    private static String prepareEscapedSequence(String token) {
-        return token.chars()
-                .mapToObj(String::valueOf)
-                .map(chr -> "__" + chr + "__")
-                .collect(Collectors.joining());
-    }
-
     /* --------------
        Initialization
        -------------- */
