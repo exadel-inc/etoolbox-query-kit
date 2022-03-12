@@ -1,7 +1,7 @@
 (function (document, $, ns) {
     'use strict';
 
-    const FAVOURITE_QUERIES = 'eqk-saved-queries';
+    const FAVORITE_QUERIES = 'eqk-favorite-queries';
     const LATEST_QUERIES = 'eqk-latest-queries';
 
     const registry = $(window).adaptTo('foundation-registry');
@@ -11,22 +11,22 @@
 
     registry.register('foundation.collection.action.action', {
         name: 'eqk.query.saveQuery',
-        handler: saveFavouriteQueries
+        handler: saveFavoriteQueries
     });
 
     $(document).ready(function () {
         $(document).on('query-kit:success-response', saveLatestQueries);
     });
 
-    function saveFavouriteQueries() {
+    function saveFavoriteQueries() {
         const query = ns.getEditorValue();
-        const favouriteQueries = ns.DataStore.getQueries(FAVOURITE_QUERIES);
+        const favoriteQueries = ns.DataStore.getQueries(FAVORITE_QUERIES);
 
-        if (favouriteQueries.includes(query)) {
+        if (favoriteQueries.includes(query)) {
             foundationUi.notify('', 'Query has already been saved', 'notice');
         } else if (query && query.trim().length > 0) {
-            favouriteQueries.push(query);
-            ns.DataStore.setQueries(FAVOURITE_QUERIES, favouriteQueries);
+            favoriteQueries.push(query);
+            ns.DataStore.setQueries(FAVORITE_QUERIES, favoriteQueries);
             foundationUi.notify('Query saved');
         }
     }
@@ -46,7 +46,7 @@
         const queries = ns.DataStore.getQueries(key);
         queries.length > 0 && queries.splice(index, 1);
         ns.DataStore.setQueries(key, queries);
-        const table = key === FAVOURITE_QUERIES ? $('#favouriteQueriesTable tbody') : $('#latestQueriesTable tbody');
+        const table = key === FAVORITE_QUERIES ? $('#favoriteQueriesTable tbody') : $('#latestQueriesTable tbody');
         populateTable(queries, table, key);
     }
 
@@ -93,10 +93,10 @@
         $('.share-query-button').prop('disabled', value);
     }
 
-    $(document).on('coral-overlay:beforeopen', '#favouriteQueriesDialog', function () {
+    $(document).on('coral-overlay:beforeopen', '#favoriteQueriesDialog', function () {
         $selectedQuery = null;
-        const savedQueries = ns.DataStore.getQueries(FAVOURITE_QUERIES);
-        populateTable(savedQueries, $('#favouriteQueriesTable tbody'), FAVOURITE_QUERIES);
+        const savedQueries = ns.DataStore.getQueries(FAVORITE_QUERIES);
+        populateTable(savedQueries, $('#favoriteQueriesTable tbody'), FAVORITE_QUERIES);
     });
 
     $(document).on('coral-overlay:beforeopen', '#latestQueriesDialog', function () {
@@ -105,7 +105,7 @@
         populateTable(latestQueries, $('#latestQueriesTable tbody'), LATEST_QUERIES);
     });
 
-    $(document).on('coral-table:change', '#favouriteQueriesTable, #latestQueriesTable', function (e) {
+    $(document).on('coral-table:change', '#favoriteQueriesTable, #latestQueriesTable', function (e) {
         const selectedItem = e.target.selectedItem;
         if (selectedItem) {
             toggleActionBtnsDisabledState(false);

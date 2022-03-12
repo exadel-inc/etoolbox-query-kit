@@ -53,17 +53,17 @@
                         text="Open"
                         variant="actionBar">
                     <items jcr:primaryType="nt:unstructured">
-                        <favourites
+                        <favorites
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
-                                granite:id="openFavouritesQueriesButton"
+                                granite:id="openFavoritesQueriesButton"
                                 target=".eqk-ui"
                                 action="foundation.dialog"
                                 text="Saved...">
                             <data jcr:primaryType="nt:unstructured"
                                   nesting="hide"
                                   src.url="/mnt/overlay/etoolbox-query-kit/console/dialogs/saved-queries.html"/>
-                        </favourites>
+                        </favorites>
                         <latest
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
@@ -103,21 +103,21 @@
                 <exportHtml
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/button"
-                        granite:id="htmlExportBtn"
+                        granite:id="htmlExportButton"
                         icon="fileHTML"
                         text="HTML"
                         variant="actionBar"/>
                 <exportCsv
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/button"
-                        granite:id="csvExportBtn"
+                        granite:id="csvExportButton"
                         icon="fileExcel"
                         text="CSV"
                         variant="actionBar"/>
                 <exportJson
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/button"
-                        granite:id="jsonExportBtn"
+                        granite:id="jsonExportButton"
                         icon="fileJson"
                         text="JSON"
                         variant="actionBar"/>
