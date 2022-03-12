@@ -1,7 +1,7 @@
-![BackPack Logo](assets/eqk-logo.png)
+![QueryKit Logo](assets/eqk-logo.png)
 
 # Exadel Query Kit for AEM
-#### (EToolbox Query Kit)
+#### (part of Exadel Toolbox - EToolbox)
 ***
 ![License](https://img.shields.io/github/license/exadel-inc/etoolbox-authoring-kit)
 
