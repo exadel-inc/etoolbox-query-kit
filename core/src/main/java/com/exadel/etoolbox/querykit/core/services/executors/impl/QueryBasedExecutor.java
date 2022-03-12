@@ -1,14 +1,25 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.exadel.etoolbox.querykit.core.services.executors.impl;
 
 import com.exadel.etoolbox.querykit.core.models.query.MeasuredQueryResult;
 import com.exadel.etoolbox.querykit.core.models.qom.columns.ModifiableColumnCollection;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.models.search.SearchResult;
-import com.exadel.etoolbox.querykit.core.utils.ConverterException;
 import com.exadel.etoolbox.querykit.core.utils.ValueUtil;
 import org.apache.commons.lang3.ArrayUtils;
 
-import javax.jcr.RepositoryException;
 import javax.jcr.ValueFactory;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
@@ -34,7 +45,7 @@ abstract class QueryBasedExecutor extends ExecutorImpl {
                 .builder()
                 .request(request)
                 .executionTime(executionTime)
-                .info("Via " + getClass().getSimpleName())
+                .metadata("Via " + getClass().getSimpleName())
                 .columns(columnCollection);
 
         if (request.isIterating()) {
@@ -54,7 +65,7 @@ abstract class QueryBasedExecutor extends ExecutorImpl {
         return SearchResult
                 .builder()
                 .request(request)
-                .info("Via " + getClass().getSimpleName())
+                .metadata("Via " + getClass().getSimpleName())
                 .columns(columnCollection)
                 .build();
     }

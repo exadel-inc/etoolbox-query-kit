@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.exadel.etoolbox.querykit.core.utils.serialization;
 
 import com.exadel.etoolbox.querykit.core.utils.ResponseUtil;
@@ -17,6 +30,9 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 
+/**
+ * Contains utility methods for facilitating serialization of entities to JSON strings
+ */
 @UtilityClass
 public class JsonExportUtil {
 
@@ -27,8 +43,8 @@ public class JsonExportUtil {
     static {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeHierarchyAdapter(
-                        JsonExportable.class,
-                        (JsonSerializer<JsonExportable>) (value, type, context) -> value.toJson(context));
+                JsonExportable.class,
+                (JsonSerializer<JsonExportable>) (value, type, context) -> value.toJson(context));
         // Do not serialize empty strings
         gsonBuilder.registerTypeAdapter(
                 String.class,
@@ -41,8 +57,9 @@ public class JsonExportUtil {
                             jsonWriter.value(value);
                         }
                     }
+
                     @Override
-                    public String read(JsonReader jsonReader)  {
+                    public String read(JsonReader jsonReader) {
                         return null;
                     }
                 });
@@ -50,6 +67,11 @@ public class JsonExportUtil {
         GSON = gsonBuilder.create();
     }
 
+    /**
+     * Exports an arbitrary entity into a JSON string
+     * @param value Serializable object
+     * @return JSON string. Might be a JSON exposing an error message in case of a serialization exception
+     */
     public static String export(Object value) {
         try {
             return GSON.toJson(value);
@@ -58,7 +80,14 @@ public class JsonExportUtil {
         }
     }
 
-    public static void submitValue(JsonObject target, String name, Object value) {
+    /**
+     * Stores an arbitrary named value into the provided {@link JsonObject}. Honors whether the given value is a
+     * singular value or an array of objects
+     * @param target {@code JsonObject} instance
+     * @param name   Name of the value to store
+     * @param value  Value to store
+     */
+    public static void storeValue(JsonObject target, String name, Object value) {
         if (value != null && value.getClass().isArray()) {
             target.add(name, getArray(value));
         } else if (value != null) {

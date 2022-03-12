@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.exadel.etoolbox.querykit.core.models.search;
 
 import com.adobe.granite.ui.components.ds.ValueMapResource;
@@ -31,26 +44,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * A {@link SearchItem} implementation for an item that can be rendered or modified in UI
+ */
 class TypeAwareSearchItem implements SearchItem {
 
+    /**
+     * Accesses the path associated with the current entry
+     */
     @Getter
     @Setter
     private String path;
 
     private Map<String, PropertyDefinition> properties;
 
+    /**
+     * Creates a new {@link TypeAwareSearchItem} instance
+     * @param path Path associated with the current entry
+     */
     public TypeAwareSearchItem(String path) {
         this(path, new HashMap<>());
     }
 
+    /**
+     * Creates a new {@link TypeAwareSearchItem} instance
+     * @param path       Path associated with the current entry
+     * @param properties Properties which the current entry will report
+     */
     public TypeAwareSearchItem(String path, Map<String, Object> properties) {
         this(path, properties, path);
     }
 
-    /* ------------------------
-       Common interface methods
-       ------------------------ */
-
+    /**
+     * Creates a new {@link TypeAwareSearchItem} instance
+     * @param rootPath       JCR path associated with the search item in a whole
+     * @param properties     Properties which the current entry will report
+     * @param propertiesPath JCR path associated with the particular properties of the item
+     */
     public TypeAwareSearchItem(String rootPath, Map<String, Object> properties, String propertiesPath) {
         this.path = rootPath;
         if (MapUtils.isEmpty(properties)) {
@@ -64,11 +94,21 @@ class TypeAwareSearchItem implements SearchItem {
                 ValueUtil.detectType(value), ValueUtil.detectMultivalue(value)));
     }
 
+    /* ------------------------
+       Common interface methods
+       ------------------------ */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<String> getPropertyNames() {
         return properties != null ? properties.keySet() : Collections.emptySet();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T getProperty(String name, Class<T> type) {
         if (name == null || type == null) {
@@ -81,6 +121,9 @@ class TypeAwareSearchItem implements SearchItem {
         return type.cast(result.getValue());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object getProperty(String name) {
         if (name == null) {
@@ -93,11 +136,18 @@ class TypeAwareSearchItem implements SearchItem {
         return result.getValue();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void putProperty(String name, Object value) {
         putProperty(name, value, null, 0, false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void putProperty(String name, Object value, String path, int type, boolean multiple) {
         if (properties == null) {
             properties = new HashMap<>();
@@ -105,6 +155,9 @@ class TypeAwareSearchItem implements SearchItem {
         properties.put(name, new PropertyDefinition(value, path, type, multiple));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void clearProperties() {
         if (properties == null) {
@@ -117,6 +170,9 @@ class TypeAwareSearchItem implements SearchItem {
        Serialization
        ------------- */
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Resource toVirtualResource(ResourceResolver resourceResolver, ColumnCollection columns, String resourceType) {
         Map<String, Object> valueProperties = SearchItem.super.toVirtualResource(resourceResolver, columns, resourceType).getValueMap();
@@ -152,6 +208,9 @@ class TypeAwareSearchItem implements SearchItem {
                 valueMap);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public JsonElement toJson(JsonSerializationContext serializer, ColumnCollection data) {
         JsonObject result = new JsonObject();
@@ -182,7 +241,7 @@ class TypeAwareSearchItem implements SearchItem {
         @Override
         public JsonElement toJson(JsonSerializationContext serializer) {
             JsonObject result = new JsonObject();
-            JsonExportUtil.submitValue(result, Constants.PROPERTY_VALUE, value);
+            JsonExportUtil.storeValue(result, Constants.PROPERTY_VALUE, value);
             result.addProperty(Constants.PROPERTY_PATH, path);
             if (type > 0) {
                 result.addProperty(Constants.PROPERTY_TYPE, PropertyType.nameFromValue(type) + (multiple ? "[]" : StringUtils.EMPTY));

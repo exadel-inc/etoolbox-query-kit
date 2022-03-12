@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers;
 
 import com.exadel.etoolbox.querykit.core.models.qom.EvaluationContext;
@@ -20,12 +33,25 @@ import java.util.Map;
 import static org.apache.jackrabbit.commons.query.qom.Operator.EQ;
 import static org.apache.jackrabbit.commons.query.qom.Operator.LIKE;
 
+/**
+ * Contains utility methods for composing JCR node predicates out of constraint adapters
+ * <p><u>Note</u>: this class is not a part of a public API</p>
+ */
 @UtilityClass
 @Slf4j
 public class PredicateHelper {
 
     private static final String WILDCARD = "%";
 
+    /**
+     * Compares the two operands in the given evaluation context with the provided operator. Returns a boolean value
+     * manifesting the result of the comparison
+     * @param context  {@link EvaluationContext} instance
+     * @param left     Left operand
+     * @param operator A string representing the operator in "real-world" notation
+     * @param right    Right operand
+     * @return True or false
+     */
     public static boolean compare(
             EvaluationContext context,
             DynamicOperandAdapter left,
@@ -36,6 +62,15 @@ public class PredicateHelper {
         return compare(leftValue, operator, right, context.getBindVariables());
     }
 
+    /**
+     * Compares a property selector against a static operand in the given evaluation context with the provided operator.
+     * Returns a boolean value manifesting the result of the comparison
+     * @param context  {@link EvaluationContext} instance
+     * @param selector Property selector
+     * @param operator A string representing the operator in "real-world" notation
+     * @param right    Right (static) operand
+     * @return True or false
+     */
     public static boolean compare(
             EvaluationContext context,
             String selector,
@@ -50,6 +85,15 @@ public class PredicateHelper {
         return compare(leftValue, operator, right, context.getBindVariables());
     }
 
+    /**
+     * Compares an arbitrary value a static operand in the given evaluation context with the provided operator. Returns
+     * a boolean value manifesting the result of the comparison
+     * @param leftValue     Left (arbitrary) operand
+     * @param operator      A string representing the operator in "real-world" notation
+     * @param right         Right (static) operand
+     * @param bindVariables Query's bind variables used to compose the static operand
+     * @return True or false
+     */
     public static boolean compare(
             Object leftValue,
             String operator,

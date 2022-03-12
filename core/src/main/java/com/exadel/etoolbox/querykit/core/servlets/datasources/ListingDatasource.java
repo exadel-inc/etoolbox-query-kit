@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.exadel.etoolbox.querykit.core.servlets.datasources;
 
 import com.adobe.granite.ui.components.ds.DataSource;
@@ -27,6 +40,9 @@ import java.util.stream.Collectors;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_PATHS;
 
+/**
+ * Serves requests for a list of query results
+ */
 @Component(
         service = Servlet.class,
         property = {
@@ -39,6 +55,12 @@ public class ListingDatasource extends SlingSafeMethodsServlet {
     @Reference
     private QueryService queryService;
 
+    /**
+     * Processes HTTP {@code GET} requests. Depending on the request parameters, sets the list of retrieved query result
+     * entries as a request attribute per the format of Granite Table datasource, or outputs in a a JSON value
+     * @param request  {@code SlingHttpServletRequest} object
+     * @param response {@code slingHttpServletResponse} object
+     */
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
         SearchRequest searchRequest = SearchRequest.from(request, request.getResource().getChild(Constants.NODE_DATASOURCE));

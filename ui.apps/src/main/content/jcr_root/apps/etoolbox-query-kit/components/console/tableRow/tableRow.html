@@ -1,18 +1,31 @@
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License").
+  You may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
 <sly data-sly-use.row="com.exadel.etoolbox.querykit.core.models.query.TableRowInfo"/>
 <tr is="coral-table-row" class="foundation-collection-navigator"
     data-foundation-collection-navigator-href="#">
     <td is="coral-table-cell">
         <coral-checkbox coral-table-rowselect/>
     </td>
-    <sly data-sly-list.cellName="${row.cells}">
+    <sly data-sly-list.cell="${row.cells}">
         <td class="result-table-cell"
             is="coral-table-cell"
-            data-name="${cellName}"
-            data-path="${row.cells[cellName].path}"
-            data-type="${row.cells[cellName].type}"
-            data-editable="${row.cells[cellName].path} ? 'true' : 'false'">
+            data-name="${cell.name}"
+            data-path="${cell.path}"
+            data-type="${cell.type}"
+            data-editable="${cell.path} ? 'true' : 'false'">
         <span>
-           ${row.cells[cellName].value}
+           ${cell.value}
         </span>
         </td>
     </sly>

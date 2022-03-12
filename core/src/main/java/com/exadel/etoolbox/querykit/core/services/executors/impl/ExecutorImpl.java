@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.exadel.etoolbox.querykit.core.services.executors.impl;
 
 import com.exadel.etoolbox.querykit.core.models.qom.columns.ColumnAdapter;
@@ -28,17 +41,44 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
+/**
+ * Provides the basic functionality for services implementing {@link Executor}
+ */
 abstract class ExecutorImpl implements Executor {
 
     private static final Predicate<Row> DEFAULT_FILTER = row -> true;
     private static final UnaryOperator<SearchItem> DEFAULT_MODIFIER = item -> item;
 
+    /**
+     * Retrieves the list of requested item filter factories
+     * @return A nullable {@code List} value
+     */
     abstract List<SearchItemFilterFactory> getItemFilters();
 
+    /**
+     * Retrieves the list of requested item converter factories
+     * @return A nullable {@code List} value
+     */
     abstract List<SearchItemConverterFactory> getItemConverters();
 
-    abstract ColumnCollection getColumnCollection(SearchRequest request, Query source) throws ConverterException;
+    /**
+     * Retrieves the {@link ColumnCollection} per the current search request and {@link Query} object
+     * @param request {@code SearchRequest} instance
+     * @param query   {@code Query} instance
+     * @return {@code ColumnCollection} object, non-null
+     * @throws ConverterException If the conversion failed
+     */
+    abstract ColumnCollection getColumnCollection(SearchRequest request, Query query) throws ConverterException;
 
+    /**
+     * Fills in the provided {@code SearchResult} builder the {@link SearchResult} instances created out of query result
+     * entries (rows)
+     * @param searchResultBuilder The builder to populate
+     * @param queryResult         {@link QueryResult} instance
+     * @param request             {@link SearchRequest} used to create new search items
+     * @param columns             {@link ColumnCollection} used to create new search items
+     * @throws RepositoryException If data retrieval for the search item creation failed
+     */
     void populate(
             SearchResult.Builder searchResultBuilder,
             QueryResult queryResult,
@@ -57,6 +97,15 @@ abstract class ExecutorImpl implements Executor {
         }
     }
 
+    /**
+     * Fills in the provided {@code SearchResult} builder the {@link SearchResult} instances created out of query result
+     * entries (rows) while simultaneously calculating the "total results" value via iteration
+     * @param searchResultBuilder The builder to populate
+     * @param queryResult         {@link QueryResult} instance
+     * @param request             {@link SearchRequest} used to create new search items
+     * @param columns             {@link ColumnCollection} used to create new search items
+     * @throws RepositoryException If data retrieval for the search item creation failed
+     */
     void populateAndMeasure(
             SearchResult.Builder searchResultBuilder,
             QueryResult queryResult,

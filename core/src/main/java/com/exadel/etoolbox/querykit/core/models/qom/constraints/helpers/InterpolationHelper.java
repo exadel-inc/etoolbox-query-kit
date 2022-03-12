@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers;
 
 import com.exadel.etoolbox.querykit.core.models.qom.constraints.ConstraintAdapter;
@@ -20,12 +33,26 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * Contains utility methods for interpolating user-defined variable templates
+ * <p><u>Note</u>: this class is not a part of a public API</p>
+ */
 @UtilityClass
 @Slf4j
 public class InterpolationHelper {
 
     private static final Pattern INTERPOLATION_TEMPLATE = Pattern.compile("(?<!\\w)\\$([a-z]\\w*)\\b");
 
+    /**
+     * Interpolates possible user-defined variable templates within the given {@link ConstraintAdapter} with
+     * user-provided arguments
+     * @param source             Constraint adapter to use
+     * @param arguments          {@code Map} of user-provided arguments
+     * @param qomFactory         {@link QueryObjectModelFactory} instance
+     * @param valueSupplier      A routine that provides templated string values
+     * @param constraintSupplier A routine that provides new constraint objects
+     * @return An original or augmented {@code Constraint} object
+     */
     public static Constraint interpolate(
             ConstraintAdapter source,
             Map<String, Object> arguments,
@@ -36,6 +63,18 @@ public class InterpolationHelper {
         return interpolate(source, arguments, qomFactory, valueSupplier, constraintSupplier, Or.class);
     }
 
+    /**
+     * Interpolates possible user-defined variable templates within the given {@link ConstraintAdapter} with
+     * user-provided arguments
+     * @param source             Constraint adapter to use
+     * @param arguments          {@code Map} of user-provided arguments
+     * @param qomFactory         {@link QueryObjectModelFactory} instance
+     * @param valueSupplier      A routine that provides templated string values
+     * @param constraintSupplier A routine that provides new constraint objects
+     * @param reductionOperator  {@code Class<?>} reference representing what logical operator to use when interpolating
+     *                           array-like values
+     * @return An original or augmented {@code Constraint} object
+     */
     public static Constraint interpolate(
             ConstraintAdapter source,
             Map<String, Object> arguments,
@@ -98,6 +137,13 @@ public class InterpolationHelper {
             }
         }
     }
+
+    /**
+     * Gets whether the given string contains a user-defined template for variable interpolation
+     * @param value       String literal
+     * @param placeholder Placeholder string ("variable") to look for
+     * @return True or false
+     */
     public static boolean isProcessable(String value, String placeholder) {
         Matcher matcher = INTERPOLATION_TEMPLATE.matcher(value);
         return matcher.find() && matcher.group(1).equals(placeholder);

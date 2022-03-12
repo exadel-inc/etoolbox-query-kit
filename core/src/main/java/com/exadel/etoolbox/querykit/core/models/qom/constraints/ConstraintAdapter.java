@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.exadel.etoolbox.querykit.core.models.qom.constraints;
 
 import com.exadel.etoolbox.querykit.core.models.qom.EvaluationContext;
@@ -35,6 +48,10 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Represents an adapter for a query object model constraint. This one has additional features such as ability to
+ * interpolate user-defined property templates and being exported to a node JCR node predicate
+ */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 public abstract class ConstraintAdapter {
@@ -75,21 +92,57 @@ public abstract class ConstraintAdapter {
 
     private final transient Constraint original;
 
+    /**
+     * Retrieves the type of this constraint
+     */
     @Getter
     private final String type;
 
+    /**
+     * Retrieves the basic constraint this adapter is created from
+     * @return {@link Constraint} instance
+     */
     public Constraint getConstraint() {
         return original;
     }
 
+    /**
+     * Retrieves an augmented constraint that honors the provided arguments with the ability to interpolate user-defined
+     * variable templates if there are any
+     * @param factory   {@link QueryObjectModelFactory} instance
+     * @param arguments A nullable {@code Map} representing user-provided arguments
+     * @return A possibly augmented {@link Constraint} value
+     * @throws RepositoryException If constraint creation fails
+     */
     public abstract Constraint getConstraint(QueryObjectModelFactory factory, Map<String, Object> arguments) throws RepositoryException;
 
+    /**
+     * Retrieves the {@code Predicate} built upon the current constraint that can be used to filter JCR nodes in a
+     * non-query manner
+     * @return {@code Predicate} instance
+     */
     public abstract Predicate<EvaluationContext> getPredicate();
 
+    /**
+     * Implements the "visitor" pattern for the current constraint as a part of a constraint tree. Allows traversing the
+     * constraint tree
+     * @param consumer A routine that visits every constraint in the constraint tree
+     */
     public void visit(Consumer<ConstraintAdapter> consumer) {
         consumer.accept(this);
     }
 
+    /* ---------------
+       Factory methods
+       --------------- */
+
+    /**
+     * Creates a new {@link ConstraintAdapter} instance based upon the given original constraint with the use of the
+     * given factory context
+     * @param original Original {@link Constraint} instance
+     * @param context  {@link QomAdapterContext} used for creating the adapters tree
+     * @return {@code ConstraintAdapter} instance, or null in case of invalid arguments or adapter creation failure
+     */
     public static ConstraintAdapter from(
             Constraint original,
             QomAdapterContext context) {

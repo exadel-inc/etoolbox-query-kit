@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.exadel.etoolbox.querykit.core.utils.serialization;
 
 import com.exadel.etoolbox.querykit.core.utils.Constants;
@@ -21,9 +34,16 @@ import javax.jcr.query.qom.SameNodeJoinCondition;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.UpperCase;
 
+/**
+ * Contains utility methods for facilitating the export of standard query entities into formatted JSON
+ */
 @UtilityClass
 class StandardTypesHelper {
 
+    /**
+     * Feeds the prepared JSON serializers (formatters) into the given JSON builder
+     * @param builder {@link GsonBuilder} instance
+     */
     public static void feedToGsonBuilder(GsonBuilder builder) {
         addForColumn(builder);
         addForChildNodeJoinCondition(builder);

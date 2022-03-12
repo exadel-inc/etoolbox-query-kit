@@ -14,20 +14,15 @@
 package com.exadel.etoolbox.querykit.core.utils;
 
 /**
- * Represents a functional monad based upon a {@code BiFunction} that throws an exception
- * @param <T> Type of the first argument
- * @param <U> Type of the second argument
- * @param <R> Type of the returned value
+ * Triggers when an OSGi component matching the requirements cannot be found
  */
-@FunctionalInterface
-public interface TryBiFunction<T, U, R> {
+public class MissingComponentException extends RuntimeException {
 
     /**
-     * Executes a bi-argument function
-     * @param t First argument
-     * @param u Second argument
-     * @return {@code R}-typed value
-     * @throws Exception If the enclosed code produces an exception
+     * Creates a new instance
+     * @param message Exception message
      */
-    R apply(T t, U u) throws Exception;
+    public MissingComponentException(String message) {
+        super(message);
+    }
 }

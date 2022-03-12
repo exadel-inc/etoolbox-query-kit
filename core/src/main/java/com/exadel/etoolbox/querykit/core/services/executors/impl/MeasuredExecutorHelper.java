@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.exadel.etoolbox.querykit.core.services.executors.impl;
 
 import com.exadel.etoolbox.querykit.core.models.query.MeasuredQueryResult;
@@ -17,13 +30,23 @@ import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+/**
+ * Helper class that facilitates running parallel queries for retrieving results and measuring the total number of
+ * results
+ */
 @Builder
 class MeasuredExecutorHelper {
 
     private final SearchRequest request;
     private final Query query;
 
-
+    /**
+     * Implements parallel queries for retrieving results and measuring the total number of results
+     * @param request {@link SearchRequest} instance
+     * @param query   {@link Query} instance
+     * @return {@link MeasuredQueryResult} object, non-null
+     * @throws Exception In case query running failed
+     */
     public static MeasuredQueryResult execute(SearchRequest request, Query query) throws Exception {
         CompletableFuture<ValueOrException<QueryResult>> resultSupplier =
                 CompletableFuture.supplyAsync(() -> executeMainQuery(query));

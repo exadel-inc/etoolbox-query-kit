@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.exadel.etoolbox.querykit.core.services.query.impl;
 
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
@@ -55,7 +68,7 @@ public class QueryServiceTest {
         Assert.assertTrue(result.isSuccess());
         Assert.assertTrue(result.getTotal() > 0);
         Assert.assertEquals(1, result.getItems().size());
-        Assert.assertTrue(result.getInfo().contains(QomExecutor.class.getSimpleName()));
+        Assert.assertTrue(result.getMetadata().contains(QomExecutor.class.getSimpleName()));
     }
 
     @Test
@@ -73,7 +86,7 @@ public class QueryServiceTest {
         Assert.assertTrue(result.isSuccess());
         Assert.assertEquals(10, result.getTotal());
         Assert.assertEquals(5, result.getItems().size());
-        Assert.assertTrue(result.getInfo().contains(QomExecutor.class.getSimpleName()));
+        Assert.assertTrue(result.getMetadata().contains(QomExecutor.class.getSimpleName()));
     }
 
     @Test
@@ -90,7 +103,7 @@ public class QueryServiceTest {
 
         Assert.assertTrue(result.isSuccess());
         Assert.assertTrue(result.getTotal() > 0);
-        Assert.assertTrue(result.getInfo().contains(SqlExecutor.class.getSimpleName()));
+        Assert.assertTrue(result.getMetadata().contains(SqlExecutor.class.getSimpleName()));
     }
 
     @Test

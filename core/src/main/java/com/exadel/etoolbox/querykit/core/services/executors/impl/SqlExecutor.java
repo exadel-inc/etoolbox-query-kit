@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.exadel.etoolbox.querykit.core.services.executors.impl;
 
 import com.exadel.etoolbox.querykit.core.models.qom.QomAdapter;
@@ -28,6 +41,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Implements {@link Executor} for running queries based on SQL statements
+ */
 @Component(service = Executor.class)
 public class SqlExecutor extends QueryBasedExecutor  {
 
@@ -37,19 +53,31 @@ public class SqlExecutor extends QueryBasedExecutor  {
     @Reference(target = "(converter.output=QOM)", policyOption = ReferencePolicyOption.GREEDY)
     private QueryConverter queryConverterService;
 
+    /**
+     * {@inheritDoc}
+     */
     @Getter(AccessLevel.PACKAGE)
     @Reference
     private List<SearchItemFilterFactory> itemFilters;
 
+    /**
+     * {@inheritDoc}
+     */
     @Getter(AccessLevel.PACKAGE)
     @Reference
     private List<SearchItemConverterFactory> itemConverters;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ExecutorType getType() {
         return ExecutorType.SQL;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ParsedQueryInfo parse(SearchRequest request) throws Exception {
 
@@ -78,15 +106,21 @@ public class SqlExecutor extends QueryBasedExecutor  {
         };
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     Query compile(SearchRequest request) throws Exception {
         return request.getQueryManager().createQuery(parse(request).toSqlString(), Query.JCR_SQL2);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    ColumnCollection getColumnCollection(SearchRequest request, Query source) throws ConverterException {
+    ColumnCollection getColumnCollection(SearchRequest request, Query query) throws ConverterException {
         QueryObjectModel qom = queryConverterService.convert(
-                prepareSelectExtract(source.getStatement()),
+                prepareSelectExtract(query.getStatement()),
                 request.getResourceResolver(),
                 QomAdapter.class)
                 .getModel();

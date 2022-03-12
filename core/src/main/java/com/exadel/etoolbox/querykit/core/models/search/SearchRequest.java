@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.exadel.etoolbox.querykit.core.models.search;
 
 import com.exadel.etoolbox.querykit.core.utils.RequestUtil;
@@ -23,6 +36,9 @@ import java.util.stream.Collectors;
 
 import static com.exadel.etoolbox.querykit.core.utils.RequestUtil.PARAMETER_PREFIX;
 
+/**
+ * Contains user-specified data used to compose and execute a query
+ */
 @Builder(access = AccessLevel.PRIVATE, builderClassName = "Builder")
 @Getter
 @Slf4j
@@ -43,53 +59,112 @@ public class SearchRequest {
 
     private static final String PARAM_VALUE_ITERATING = "iterating";
 
+    /**
+     * Gets the {@link ResourceResolver} associated with the current request
+     */
     private transient ResourceResolver resourceResolver;
 
+    /**
+     * Gets the query statement string
+     */
     @With
     private String statement;
 
+    /**
+     * Gets the user parameters passed alongside the query statement
+     */
     private Map<String, Object> userParameters;
 
+    /**
+     * Gets the names of item filters used to modify query results
+     */
     private List<String> itemFilters;
 
+    /**
+     * Gets the user parameters passed alongside the query statement
+     */
     private SearchResultFormat resultFormat;
 
     private boolean iterating;
 
+    /**
+     * Gets the limit of results per query run
+     */
     private long limit;
 
+    /**
+     * Gets the names of item converters used to modify query results
+     */
     private List<String> itemConverters;
 
+    /**
+     * Gets the offset applied to query results
+     */
     private long offset;
 
+    /**
+     * Gets whether the query result should expose all properties when a wildcard selector is specified (by default,
+     * only the {@code jcr:path} is exposed unless some particular columns are named)
+     */
     private boolean showAllProperties;
 
+    /**
+     * Gets whether the total number of results should be computed alongside with the results per given {@code offset}
+     * and {@code limit}
+     */
     private boolean showTotal;
 
+    /**
+     * Gets whether the query result should contain metadata for particular properties, such as property path and data
+     * type
+     */
     private boolean storeDetails;
 
+    /**
+     * Gets whether the statement should be parsed executed in a "non-query" manner, i.e., via repository traversal
+     */
     private boolean traverse;
 
-    /* ----------------
-       Instance methods
-       ---------------- */
+    /* ------------------
+       Instance accessors
+       ------------------ */
 
+    /**
+     * Gets whether the current request is valid
+     * @return True or false
+     */
     public boolean isValid() {
         return !getType().equals(QueryType.UNSUPPORTED) && offset >= 0 && limit >= 0;
     }
 
+    /**
+     * Gets the {@link QueryType} associated with the current request
+     * @return {@code QueryType} value
+     */
     public QueryType getType() {
         return QueryType.from(statement);
     }
 
-    public QueryParsingFormat getParsingFormat() {
-        return this.getResultFormat() == SearchResultFormat.JSON ? QueryParsingFormat.JSON : QueryParsingFormat.SQL;
+    /**
+     * Gets the {@link QueryRenderingFormat} associated with the current request
+     * @return {@code QueryRenderingFormat} value
+     */
+    public QueryRenderingFormat getRenderingFormat() {
+        return this.getResultFormat() == SearchResultFormat.JSON ? QueryRenderingFormat.JSON : QueryRenderingFormat.SQL;
     }
 
+    /**
+     * Gets whether the query engine should perform complete results iteration to retrieve the total number of results
+     */
     public boolean isIterating() {
         return traverse || iterating || !itemFilters.isEmpty();
     }
 
+    /**
+     * Retrieves the {@link QueryManager} associated with the current request
+     * @return {@code QueryManager} object
+     * @throws RepositoryException In the {@code QueryManager} cannot be retrieved
+     */
     public QueryManager getQueryManager() throws RepositoryException {
         Session session = resourceResolver.adaptTo(Session.class);
         Workspace workspace = Optional.ofNullable(session).map(Session::getWorkspace).orElse(null);
@@ -99,6 +174,11 @@ public class SearchRequest {
         return workspace.getQueryManager();
     }
 
+    /**
+     * Retrieves the {@link ValueFactory} associated with the current request
+     * @return {@code ValueFactory} object
+     * @throws RepositoryException In the {@code ValueFactory} cannot be retrieved
+     */
     public ValueFactory getValueFactory() throws RepositoryException {
         Session session = resourceResolver.adaptTo(Session.class);
         if (session == null) {
@@ -111,10 +191,23 @@ public class SearchRequest {
        Factory methods
        --------------- */
 
+    /**
+     * Creates a new {@link SearchRequest} instance by extracting parameters from the provided {@code
+     * SlingHttpServletRequest}
+     * @param request {@code SlingHttpServletRequest} object
+     * @return New {@code SearchRequest} instance
+     */
     public static SearchRequest from(SlingHttpServletRequest request) {
         return from(request, null);
     }
 
+    /**
+     * Creates a new {@link SearchRequest} instance by extracting parameters from the provided {@code
+     * SlingHttpServletRequest} and Sling {@code Resource} that contains fallback parameters
+     * @param request  {@code SlingHttpServletRequest} object
+     * @param resource {@code Resource} object
+     * @return New {@code SearchRequest} instance
+     */
     public static SearchRequest from(SlingHttpServletRequest request, Resource resource) {
         return SearchRequest
                 .builder()
@@ -153,5 +246,4 @@ public class SearchRequest {
         }
         return result;
     }
-
 }
