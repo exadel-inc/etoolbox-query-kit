@@ -62,7 +62,7 @@
                                 text="Saved...">
                             <data jcr:primaryType="nt:unstructured"
                                   nesting="hide"
-                                  src.url="/mnt/overlay/etoolbox-query-kit/console/dialogs/saved-queries.html"/>
+                                  src.url="/mnt/overlay/etoolbox-query-kit/console/dialogs/favorite-queries.html"/>
                         </favorites>
                         <latest
                                 jcr:primaryType="nt:unstructured"

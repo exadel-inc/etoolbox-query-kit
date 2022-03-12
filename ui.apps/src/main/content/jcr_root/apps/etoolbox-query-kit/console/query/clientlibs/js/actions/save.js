@@ -95,8 +95,8 @@
 
     $(document).on('coral-overlay:beforeopen', '#favoriteQueriesDialog', function () {
         $selectedQuery = null;
-        const savedQueries = ns.DataStore.getQueries(FAVORITE_QUERIES);
-        populateTable(savedQueries, $('#favoriteQueriesTable tbody'), FAVORITE_QUERIES);
+        const favoriteQueries = ns.DataStore.getQueries(FAVORITE_QUERIES);
+        populateTable(favoriteQueries, $('#favoriteQueriesTable tbody'), FAVORITE_QUERIES);
     });
 
     $(document).on('coral-overlay:beforeopen', '#latestQueriesDialog', function () {
