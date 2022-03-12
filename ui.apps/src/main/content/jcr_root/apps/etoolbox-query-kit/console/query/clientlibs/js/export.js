@@ -11,8 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-(function (document, $) {
+(function (document, ns, $) {
     'use strict';
+
+    // TODO try convert to granite-foundation actions
 
     $(document).on('click', '#buttonExportPdf', function () {
         doPostForExport('pdf', 'PDF');
@@ -31,9 +33,11 @@
     });
 
     function doPostForExport(type, format) {
-        const editor = document.querySelector('.CodeMirror').CodeMirror;
-        const value = editor.getValue();
+        const query = ns.DataStore.getQuery();
 
+        // TODO convert to AJAX request
+        // foundation-io.wait()
+        // then cancelWait()
         const xhrRequest = new XMLHttpRequest();
         xhrRequest.open('POST', '/services/etoolbox-query-kit/export', true);
         xhrRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -48,6 +52,6 @@
             a.click();
             document.body.removeChild(a);
         };
-        xhrRequest.send(`query=${value}&format=${format}`);
+        xhrRequest.send(`-query=${query}&-format=${format}`);
     }
-})(document, Granite.$);
+})(document, Granite.Eqk = (Granite.Eqk || {}), Granite.$);

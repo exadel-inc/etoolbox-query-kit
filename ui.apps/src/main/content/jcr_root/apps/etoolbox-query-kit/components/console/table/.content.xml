@@ -24,7 +24,7 @@
                 granite:rel="granite-uptime-collection"
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="granite/ui/components/coral/foundation/table"
-                granite:id="tableResult"
+                granite:id="resultsTable"
                 stateId="shell.collectionpage"
                 selectionCount="single"
                 selectionMode="row">

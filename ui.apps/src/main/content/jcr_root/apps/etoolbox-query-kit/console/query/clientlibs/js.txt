@@ -5,13 +5,15 @@ addon/hint/sql-hint.js
 addon/hint/show-hint.js
 
 #base=js
+editor/editor-init.js
 editor/sql2-init.js
-editor/codemirror-init.js
-export-group.js
+utils/datastore.js
+actions.js
+export.js
 profiles.js
-query-kit-dialog.js
 query-dialog.js
-query-run.js
-query-save.js
-query-share.js
-settings.js
+
+#base=js/actions
+execute.js
+save.js
+share.js

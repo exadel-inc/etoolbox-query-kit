@@ -44,7 +44,7 @@
     border: none;
 }
 
-.CodeMirror, #tableResult {
+.CodeMirror, #resultsTable {
     width: auto;
     height: 82vh;
     background-color: #fff;
