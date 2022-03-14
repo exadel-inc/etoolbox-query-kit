@@ -67,12 +67,6 @@
     }
 
     function openQueryDialog(name, el, config, collection, selections) {
-        const action = registry.get('foundation.collection.action.action').find(function (action) {
-            return action.name === 'foundation.dialog';
-        });
-        if (!action) {
-            return;
-        }
         const profile = ns.DataStore.getProfileName();
         const url = new URL(config.data.src, window.location);
         url.searchParams.set('profile', profile);
@@ -82,7 +76,7 @@
                 src: url.pathname + url.search
             }
         };
-        action.handler.call(this, 'foundation.dialog', el, newConfig, collection, selections);
+        ns.runAction('foundation.dialog', this, el, newConfig, collection, selections)
     }
 
     function completeQueryDialog(name, el) {
@@ -113,12 +107,16 @@
         });
     }
 
-    $(document).on('coral-overlay:open', '.eqk-dialog', function (e) {
+    $(document).on('coral-overlay:open', '#queryDialog', function (e) {
         const $dialog = $(e.target);
         $dialog.find('[data-datasource-query]').each(function (index, dsInput) {
             populateItemSources($dialog, $(dsInput));
         });
     });
+
+    /* -------
+       Actions
+       ------- */
 
     registry.register('foundation.collection.action.action', {
         name: 'eqk.query.dialog',
