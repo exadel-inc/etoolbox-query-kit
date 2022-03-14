@@ -68,7 +68,7 @@ class MeasuredExecutorHelper {
     private static ValueOrException<QueryResult> executeMainQuery(Query query) {
         try {
             return new ValueOrException<>(query.execute());
-        } catch (RepositoryException e) {
+        } catch (RepositoryException | UnsupportedOperationException e) {
             return new ValueOrException<>(e);
         }
     }
@@ -88,7 +88,7 @@ class MeasuredExecutorHelper {
                 }
             }
             return new ValueOrException<>(0L);
-        } catch (RepositoryException | NumberFormatException e) {
+        } catch (RepositoryException | NumberFormatException | UnsupportedOperationException e) {
             return new ValueOrException<>(e);
         }
     }

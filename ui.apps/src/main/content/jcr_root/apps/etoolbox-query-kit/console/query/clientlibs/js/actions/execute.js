@@ -37,9 +37,17 @@
                 foundationUi.wait();
             },
             success: function (data) {
-                const $result = $(data);
-                $('#resultsColumn').empty().prepend($result);
-                $(document).trigger('eqk-success-response', args);
+                const $result = $('<div/>').html(data);
+                const $errorMessage = $result.find('.error');
+                const isBackendException = $errorMessage.length;
+                if (!isBackendException) {
+                    $('#resultsColumn').empty().prepend($result.html());
+                    $(document).trigger('eqk-success-response', args);
+                } else {
+                    foundationUi.alert('EToolbox Query Console', 'Could not retrieve results: ' + $errorMessage.text(), 'error');
+                    $errorMessage.remove();
+                    $('#resultsColumn').empty().prepend($result.html());
+                }
             },
             error: function (error) {
                 foundationUi.alert('EToolbox Query Console', 'Could not retrieve results' + (error.responseText ? ': ' + error.responseText : ''), 'error');

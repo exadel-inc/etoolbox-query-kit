@@ -33,6 +33,11 @@
         </sly>
     </div>
     <div>
-        ${info.executionTime} ms
+        <sly data-sly-test="${info.executionTime}">
+            ${info.executionTime} ms
+        </sly>
     </div>
+</div>
+<div data-sly-test="${info.errorMessage}" class="error hidden">
+    ${info.errorMessage}
 </div>

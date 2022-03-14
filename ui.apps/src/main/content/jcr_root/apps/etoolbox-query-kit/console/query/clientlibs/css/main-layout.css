@@ -66,3 +66,7 @@
 .no-selection-badge .coral-Table-row.is-focused .coral-Table-cell:first-of-type:after{
     background: none;
 }
+
+.coral3-Dialog--error .coral3-Dialog-wrapper {
+    max-width: 550px;
+}
