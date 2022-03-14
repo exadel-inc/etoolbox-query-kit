@@ -93,6 +93,16 @@ public class ResponseUtil {
         sendContent(response, status, Constants.CONTENT_TYPE_JSON, content);
     }
 
+    /**
+     * Sends the provided content as a CSV response
+     * @param response {@code SlingHttpServletResponse} object
+     * @param content  CSV payload to send
+     * @throws IOException If response preparation or sending failed
+     */
+    public static void sendCsv(SlingHttpServletResponse response, String content) throws IOException {
+        sendContent(response, HttpServletResponse.SC_OK, Constants.CONTENT_TYPE_CSV, content);
+    }
+
     private static void sendContent(SlingHttpServletResponse response, int status, String contentType, String content) throws IOException {
         response.setContentType(contentType);
         response.setStatus(status);
