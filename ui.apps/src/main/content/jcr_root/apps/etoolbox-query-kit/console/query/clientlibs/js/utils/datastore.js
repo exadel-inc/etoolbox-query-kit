@@ -1,46 +1,73 @@
 (function (ns) {
     'use strict';
 
-    const KEY_PAGE_LIMIT = 'eqk-pageLimit';
+    const KEY_PAGE_SIZE = 'eqk-pageSize';
     const KEY_PROFILE = 'eqk-profile';
     const KEY_QUERY = 'eqk-query';
 
-    const DEFAULT_PAGE_LIMIT = 20;
+    const DEFAULT_PAGE_SIZE = 15;
     const DEFAULT_PROFILE = 'default';
 
     class DataStore {
+        static FAVORITE_QUERIES = 'eqk-favorite-queries';
+        static LATEST_QUERIES = 'eqk-latest-queries';
 
-        static getQuery() {
+        // Session data
+
+        static getCurrentQuery() {
             return sessionStorage.getItem(KEY_QUERY) || '';
         };
 
-        static setQuery(value) {
+        static setCurrentQuery(value) {
             sessionStorage.setItem(KEY_QUERY, value);
         };
 
+        // Locally stored data - Generic
+
+        static getValue(key, defaultValue, postproc) {
+            let result = localStorage.getItem(key) || defaultValue;
+            if (postproc instanceof Function && result) {
+                result = postproc(result);
+            }
+            return result;
+        }
+
+        static setValue(key, value, preproc) {
+            let storable = value;
+            if (preproc instanceof Function) {
+                storable = preproc(storable);
+            }
+            localStorage.setItem(key, storable);
+        }
+
+        // Locally stored data - Particular
+
         static getProfileName() {
-            return localStorage.getItem(KEY_PROFILE) || DEFAULT_PROFILE;
+            return DataStore.getValue(KEY_PROFILE, DEFAULT_PROFILE);
         };
 
         static setProfileName(value) {
-            localStorage.setItem(KEY_PROFILE, value);
+            DataStore.setValue(KEY_PROFILE, value);
         };
 
-        static getPageLimit() {
-            return localStorage.getItem(KEY_PAGE_LIMIT) || DEFAULT_PAGE_LIMIT;
+        static getPageSize() {
+            return DataStore.getValue(KEY_PAGE_SIZE, DEFAULT_PAGE_SIZE);
         }
 
-        static setPageLimit(value) {
-            localStorage.setItem(KEY_PAGE_LIMIT, value);
-        };
+        static getFavoriteQueries() {
+            return DataStore.getValue(DataStore.FAVORITE_QUERIES, [], result => JSON.parse(result));
+        }
 
-        static getQueries(key) {
-            const storageItem = localStorage.getItem(key);
-            return storageItem ? JSON.parse(storageItem) : [];
-        };
+        static setFavoriteQueries(value) {
+            DataStore.setValue(DataStore.FAVORITE_QUERIES, value, val => JSON.stringify(val));
+        }
 
-        static setQueries(key, queries) {
-            localStorage.setItem(key, JSON.stringify(queries));
+        static getLatestQueries() {
+            return DataStore.getValue(DataStore.LATEST_QUERIES, [], result => JSON.parse(result));
+        }
+
+        static setLatestQueries(value) {
+            DataStore.setValue(DataStore.LATEST_QUERIES, value, val => JSON.stringify(val));
         }
     }
 
