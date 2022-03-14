@@ -26,12 +26,15 @@ public class Constants {
     public static final String DOT = ".";
     public static final String DOUBLE_AT = "@@";
     public static final String OPENING_BRACKET = "(";
-    public static final String QUOTE = "'";
+    public static final String QUOTE = "\"";
+    public static final String SEMICOLON = ";";
+    public static final String SINGLE_QUOTE = "'";
 
     public static final String ATTRIBUTE_ERROR_MESSAGE = "eqk-errorMessage";
     public static final String ATTRIBUTE_EXECUTION_TIME = "eqk-executionTime";
     public static final String ATTRIBUTE_TOTAL = "eqk-total";
 
+    public static final String CONTENT_TYPE_CSV = "text/csv";
     public static final String CONTENT_TYPE_JSON = "application/json";
     public static final String CONTENT_TYPE_TEXT = "text/html";
 

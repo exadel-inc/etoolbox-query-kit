@@ -13,6 +13,7 @@
  */
 package com.exadel.etoolbox.querykit.core.models.query.helpers;
 
+import com.exadel.etoolbox.querykit.core.utils.Constants;
 import lombok.Getter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -28,9 +29,7 @@ import javax.inject.Inject;
 @Model(adaptables = SlingHttpServletRequest.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public class InlineJsonHelper {
 
-    private static final String QUOTE = "\"";
     private static final String COLON = ":";
-    private static final String COMMA = ",";
     private static final String OPENING_BRACKET = "{";
     private static final String CLOSING_BRACKET = "}";
 
@@ -59,15 +58,15 @@ public class InlineJsonHelper {
                 continue;
             }
             if (commaNeeded) {
-                stringBuilder.append(COMMA);
+                stringBuilder.append(Constants.COMMA);
             }
-            stringBuilder.append(QUOTE).append(args[i].toString()).append(QUOTE).append(COLON);
+            stringBuilder.append(Constants.QUOTE).append(args[i].toString()).append(Constants.QUOTE).append(COLON);
             if (args[i + 1] == null) {
-                stringBuilder.append(QUOTE).append(QUOTE);
+                stringBuilder.append(Constants.QUOTE).append(Constants.QUOTE);
             } else if (args[i + 1].getClass().isArray()) {
                 stringBuilder.append(prepareJson((Object[]) args[i + 1]));
             } else {
-                stringBuilder.append(QUOTE).append(args[i + 1].toString()).append(QUOTE);
+                stringBuilder.append(Constants.QUOTE).append(args[i + 1].toString()).append(Constants.QUOTE);
             }
             commaNeeded = true;
         }
