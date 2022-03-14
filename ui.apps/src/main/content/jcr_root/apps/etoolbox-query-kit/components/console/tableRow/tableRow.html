@@ -49,12 +49,28 @@
                 </a>
             </div>
             <div class="actions"
-                 data-sly-test="${!isMainPath && cell.path}">
+                 data-sly-test="${!isMainPath}"
+                 data-sly-set.collectionActionSrc="${'/mnt/overlay/etoolbox-query-kit/console/dialogs/edit-content.html?path={0}&name={1}&type={2}&{3}'
+                    @ format = [
+                         cell.path,
+                         cell.name,
+                         cell.type,
+                         cell.valueHash
+                 ]}"
+                 data-sly-use.collectionAction="${'com.exadel.etoolbox.querykit.core.models.query.helpers.InlineJsonHelper'
+                    @ args = [
+                        'target', '.eqk-ui',
+                        'action', 'foundation.dialog',
+                        'data', [
+                            'src', collectionActionSrc,
+                            'nesting', 'hide'
+                        ]
+                 ]}"
+            >
                 <a is="coral-anchorbutton"
                    class="coral3-Button coral3-Button--secondary coral3-QuickActions-button foundation-collection-action"
                    variant="secondary"
-                   data-foundation-collection-action="{&quot;target&quot;:&quot;.eqk-ui&quot;,&quot;action&quot;:&quot;foundation.dialog&quot;,&quot;data&quot;:{&quot;src&quot;:&quot;/mnt/overlay/etoolbox-query-kit/console/dialogs/edit-content.html?path=${cell.path}&name=${cell.name}&type=${cell.type}&${cell.valueHash}&quot;,&quot;nesting&quot;:&quot;hide&quot;}}"
-                   data-foundation-tracking-event="{&quot;feature&quot;:null,&quot;element&quot;:&quot;edit&quot;,&quot;type&quot;:&quot;button&quot;,&quot;widget&quot;:{&quot;name&quot;:null,&quot;type&quot;:&quot;button&quot;}}"
+                   data-foundation-collection-action="${collectionAction.json}"
                    href="#"
                    title="Edit value"
                    aria-label="Edit value"
