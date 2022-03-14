@@ -90,21 +90,29 @@
         const queryParams = collectQueryParams($dialog);
         queryParams['-query'] = queryString;
 
-        $.ajax({
-            method: 'POST',
-            url: PARSE_ENDPOINT,
-            data: queryParams,
-            traditional: true,
-            beforeSend: function () {
-                foundationUi.wait();
-            },
-            success: function (response) {
-                ns.setEditorValue(response);
-            },
-            complete: function () {
-                foundationUi.clearWait();
-            }
-        });
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                method: 'POST',
+                url: PARSE_ENDPOINT,
+                data: queryParams,
+                traditional: true,
+                beforeSend: function () {
+                    foundationUi.wait();
+                },
+                success: function (response) {
+                    ns.setEditorValue(response);
+                    resolve();
+                },
+                error: function (e) {
+                    foundationUi.alert('EToolbox Query Console', 'Could not parse query' + (e.responseText ? ': ' + e.responseText : ''), 'error');
+                    reject(e);
+                },
+                complete: function () {
+                    foundationUi.clearWait();
+                }
+            });
+
+        })
     }
 
     $(document).on('coral-overlay:open', '#queryDialog', function (e) {
@@ -130,6 +138,10 @@
 
     registry.register('foundation.collection.action.action', {
         name: 'eqk.query.toEditorAndRun',
-        handler: completeQueryDialog
+        handler: function (name, el) {
+            completeQueryDialog(name, el).then(() => {
+                ns.runAction('eqk.query.execute', this);
+            });
+        }
     });
 })(window, Granite.$, Granite.Eqk = (Granite.Eqk || {}));
