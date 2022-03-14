@@ -1,5 +1,4 @@
 (function ($, ns) {
-
     'use strict';
 
     const EDITOR_SELECTOR = '#queryEditor';
@@ -35,5 +34,4 @@
             editor.setValue(query);
         };
     });
-
 })(Granite.$, Granite.Eqk = (Granite.Eqk || {}));

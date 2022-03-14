@@ -31,7 +31,8 @@
                 '-offset': args.offset || 0,
                 '-pageSize': args.pageSize || ns.DataStore.getPageSize(),
                 '-total': args.passedTotal || 0,
-                '-typeaware': true },
+                '-typeaware': true
+            },
             beforeSend: function () {
                 foundationUi.wait();
             },
@@ -66,7 +67,7 @@
             offset: $navButton.data('query-offset'),
             pageSize: $navButton.data('query-size'),
             passedTotal: getRenderedTotal()
-        }
+        };
     }
 
     function getRenderedTotal() {
@@ -102,5 +103,4 @@
             executeAndUpdateUi(args);
         }
     });
-
 })(document, Granite.$, Granite.Eqk = (Granite.Eqk || {}));

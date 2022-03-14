@@ -9,8 +9,13 @@
     const DEFAULT_PROFILE = 'default';
 
     class DataStore {
-        static FAVORITE_QUERIES = 'eqk-favorite-queries';
-        static LATEST_QUERIES = 'eqk-latest-queries';
+        static get FAVORITE_QUERIES() {
+            return 'eqk-favorite-queries';
+        }
+
+        static get LATEST_QUERIES() {
+            return 'eqk-latest-queries';
+        }
 
         // Session data
 
@@ -55,22 +60,21 @@
         }
 
         static getFavoriteQueries() {
-            return DataStore.getValue(DataStore.FAVORITE_QUERIES, [], result => JSON.parse(result));
+            return DataStore.getValue(this.FAVORITE_QUERIES, [], result => JSON.parse(result));
         }
 
         static setFavoriteQueries(value) {
-            DataStore.setValue(DataStore.FAVORITE_QUERIES, value, val => JSON.stringify(val));
+            DataStore.setValue(this.FAVORITE_QUERIES, value, val => JSON.stringify(val));
         }
 
         static getLatestQueries() {
-            return DataStore.getValue(DataStore.LATEST_QUERIES, [], result => JSON.parse(result));
+            return DataStore.getValue(this.LATEST_QUERIES, [], result => JSON.parse(result));
         }
 
         static setLatestQueries(value) {
-            DataStore.setValue(DataStore.LATEST_QUERIES, value, val => JSON.stringify(val));
+            DataStore.setValue(this.LATEST_QUERIES, value, val => JSON.stringify(val));
         }
     }
 
     ns.DataStore = DataStore;
-
 })(Granite.Eqk = (Granite.Eqk || {}));

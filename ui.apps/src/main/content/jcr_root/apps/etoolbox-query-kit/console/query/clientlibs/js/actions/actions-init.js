@@ -1,9 +1,7 @@
 (function (ns, $) {
-
     'use strict';
 
     $(document).ready(function () {
-
         const registry = $(window).adaptTo('foundation-registry');
 
         /** Retrieves a registered action by name and then runs it with the provided content and parameters */
@@ -16,7 +14,5 @@
             }
             target.handler.call(context, name, el, config, collection, selections);
         };
-
     });
-
 })(Granite.Eqk = (Granite.Eqk || {}), Granite.$);

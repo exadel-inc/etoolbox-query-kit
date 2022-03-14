@@ -132,5 +132,4 @@
 
     // TODO third action
     $(document).on('click', '.share-query-button', shareQuery);
-
 })(document, Granite.$, Granite.Eqk = (Granite.Eqk || {}));

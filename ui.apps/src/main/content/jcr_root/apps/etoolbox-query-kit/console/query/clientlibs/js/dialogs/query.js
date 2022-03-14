@@ -76,7 +76,7 @@
                 src: url.pathname + url.search
             }
         };
-        ns.runAction('foundation.dialog', this, el, newConfig, collection, selections)
+        ns.runAction('foundation.dialog', this, el, newConfig, collection, selections);
     }
 
     function completeQueryDialog(name, el) {

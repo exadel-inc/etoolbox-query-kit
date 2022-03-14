@@ -15,5 +15,4 @@
             }
         }
     });
-
 })(document, Granite.$, Granite.Eqk = (Granite.Eqk || {}));

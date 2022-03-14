@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-(function(Granite) {
+(function (Granite) {
     'use strict';
 
     const registry = Granite.UI.Foundation.Registry;
@@ -22,15 +22,15 @@
     registry.register('foundation.adapters', {
         type: 'foundation-collection',
         selector: '.eqk-ui.foundation-collection',
-        adapter: function() {
+        adapter: function () {
             return {
-                append: function(items) {
+                append: function (items) {
                     // No operation
                 },
-                clear: function() {
+                clear: function () {
                     // No operation
                 },
-                getPagination: function() {
+                getPagination: function () {
                     // No operation
                 }
             };

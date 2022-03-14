@@ -28,7 +28,6 @@
             e.preventDefault();
             completeSettingsDialog($form);
         });
-
     }
 
     function completeSettingsDialog($dialog) {
@@ -42,5 +41,4 @@
     }
 
     $(document).on('coral-overlay:open', '#userSettingsDialog', fillSettingsDialog);
-
 })(window, Granite.$, Granite.Eqk = (Granite.Eqk || {}));

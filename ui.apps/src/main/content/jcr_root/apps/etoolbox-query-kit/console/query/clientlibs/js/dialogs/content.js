@@ -14,13 +14,12 @@
 (function (window, $, ns) {
     'use strict';
 
-    const registry = $(window).adaptTo('foundation-registry');
     const foundationUi = $(window).adaptTo('foundation-ui');
 
     function manageContentDialog(e) {
         const $dialog = $(e.target);
         const $form = $dialog.find('form');
-        $form.submit(function(e) {
+        $form.submit(function (e) {
             e.preventDefault();
             submitAsync($form);
             $dialog.remove();
@@ -47,9 +46,7 @@
                 foundationUi.clearWait();
             }
         });
-
     }
 
     $(document).on('coral-overlay:open', '#editContentDialog', manageContentDialog);
-
 })(window, Granite.$, Granite.Eqk = (Granite.Eqk || {}));
