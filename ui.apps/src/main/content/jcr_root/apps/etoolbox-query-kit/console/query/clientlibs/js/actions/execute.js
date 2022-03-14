@@ -16,140 +16,91 @@
 
     const TABLE_URL = '/apps/etoolbox-query-kit/components/console/tableHost/jcr:content/data.html';
 
-    const DEFAULT_LIMIT = 2;
-
-    const $editRowForm = $('#editRowDialogForm');
-
-    let currentPage = 1;
-    let offset = 0;
-    const limit = DEFAULT_LIMIT;
-
-    let totalCount;
-
     const registry = $(window).adaptTo('foundation-registry');
     const foundationUi = $(window).adaptTo('foundation-ui');
 
-    registry.register('foundation.collection.action.action', {
-        name: 'eqk.query.executeQuery',
-        handler: function () {
-            const query = ns.getEditorValue();
-            if (!query) return;
-            updateUrlParams(query);
-            currentPage = 1;
-            totalCount = 0;
-            offset = 0;
-            updateResult(query);
+    function executeAndUpdateUi(args) {
+        if (!args || !args.query) {
+            return;
         }
-    });
-
-    function updateUrlParams(query) {
-        if (query && query.trim().length > 0 && history.pushState) {
-            const url = new URL(window.location);
-            url.searchParams.set('-query', encodeURIComponent(query));
-            url.searchParams.set('-measure', 'true');
-            window.history.pushState({}, '', url.toString());
-        }
-    }
-
-    function updateResult(query) {
         $.ajax({
             url: TABLE_URL,
             type: 'GET',
-            data: { '-query': query, '-offset': offset, '-pageSize': limit, '-measure': !totalCount, '-typeaware': true },
+            data: {
+                '-query': args.query,
+                '-offset': args.offset || 0,
+                '-pageSize': args.pageSize || ns.DataStore.getPageSize(),
+                '-total': args.passedTotal || 0,
+                '-typeaware': true },
             beforeSend: function () {
                 foundationUi.wait();
             },
             success: function (data) {
-                $(document).trigger('query-kit:success-response', query);
-                const $table = $(data);
-                offset = 0;
-                totalCount = $table.attr('data-foundation-layout-table-guesstotal');
-                updateTable($table);
+                const $result = $(data);
+                $('#resultsColumn').empty().prepend($result);
+                $(document).trigger('eqk-success-response', args);
             },
             error: function (error) {
-                foundationUi.alert('EToolbox Query Kit', 'Could not retrieve results' + (error.responseText ? ': ' + error.responseText : ''), 'error');
+                foundationUi.alert('EToolbox Query Console', 'Could not retrieve results' + (error.responseText ? ': ' + error.responseText : ''), 'error');
             },
             complete: function () {
                 foundationUi.clearWait();
             }
         });
     }
-
-    function updateTable($table) {
-        $('#resultsTable').remove();
-        $('.pagination').remove();
-        $('#resultsColumn').prepend($table);
-    }
-
-    $(document).on('click', '.nav-page-button', function (e) {
-        currentPage = e.target.value;
-        const query = ns.getEditorValue();
-        offset = (currentPage - 1) * limit;
-        updateResult(query);
-    });
 
     $(document).on('click', '.nav-button', function (e) {
-        if ($(e.target).is('.next')) {
-            offset = currentPage * limit;
-            currentPage++;
-        } else {
-            currentPage--;
-            offset = (currentPage - 1) * limit;
+        const $button = $(e.target);
+        if ($button.is('.coral3-Button--primary')) {
+            return;
         }
-        const query = ns.getEditorValue();
-        updateResult(query);
+        executeAndUpdateUi(getQueryArgs($button));
     });
 
-    $editRowForm.submit(function (e) {
-        e.preventDefault();
-        const form = $(this);
-        const url = form.attr('action');
-        const data = form.serialize();
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: data,
-            success: function () {
-                foundationUi.notify('Row successfully edited');
-            },
-            error: function (error) {
-                foundationUi.alert('EToolbox Query Kit', 'Edit row error' + (error.responseText ? ': ' + error.responseText : ''), 'error');
-            }
-        });
-    });
-
-    $(document).on('dblclick', '.result-table-cell', function (e) {
-        const property = e.target.getAttribute('data-name');
-        const type = e.target.getAttribute('data-type');
-        const path = e.target.getAttribute('data-path');
-
-        $.ajax({
-            url: '/apps/etoolbox-query-kit/console/dialogs/editCell.html',
-            type: 'GET',
-            data: { path: path, property: property, type: type },
-            beforeSend: function () {
-                foundationUi.wait();
-            },
-            success: function (data) {
-                const action = $(data).find('input[name="path"]')[0].value;
-                const dialogContent = $(data).find('div[id="editCellDialogContainer"]');
-                $('#editCellDialog form').attr('action', action);
-                $('#editCellDialog div[id="editCellDialogContainer"]').remove();
-                $('#editCellDialog div.coral-FixedColumn').append(dialogContent);
-                openDialog('#editCellDialog');
-            },
-            error: function (error) {
-                foundationUi.alert('EToolbox Query Kit', 'Could not retrieve results' + (error.responseText ? ': ' + error.responseText : ''), 'error');
-            },
-            complete: function () {
-                foundationUi.clearWait();
-            }
-        });
-    });
-
-    function openDialog(dialogSelector) {
-        const dialog = document.querySelector(dialogSelector);
-        dialog.center();
-        dialog.show();
+    function getQueryArgs($navButton) {
+        if (!$navButton.length) {
+            return {};
+        }
+        return {
+            query: ns.DataStore.getCurrentQuery(),
+            offset: $navButton.data('query-offset'),
+            pageSize: $navButton.data('query-size'),
+            passedTotal: getRenderedTotal()
+        }
     }
+
+    function getRenderedTotal() {
+        const $resultsTable = $('#resultsTable');
+        return ($resultsTable.length && $resultsTable.attr('data-foundation-layout-table-guesstotal')) || 0;
+    }
+
+    /* --------------------
+       Actions registration
+       -------------------- */
+
+    registry.register('foundation.collection.action.action', {
+        name: 'eqk.query.execute',
+        handler: function () {
+            if (!ns.getEditorValue()) {
+                return;
+            }
+            ns.DataStore.setCurrentQuery(ns.getEditorValue());
+            executeAndUpdateUi({
+                query: ns.getEditorValue()
+            });
+        }
+    });
+
+    registry.register('foundation.collection.action.action', {
+        name: 'eqk.query.replay',
+        handler: function () {
+            const $button = $('.nav-button.coral3-Button--primary');
+            if (!$button.length) {
+                return;
+            }
+            const args = getQueryArgs($button);
+            executeAndUpdateUi(args);
+        }
+    });
+
 })(document, Granite.$, Granite.Eqk = (Granite.Eqk || {}));
