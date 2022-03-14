@@ -95,6 +95,7 @@ abstract class ExecutorImpl implements Executor {
             populateItemProperties(searchItem, row, columns);
             searchResultBuilder.item(modifier.apply(searchItem));
         }
+        searchResultBuilder.markExecutionEnd();
     }
 
     /**
@@ -130,8 +131,7 @@ abstract class ExecutorImpl implements Executor {
                 searchResultBuilder.item(modifier.apply(searchItem));
             }
         }
-
-        searchResultBuilder.total(total);
+        searchResultBuilder.markExecutionEnd().total(total);
     }
 
     private void populateItemProperties(

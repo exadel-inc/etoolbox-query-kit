@@ -32,21 +32,21 @@ abstract class QueryBasedExecutor extends ExecutorImpl {
         Query query = compileAndSetUp(request);
         ModifiableColumnCollection columnCollection = (ModifiableColumnCollection) getColumnCollection(request, query);
 
-        long startingTime = System.currentTimeMillis();
+        SearchResult.Builder resultBuilder = SearchResult
+                .builder()
+                .request(request)
+                .metadata("Via " + getClass().getSimpleName())
+                .markExecutionStart();
+
         QueryResult queryResult = request.shouldIterate()
                 ? query.execute()
                 : executeMeasured(request, query);
-        long executionTime = System.currentTimeMillis() - startingTime;
 
         if (request.isShowAllProperties()) {
             columnCollection.injectNamesForWildcards(queryResult.getColumnNames());
         }
-        SearchResult.Builder resultBuilder = SearchResult
-                .builder()
-                .request(request)
-                .executionTime(executionTime)
-                .metadata("Via " + getClass().getSimpleName())
-                .columns(columnCollection);
+
+        resultBuilder.columns(columnCollection);
 
         if (request.shouldIterate()) {
             populateAndMeasure(resultBuilder, queryResult, request, columnCollection);
