@@ -31,6 +31,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 /**
@@ -66,6 +67,9 @@ public class QueryItemsDatasource extends SlingSafeMethodsServlet {
                 .stream()
                 .map(item -> item.toVirtualResource(request.getResourceResolver(), searchResult.getColumns(), ITEM_RESOURCE_TYPE))
                 .collect(Collectors.toList());
+
+        AtomicLong rowOrdinals = new AtomicLong(searchRequest.getOffset() + 1);
+        resources.forEach(res -> res.getValueMap().put(Constants.PROPERTY_ORDINAL, rowOrdinals.getAndIncrement()));
 
         DataSource dataSource = new SimpleDataSource(resources.iterator());
         request.setAttribute(DataSource.class.getName(), new MeasuredDatasourceAdapter(dataSource, searchResult.getTotal()));

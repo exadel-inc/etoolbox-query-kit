@@ -38,10 +38,23 @@ public class TableRowInfo {
     private Resource resource;
 
     /**
+     * Retrieves the ordinal of this row in the collection of query results
+     */
+    @Getter(lazy = true)
+    private final long ordinal = prepareOrdinal();
+
+    /**
      * Retrieves the collection of cells to be rendered within the current table row
      */
     @Getter(lazy = true)
     private final Collection<TableCellInfo> cells = prepareCells();
+
+    private long prepareOrdinal() {
+        if (resource == null) {
+            return 0L;
+        }
+        return resource.getValueMap().get(Constants.PROPERTY_ORDINAL, 0L);
+    }
 
     private Collection<TableCellInfo> prepareCells() {
         Map<String, TableCellInfo> cells = new LinkedHashMap<>();
