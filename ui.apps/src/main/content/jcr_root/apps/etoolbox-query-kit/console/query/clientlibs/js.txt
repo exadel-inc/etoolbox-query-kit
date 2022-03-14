@@ -4,16 +4,25 @@ mode/sql/sql.js
 addon/hint/sql-hint.js
 addon/hint/show-hint.js
 
+#base=js/editor
+editor-init.js
+sql2-init.js
+
 #base=js
-editor/editor-init.js
-editor/sql2-init.js
-utils/datastore.js
-actions.js
 export.js
 profiles.js
-query-dialog.js
 
 #base=js/actions
+actions-init.js
 execute.js
 save.js
 share.js
+
+#base=js/dialogs
+query.js
+settings.js
+content.js
+
+#base=js/utils
+datastore.js
+noop-adapter.js

@@ -5,4 +5,4 @@ addon/hint/show-hint.css
 #base=css
 main-layout.css
 dialog.css
-table.css
+results.css
