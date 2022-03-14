@@ -5,14 +5,15 @@
     const foundationUi = $(window).adaptTo('foundation-ui');
 
     registry.register('foundation.collection.action.action', {
-        name: 'eqk.query.shareQuery',
+        name: 'eqk.query.share',
         handler: function () {
             const query = ns.getEditorValue();
             if (query) {
-                foundationUi.notify('URL copied to clipboard');
                 const urlWithoutParams = window.location.origin + window.location.pathname;
-                navigator.clipboard.writeText(urlWithoutParams + '?query=' + encodeURIComponent(query));
+                navigator.clipboard.writeText(urlWithoutParams + '?-query=' + encodeURIComponent(query));
+                foundationUi.notify('Query URL copied to clipboard');
             }
         }
     });
+
 })(document, Granite.$, Granite.Eqk = (Granite.Eqk || {}));

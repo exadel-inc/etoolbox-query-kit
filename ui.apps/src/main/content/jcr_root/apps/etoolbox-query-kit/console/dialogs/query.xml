@@ -17,9 +17,9 @@
         xmlns:jcr="http://www.jcp.org/jcr/1.0"
         xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
         jcr:primaryType="nt:unstructured"
-        jcr:title="Find content"
-        granite:id="dialog-query"
-        granite:class="coral-Form coral-Form--vertical eqk-dialog"
+        jcr:title="Find Content"
+        granite:id="queryDialog"
+        granite:class="coral-Form coral-Form--vertical eqk-dialog eqk-query-dialog"
         sling:resourceType="granite/ui/components/coral/foundation/dialog">
     <items jcr:primaryType="nt:unstructured">
         <content jcr:primaryType="nt:unstructured"

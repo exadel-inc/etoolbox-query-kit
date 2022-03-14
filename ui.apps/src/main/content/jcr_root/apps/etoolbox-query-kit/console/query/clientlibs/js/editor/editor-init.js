@@ -1,7 +1,9 @@
-(function (ns, $) {
+(function ($, ns) {
+
     'use strict';
+
     const EDITOR_SELECTOR = '#queryEditor';
-    const ENTER = 'Enter';
+    const KEY_ENTER = 'Enter';
 
     $(document).ready(function () {
         const textArea = $(EDITOR_SELECTOR)[0];
@@ -16,25 +18,22 @@
         });
 
         editor.on('keyup', function (cm, event) {
-            if (!cm.state.completionActive && event.key !== ENTER) {
+            if (!cm.state.completionActive && event.key !== KEY_ENTER) {
                 CodeMirror.commands.autocomplete(cm, null, { completeSingle: false });
             }
         });
 
-        editor.on('blur', function () {
-            ns.DataStore.setQuery(editor.getValue());
-        });
+        editor.setValue(ns.DataStore.getLatestQueries().length ? ns.DataStore.getLatestQueries()[0] : '');
 
-        editor.setValue(ns.DataStore.getQuery());
-
-        /** Util to get query from editor */
+        /** Gets query string from the editor */
         ns.getEditorValue = function () {
-            return editor.getValue();
+            return editor.getValue().trim();
         };
 
-        /** Util to set query to editor */
+        /** Assigns query string to the editor */
         ns.setEditorValue = function (query) {
             editor.setValue(query);
         };
     });
-})(Granite.Eqk = (Granite.Eqk || {}), Granite.$);
+
+})(Granite.$, Granite.Eqk = (Granite.Eqk || {}));

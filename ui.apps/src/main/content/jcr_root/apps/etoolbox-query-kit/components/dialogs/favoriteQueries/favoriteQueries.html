@@ -1,4 +1,4 @@
-<!--
+<!--/*
   Licensed under the Apache License, Version 2.0 (the "License").
   You may not use this file except in compliance with the License.
   You may obtain a copy of the License at
@@ -10,12 +10,12 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
--->
+  */-->
 <coral-dialog class="foundation-toggleable eqk-dialog" closable="on" id="favoriteQueriesDialog">
     <coral-dialog-header>Saved queries</coral-dialog-header>
     <coral-dialog-content>
         <div class="coral-Form coral-Form--vertical foundation-layout-util-maximized-container">
-            <table is="coral-table" id="favoriteQueriesTable" selectable>
+            <table is="coral-table" id="favoriteQueriesTable" selectable class="no-selection-badge">
                 <tbody is="coral-table-body"></tbody>
             </table>
         </div>

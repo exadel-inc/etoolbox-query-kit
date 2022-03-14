@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-(function (document, ns, $) {
+(function (document, $, ns) {
     'use strict';
 
     // TODO try convert to granite-foundation actions
@@ -28,12 +28,8 @@
         doPostForExport('json', 'JSON');
     });
 
-    $(document).on('query-kit:success-response', function (event, result) {
-        $("[name='export-buttons-group']").prop('disabled', !(result.data && result.data.length > 0));
-    });
-
     function doPostForExport(type, format) {
-        const query = ns.DataStore.getQuery();
+        const query = ns.DataStore.getCurrentQuery();
 
         // TODO convert to AJAX request
         // foundation-io.wait()
@@ -54,4 +50,4 @@
         };
         xhrRequest.send(`-query=${query}&-format=${format}`);
     }
-})(document, Granite.Eqk = (Granite.Eqk || {}), Granite.$);
+})(document, Granite.$, Granite.Eqk = (Granite.Eqk || {}));
