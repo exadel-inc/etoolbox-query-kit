@@ -19,6 +19,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -50,7 +51,7 @@ public class SearchRequest {
     private static final String PARAMETER_OFFSET = PARAMETER_PREFIX + "offset";
     private static final String PARAMETER_LIMIT = PARAMETER_PREFIX + "pageSize";
     private static final String PARAMETER_QUERY = PARAMETER_PREFIX + "query";
-    private static final String PARAMETER_SHOW_TOTAL = PARAMETER_PREFIX + "measure";
+    private static final String PARAMETER_TOTAL = PARAMETER_PREFIX + "total";
     private static final String PARAMETER_TYPE_AWARE = PARAMETER_PREFIX + "typeaware";
     private static final String PARAMETER_TRAVERSE = PARAMETER_PREFIX + "traverse";
 
@@ -103,16 +104,16 @@ public class SearchRequest {
     private long offset;
 
     /**
+     * Gets the value that can be returned as the "total number of results" without additional measurement. If the value
+     * is {@code 0}, the measurement is performed. If it is negative, it is always skipped
+     */
+    private long predefinedTotal;
+
+    /**
      * Gets whether the query result should expose all properties when a wildcard selector is specified (by default,
      * only the {@code jcr:path} is exposed unless some particular columns are named)
      */
     private boolean showAllProperties;
-
-    /**
-     * Gets whether the total number of results should be computed alongside with the results per given {@code offset}
-     * and {@code limit}
-     */
-    private boolean showTotal;
 
     /**
      * Gets whether the query result should contain metadata for particular properties, such as property path and data
@@ -138,14 +139,6 @@ public class SearchRequest {
     }
 
     /**
-     * Gets the {@link QueryType} associated with the current request
-     * @return {@code QueryType} value
-     */
-    public QueryType getType() {
-        return QueryType.from(statement);
-    }
-
-    /**
      * Gets the {@link QueryRenderingFormat} associated with the current request
      * @return {@code QueryRenderingFormat} value
      */
@@ -154,10 +147,26 @@ public class SearchRequest {
     }
 
     /**
+     * Gets the {@link QueryType} associated with the current request
+     * @return {@code QueryType} value
+     */
+    public QueryType getType() {
+        return QueryType.from(statement);
+    }
+
+    /**
      * Gets whether the query engine should perform complete results iteration to retrieve the total number of results
      */
-    public boolean isIterating() {
+    public boolean shouldIterate() {
         return traverse || iterating || !itemFilters.isEmpty();
+    }
+
+    /**
+     * Gets whether the total number of results should be calculated
+     * @return True or false
+     */
+    public boolean shouldCalculateTotal() {
+        return predefinedTotal == 0 || iterating;
     }
 
     /**
@@ -217,13 +226,12 @@ public class SearchRequest {
 
                 .itemFilters(RequestUtil.getStringCollection(request, resource, PARAMETER_ITEM_FILTERS))
                 .resultFormat(SearchResultFormat.from(request.getRequestPathInfo().getExtension()))
-                .iterating(PARAM_VALUE_ITERATING.equals(RequestUtil.getParameter(request, resource, PARAMETER_SHOW_TOTAL)))
+                .iterating(PARAM_VALUE_ITERATING.equals(RequestUtil.getParameter(request, resource, PARAMETER_TOTAL)))
                 .limit(RequestUtil.getNumericValue(RequestUtil.getParameter(request, resource, PARAMETER_LIMIT), DEFAULT_LIMIT))
                 .itemConverters(RequestUtil.getStringCollection(request, resource, PARAMETER_ITEM_CONVERTERS))
                 .offset(RequestUtil.getNumericValue(RequestUtil.getParameter(request, resource, PARAMETER_OFFSET), DEFAULT_OFFSET))
+                .predefinedTotal(preparePredefinedTotal(request, resource))
                 .showAllProperties(Boolean.parseBoolean(RequestUtil.getParameter(request, resource, PARAMETER_ALL)))
-                .showTotal(Boolean.parseBoolean(RequestUtil.getParameter(request, resource, PARAMETER_SHOW_TOTAL))
-                        || PARAM_VALUE_ITERATING.equals(RequestUtil.getParameter(request, resource, PARAMETER_SHOW_TOTAL)))
                 .storeDetails(Boolean.parseBoolean(RequestUtil.getParameter(request, resource, PARAMETER_TYPE_AWARE)))
                 .traverse(Boolean.parseBoolean(RequestUtil.getParameter(request, resource, PARAMETER_TRAVERSE)))
 
@@ -245,5 +253,16 @@ public class SearchRequest {
             }
         }
         return result;
+    }
+
+    private static long preparePredefinedTotal(SlingHttpServletRequest request, Resource resource) {
+        String rawTotal = RequestUtil.getParameter(request, resource, PARAMETER_TOTAL);
+        if (StringUtils.isNotBlank(rawTotal) && StringUtils.isNumeric(rawTotal)) {
+            return Math.max(Long.parseLong(rawTotal), 0L);
+        }
+        if (Boolean.parseBoolean(rawTotal) || PARAM_VALUE_ITERATING.equals(rawTotal)) {
+            return 0;
+        }
+        return -1;
     }
 }

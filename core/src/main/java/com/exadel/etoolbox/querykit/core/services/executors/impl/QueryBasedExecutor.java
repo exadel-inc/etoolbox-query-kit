@@ -13,8 +13,8 @@
  */
 package com.exadel.etoolbox.querykit.core.services.executors.impl;
 
-import com.exadel.etoolbox.querykit.core.models.query.MeasuredQueryResult;
 import com.exadel.etoolbox.querykit.core.models.qom.columns.ModifiableColumnCollection;
+import com.exadel.etoolbox.querykit.core.models.query.MeasuredQueryResult;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.models.search.SearchResult;
 import com.exadel.etoolbox.querykit.core.utils.ValueUtil;
@@ -33,7 +33,7 @@ abstract class QueryBasedExecutor extends ExecutorImpl {
         ModifiableColumnCollection columnCollection = (ModifiableColumnCollection) getColumnCollection(request, query);
 
         long startingTime = System.currentTimeMillis();
-        QueryResult queryResult = request.isIterating()
+        QueryResult queryResult = request.shouldIterate()
                 ? query.execute()
                 : executeMeasured(request, query);
         long executionTime = System.currentTimeMillis() - startingTime;
@@ -48,7 +48,7 @@ abstract class QueryBasedExecutor extends ExecutorImpl {
                 .metadata("Via " + getClass().getSimpleName())
                 .columns(columnCollection);
 
-        if (request.isIterating()) {
+        if (request.shouldIterate()) {
             populateAndMeasure(resultBuilder, queryResult, request, columnCollection);
         } else {
             populate(resultBuilder, queryResult, request, columnCollection);
@@ -75,7 +75,7 @@ abstract class QueryBasedExecutor extends ExecutorImpl {
     private Query compileAndSetUp(SearchRequest request) throws Exception {
         ValueFactory valueFactory = request.getValueFactory();
         Query query = compile(request);
-        if (!request.isIterating()) {
+        if (!request.shouldIterate()) {
             query.setOffset(request.getOffset());
             if (request.getLimit() > 0 && request.getLimit() != SearchRequest.DEFAULT_LIMIT) {
                 query.setLimit(request.getLimit());
@@ -90,8 +90,8 @@ abstract class QueryBasedExecutor extends ExecutorImpl {
     }
 
     private QueryResult executeMeasured(SearchRequest request, Query query) throws Exception {
-        if (!request.isShowTotal()) {
-            return new MeasuredQueryResult(query.execute());
+        if (!request.shouldCalculateTotal()) {
+            return new MeasuredQueryResult(query.execute(), Math.max(request.getPredefinedTotal(), 0));
         }
         return MeasuredExecutorHelper.execute(request, query);
     }
