@@ -14,7 +14,9 @@
 <sly data-sly-use.info="com.exadel.etoolbox.querykit.core.models.query.QueryExecutionInfo"/>
 <div id="executionInfo" class="foundation-layout-util-vmargin">
     <div>
-        ${info.pagination.current.start}&ndash;${info.pagination.current.end} of ${info.total}
+        <sly data-sly-test="${info.pagination.current.start && info.pagination.current.end}">
+            ${info.pagination.current.start}&ndash;${info.pagination.current.end} of ${info.total}
+        </sly>
     </div>
     <div>
         <sly data-sly-list.page="${info.pagination.elements}">

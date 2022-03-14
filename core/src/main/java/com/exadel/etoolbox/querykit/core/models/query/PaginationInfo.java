@@ -68,7 +68,9 @@ public class PaginationInfo {
             elements.add(PageElement.button(pageCount, pageSize));
         }
         elements.stream().filter(elt -> elt.getNumber() == currentPage).findFirst().ifPresent(PageElement::setCurrent);
-        elements.getLast().setMaxEndPosition(total);
+        if (!elements.isEmpty()) {
+            elements.getLast().setMaxEndPosition(total);
+        }
     }
 
     /**
