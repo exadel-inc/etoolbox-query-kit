@@ -14,6 +14,7 @@
 package com.exadel.etoolbox.querykit.core.models.query;
 
 import com.exadel.etoolbox.querykit.core.utils.Constants;
+import com.exadel.etoolbox.querykit.core.utils.RequestUtil;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -22,7 +23,6 @@ import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.SlingObject;
 
 import javax.annotation.PostConstruct;
-import java.util.Map;
 
 /**
  * Contains the metadata characterizing the retrieved query result
@@ -33,9 +33,11 @@ public class QueryExecutionInfo {
     @SlingObject
     private SlingHttpServletRequest request;
 
-    private long computedTotal;
-
-    private long passedTotal;
+    /**
+     * Retrieves the total number of entries for the current query
+     */
+    @Getter
+    private long total;
 
     /**
      * Retrieves the page size in UI
@@ -65,49 +67,18 @@ public class QueryExecutionInfo {
      * Retrieves the {@link PaginationInfo} for the display of the current query
      */
     @Getter
-    private PaginationInfo paginationInfo;
-
-    /**
-     * Retrieves the total number of entries for the current query
-     * @return Long value
-     */
-    public long getTotal() {
-        return computedTotal > 0 ? computedTotal : passedTotal;
-    }
+    private PaginationInfo pagination;
 
     @PostConstruct
     private void init() {
-        computedTotal = getNumericAttribute(request, Constants.ATTRIBUTE_TOTAL);
-        passedTotal = getNumericParameter(request,"-total");
-        pageSize = (int) getNumericParameter(request,"-pageSize");
-        offset = (int) getNumericParameter(request, "-offset");
-        executionTime = getNumericAttribute(request, Constants.ATTRIBUTE_EXECUTION_TIME);
-        errorMessage = getStringAttribute(request, Constants.ATTRIBUTE_ERROR_MESSAGE);
+        total = RequestUtil.getNumericValue(request.getAttribute(Constants.ATTRIBUTE_TOTAL), 0);
+        pageSize = (int) RequestUtil.getNumericValue(request.getParameter( "-pageSize"), 0);
+        offset = (int) RequestUtil.getNumericValue(request.getParameter("-offset"), 0);
+        executionTime = RequestUtil.getNumericValue(request.getAttribute(Constants.ATTRIBUTE_EXECUTION_TIME), 0);
+        errorMessage = request.getAttribute(Constants.ATTRIBUTE_ERROR_MESSAGE) != null
+                ? request.getAttribute(Constants.ATTRIBUTE_ERROR_MESSAGE).toString()
+                : StringUtils.EMPTY;
 
-        paginationInfo = new PaginationInfo(getTotal(), offset, pageSize);
-    }
-
-    private static long getNumericAttribute(SlingHttpServletRequest request, String name) {
-        Object value = request.getAttribute(name);
-        if (value == null || !StringUtils.isNumeric(value.toString())) {
-            return 0L;
-        }
-        return Long.parseLong(value.toString());
-    }
-
-    private static long getNumericParameter(SlingHttpServletRequest request, String name) {
-        String value = request.getParameter(name);
-        if (!StringUtils.isNumeric(value)) {
-            return 0L;
-        }
-        return Long.parseLong(value);
-    }
-
-    private static String getStringAttribute(SlingHttpServletRequest request, String name) {
-        Object value = request.getAttribute(name);
-        if (value == null) {
-            return StringUtils.EMPTY;
-        }
-        return value.toString();
+        pagination = new PaginationInfo(total, offset, pageSize);
     }
 }
