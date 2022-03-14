@@ -58,7 +58,7 @@ public class QueryServiceTest {
         aemContext.request().addRequestParameter(
                 "-query",
                 "SELECT * FROM [cq:PageContent] AS e WHERE ISDESCENDANTNODE(e, '/content')");
-        aemContext.request().addRequestParameter("-measure", "true");
+        aemContext.request().addRequestParameter("-total", "true");
         aemContext.request().addRequestParameter("-offset", "1");
         aemContext.request().addRequestParameter("-pageSize", "1");
 
@@ -76,7 +76,7 @@ public class QueryServiceTest {
         aemContext.request().addRequestParameter(
                 "-query",
                 "SELECT * FROM [cq:Page] AS e WHERE ISCHILDNODE(e, '/content/site')");
-        aemContext.request().addRequestParameter("-measure", "iterating");
+        aemContext.request().addRequestParameter("-total", "iterating");
         aemContext.request().addRequestParameter("-offset", "3");
         aemContext.request().addRequestParameter("-pageSize", "5");
 
@@ -95,7 +95,7 @@ public class QueryServiceTest {
                 "-query",
                 "SELECT * FROM [cq:PageContent] AS e WHERE ISDESCENDANTNODE(e, '/content') " +
                         "UNION SELECT * FROM [cq:Page] AS e WHERE ISDESCENDANTNODE(e, '/$var')");
-        aemContext.request().addRequestParameter("-measure", "true");
+        aemContext.request().addRequestParameter("-total", "true");
         aemContext.request().addRequestParameter("var", "content");
 
         SearchRequest request = SearchRequest.from(aemContext.request());
@@ -111,7 +111,7 @@ public class QueryServiceTest {
         aemContext.request().addRequestParameter(
                 "-query",
                 "SELECT * FROM [cq:PageContent] AS e WHERE e.[jcr:title] = $title AND e.ranking = $ranking");
-        aemContext.request().addRequestParameter("-measure", "true");
+        aemContext.request().addRequestParameter("-total", "true");
         aemContext.request().addRequestParameter("title", "Page 1");
         aemContext.request().addRequestParameter("ranking", "42");
 
@@ -193,7 +193,7 @@ public class QueryServiceTest {
                         "INNER JOIN [cq:Page] AS page ON ISCHILDNODE(content, page)" +
                         "WHERE ISCHILDNODE(page, '/content/site')");
         aemContext.request().addRequestParameter("-filters", "skip-by-title, skip-by-ranking");
-        aemContext.request().addRequestParameter("-measure", "true");
+        aemContext.request().addRequestParameter("-total", "true");
 
         SearchRequest request = SearchRequest.from(aemContext.request());
         SearchResult result = queryService.execute(request);
@@ -209,7 +209,7 @@ public class QueryServiceTest {
                 "SELECT * FROM [nt:unstructured] AS e WHERE ISDESCENDANTNODE(e, '/content/site') " +
                         "AND e.[sling:resourceType] LIKE '%type'");
         aemContext.request().addRequestParameter("-filters", "no-duplicate-pages");
-        aemContext.request().addRequestParameter("-measure", "true");
+        aemContext.request().addRequestParameter("-total", "true");
         aemContext.request().setMethod("POST");
 
         SearchRequest request = SearchRequest.from(aemContext.request());
@@ -226,7 +226,7 @@ public class QueryServiceTest {
                 "SELECT * FROM [nt:unstructured] AS e WHERE ISDESCENDANTNODE(e, '/content/site') " +
                         "AND e.[sling:resourceType] LIKE '%type'");
         aemContext.request().addRequestParameter("-converters", "find-page");
-        aemContext.request().addRequestParameter("-measure", "true");
+        aemContext.request().addRequestParameter("-total", "true");
 
         SearchRequest request = SearchRequest.from(aemContext.request());
         SearchResult result = queryService.execute(request);

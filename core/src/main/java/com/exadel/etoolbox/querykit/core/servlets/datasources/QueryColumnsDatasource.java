@@ -74,8 +74,12 @@ public class QueryColumnsDatasource extends SlingSafeMethodsServlet {
                 .map(valueMap -> new ValueMapResource(request.getResourceResolver(), StringUtils.EMPTY, StringUtils.EMPTY, valueMap))
                 .collect(Collectors.toList());
 
-        Resource selectableCell = new ValueMapResource(request.getResourceResolver(), StringUtils.EMPTY, StringUtils.EMPTY, new ValueMapDecorator(ImmutableMap.<String, Object>of("select", true)));
-        resources.add(0, selectableCell);
+        Resource numberColumn = new ValueMapResource(
+                request.getResourceResolver(),
+                StringUtils.EMPTY,
+                StringUtils.EMPTY,
+                new ValueMapDecorator(ImmutableMap.of(Constants.PROPERTY_JCR_TITLE, "#")));
+        resources.add(0, numberColumn);
 
         request.setAttribute(DataSource.class.getName(), new SimpleDataSource(resources.iterator()));
     }

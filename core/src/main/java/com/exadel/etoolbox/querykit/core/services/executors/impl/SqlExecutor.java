@@ -130,7 +130,7 @@ public class SqlExecutor extends QueryBasedExecutor  {
     private static boolean containsInterpolateableValues(String statement, Set<String> variableNames) {
         WordModel wordModel = new WordModel(statement);
         for (String name : variableNames) {
-            boolean match = wordModel.hasToken(elt -> elt.startsWith("'") && elt.endsWith("'") && elt.contains("$" + name));
+            boolean match = wordModel.hasToken(elt -> elt.startsWith(Constants.SINGLE_QUOTE) && elt.endsWith(Constants.SINGLE_QUOTE) && elt.contains("$" + name));
             if (match) {
                 return true;
             }

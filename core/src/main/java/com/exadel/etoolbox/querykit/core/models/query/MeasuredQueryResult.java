@@ -26,7 +26,6 @@ import javax.jcr.query.RowIterator;
  * Implements {@link QueryResult} to provide the result bundled with the total number of entries
  */
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class MeasuredQueryResult implements QueryResult {
 
     private final QueryResult original;
@@ -35,7 +34,7 @@ public class MeasuredQueryResult implements QueryResult {
      * Retrieves the total number of entries for the current query
      */
     @Getter
-    private long total;
+    private final long total;
 
     /**
      * {@inheritDoc}

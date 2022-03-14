@@ -11,24 +11,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-(function(window, ns, $) {
+(function (window, $, ns) {
     'use strict';
 
     const DATASOURCE_ENDPOINT = '/apps/etoolbox-query-kit/datasources/itemlist.json';
     const PARSE_ENDPOINT = '/apps/etoolbox-query-kit/services/parse';
 
-    const registry = $(window).adaptTo("foundation-registry");
+    const registry = $(window).adaptTo('foundation-registry');
     const foundationUi = $(window).adaptTo('foundation-ui');
 
     function collectQueryParams($dialog) {
         const result = {};
-        $dialog.find('input[name]').each(function(index, namedInput) {
+        $dialog.find('input[name]').each(function (index, namedInput) {
             const $namedInput = $(namedInput);
             const value = $namedInput.val();
             if (!value) {
                 return;
             }
-            let paramName = $namedInput.attr('name');
+            const paramName = $namedInput.attr('name');
             let paramValue = result[paramName];
             if (Array.isArray(paramValue)) {
                 paramValue.push(value);
@@ -56,24 +56,18 @@
             dataType: 'json',
             data: queryParams,
             traditional: true,
-        })
-            .success(function(response) {
+            success: function (response) {
                 $dsInput.data('items-loaded', true);
                 $dsInput[0].items.clear();
                 Array.isArray(response) && $.each(response, function (index, item) {
-                    $dsInput[0].items.add({content: {textContent: item.text}, value: item.value});
-                })
-            });
+                    $dsInput[0].items.add({ content: { textContent: item.text }, value: item.value });
+                });
+            }
+        });
     }
 
     function openQueryDialog(name, el, config, collection, selections) {
-        const action = registry.get('foundation.collection.action.action').filter(function(action) {
-            return action.name === 'foundation.dialog';
-        })[0];
-        if (!action) {
-            return;
-        }
-        const profile = ns.getProfileName();
+        const profile = ns.DataStore.getProfileName();
         const url = new URL(config.data.src, window.location);
         url.searchParams.set('profile', profile);
         const newConfig = {
@@ -82,8 +76,7 @@
                 src: url.pathname + url.search
             }
         };
-        config.data.src = config.data.src + '&profile=' + profile;
-        action.handler.call(this, 'foundation.dialog', el, newConfig, collection, selections);
+        ns.runAction('foundation.dialog', this, el, newConfig, collection, selections);
     }
 
     function completeQueryDialog(name, el) {
@@ -97,45 +90,58 @@
         const queryParams = collectQueryParams($dialog);
         queryParams['-query'] = queryString;
 
-        foundationUi.wait();
-
-        $.ajax({
-            method: 'POST',
-            url: PARSE_ENDPOINT,
-            data: queryParams,
-            traditional: true
-        })
-            .success(function(response) {
-                const editor = $('.CodeMirror')[0].CodeMirror;
-                editor.setValue(response);
-            })
-            .always(function() {
-                foundationUi.clearWait();
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                method: 'POST',
+                url: PARSE_ENDPOINT,
+                data: queryParams,
+                traditional: true,
+                beforeSend: function () {
+                    foundationUi.wait();
+                },
+                success: function (response) {
+                    ns.setEditorValue(response);
+                    resolve();
+                },
+                error: function (e) {
+                    foundationUi.alert('EToolbox Query Console', 'Could not parse query' + (e.responseText ? ': ' + e.responseText : ''), 'error');
+                    reject(e);
+                },
+                complete: function () {
+                    foundationUi.clearWait();
+                }
             });
+
+        })
     }
 
-    $(document).on('coral-overlay:open', '.eqk-dialog', function(e) {
+    $(document).on('coral-overlay:open', '#queryDialog', function (e) {
         const $dialog = $(e.target);
-        $dialog.find('[data-datasource-query]').each(function(index, dsInput) {
+        $dialog.find('[data-datasource-query]').each(function (index, dsInput) {
             populateItemSources($dialog, $(dsInput));
         });
     });
 
-    registry.register("foundation.collection.action.action", {
-        name: "eqk.query.dialog",
+    /* -------
+       Actions
+       ------- */
+
+    registry.register('foundation.collection.action.action', {
+        name: 'eqk.query.dialog',
         handler: openQueryDialog
     });
 
-    registry.register("foundation.collection.action.action", {
-        name: "eqk.query.toEditor",
+    registry.register('foundation.collection.action.action', {
+        name: 'eqk.query.toEditor',
         handler: completeQueryDialog
     });
 
-    registry.register("foundation.collection.action.action", {
-        name: "eqk.query.toEditorAndRun",
-        handler: completeQueryDialog
+    registry.register('foundation.collection.action.action', {
+        name: 'eqk.query.toEditorAndRun',
+        handler: function (name, el) {
+            completeQueryDialog(name, el).then(() => {
+                ns.runAction('eqk.query.execute', this);
+            });
+        }
     });
-
-
-})(window, Granite.Eqk = (Granite.Eqk || {}), Granite.$);
-
+})(window, Granite.$, Granite.Eqk = (Granite.Eqk || {}));

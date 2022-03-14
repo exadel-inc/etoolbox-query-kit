@@ -17,8 +17,8 @@
         xmlns:jcr="http://www.jcp.org/jcr/1.0"
         xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
         jcr:primaryType="nt:unstructured"
-        jcr:title="Find Content"
-        granite:id="queryDialog"
+        jcr:title="Edit Content"
+        granite:id="editContentDialog"
         granite:class="coral-Form coral-Form--vertical eqk-dialog eqk-query-dialog"
         sling:resourceType="granite/ui/components/coral/foundation/dialog">
     <items jcr:primaryType="nt:unstructured">
@@ -31,10 +31,13 @@
                     <items jcr:primaryType="nt:unstructured">
                         <form jcr:primaryType="nt:unstructured"
                               sling:resourceType="granite/ui/components/foundation/form"
-                              dataPath="/conf/etoolbox-query-kit/settings/profiles/jcr:content/${param['profile'] != null ? param['profile'] : 'default'}">
+                              granite:id="editContent"
+                              method="post"
+                              action="${param['path']}"
+                              dataPath="${param['path']}">
                             <items jcr:primaryType="nt:unstructured">
-                                <payload jcr:primaryType="nt:unstructured"
-                                         sling:resourceType="etoolbox-query-kit/components/console/includePath"/>
+                                <value jcr:primaryType="nt:unstructured"
+                                       sling:resourceType="etoolbox-query-kit/components/console/includeWidget"/>
                             </items>
                         </form>
                     </items>
@@ -43,20 +46,12 @@
         </content>
     </items>
     <footer jcr:primaryType="nt:unstructured">
-        <toEditor
+        <save
                 jcr:primaryType="nt:unstructured"
-                sling:resourceType="granite/ui/components/coral/foundation/collection/action"
-                granite:id="toEditorButton"
-                action="eqk.query.toEditor"
-                target=".eqk-ui"
-                text="To editor"
-                variant="silent"/>
-        <find
-                jcr:primaryType="nt:unstructured"
-                sling:resourceType="granite/ui/components/coral/foundation/collection/action"
-                granite:id="findButton"
-                action="eqk.query.toEditorAndRun"
-                text="Find"
+                sling:resourceType="granite/ui/components/coral/foundation/button"
+                formId="editContent"
+                type="submit"
+                text="Save"
                 variant="primary"/>
     </footer>
 </jcr:root>

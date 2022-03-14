@@ -18,6 +18,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 /**
  * Contains the data needed to render the query results table cell
  */
@@ -46,4 +48,13 @@ public class TableCellInfo {
      */
     @Setter(AccessLevel.PACKAGE)
     private String type;
+
+    /**
+     * Retrieves the hash code of the associated value. This method is used to distinguish between different instances
+     * of the value editing dialog
+     * @return Int value
+     */
+    public int getValueHash() {
+        return Objects.hashCode(value);
+    }
 }

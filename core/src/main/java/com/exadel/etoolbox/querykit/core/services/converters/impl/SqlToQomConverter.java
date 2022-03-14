@@ -132,7 +132,7 @@ public class SqlToQomConverter implements QueryConverter {
             String argument = StringUtils.substringBetween(
                     inFunction.toString(),
                     Constants.OPENING_BRACKET, Constants.CLOSING_BRACKET);
-            argument = EscapingUtil.escape(argument, Constants.QUOTE);
+            argument = EscapingUtil.escape(argument, Constants.SINGLE_QUOTE);
             wordModel.replace(inFunction, String.format(PSEUDO_EQUALITY_FORMAT, argument));
             inFunction = wordModel.extractFunction(Constants.OPERATOR_IN);
         }

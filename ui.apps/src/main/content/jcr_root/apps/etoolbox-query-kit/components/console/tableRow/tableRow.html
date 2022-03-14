@@ -1,4 +1,4 @@
-<!--
+<!--/*
   Licensed under the Apache License, Version 2.0 (the "License").
   You may not use this file except in compliance with the License.
   You may obtain a copy of the License at
@@ -10,23 +10,74 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
--->
+  */-->
 <sly data-sly-use.row="com.exadel.etoolbox.querykit.core.models.query.TableRowInfo"/>
-<tr is="coral-table-row" class="foundation-collection-navigator"
-    data-foundation-collection-navigator-href="#">
-    <td is="coral-table-cell">
-        <coral-checkbox coral-table-rowselect/>
-    </td>
+<tr is="coral-table-row">
+    <td is="coral-table-cell" class="results-table-cell ordinal">${row.ordinal != 0 ? row.ordinal : ''}</td>
     <sly data-sly-list.cell="${row.cells}">
-        <td class="result-table-cell"
+        <sly data-sly-set.isMainPath="${cell.name == 'jcr:path'}"/>
+        <td class="results-table-cell"
             is="coral-table-cell"
             data-name="${cell.name}"
             data-path="${cell.path}"
-            data-type="${cell.type}"
-            data-editable="${cell.path} ? 'true' : 'false'">
-        <span>
-           ${cell.value}
-        </span>
+            data-type="${cell.type}">
+
+            ${cell.value}
+
+            <div class="actions"
+                 data-sly-test="${isMainPath}"
+                 data-sly-use.encoded="${'com.exadel.etoolbox.querykit.core.models.query.helpers.UrlEncodeHelper' @ url = cell.value}">
+                <a is="coral-anchorbutton"
+                   class="coral3-Button coral3-Button--secondary coral3-QuickActions-button"
+                   variant="secondary"
+                   href="${encoded.url @ context='uri', extension='html'}"
+                   target="_blank"
+                   title="Navigate to path"
+                   aria-label="Navigate to path"
+                   x-cq-linkchecker="skip">
+                    <coral-icon size="S" icon="linkOut" role="img"></coral-icon>
+                </a>
+                <a is="coral-anchorbutton"
+                   class="coral3-Button coral3-Button--secondary coral3-QuickActions-button"
+                   variant="secondary"
+                   href="/crx/de/index.jsp#${encoded.url @ context='uri'}"
+                   target="_blank"
+                   title="Open in CRX/DE"
+                   aria-label="Open in CRX/DE"
+                   x-cq-linkchecker="skip">
+                    <coral-icon size="S" icon="pageShare" role="img"></coral-icon>
+                </a>
+            </div>
+            <div class="actions"
+                 data-sly-test="${!isMainPath}"
+                 data-sly-set.collectionActionSrc="${'/mnt/overlay/etoolbox-query-kit/console/dialogs/edit-content.html?path={0}&name={1}&type={2}&{3}'
+                    @ format = [
+                         cell.path,
+                         cell.name,
+                         cell.type,
+                         cell.valueHash
+                 ]}"
+                 data-sly-use.collectionAction="${'com.exadel.etoolbox.querykit.core.models.query.helpers.InlineJsonHelper'
+                    @ args = [
+                        'target', '.eqk-ui',
+                        'action', 'foundation.dialog',
+                        'data', [
+                            'src', collectionActionSrc,
+                            'nesting', 'hide'
+                        ]
+                 ]}"
+            >
+                <a is="coral-anchorbutton"
+                   class="coral3-Button coral3-Button--secondary coral3-QuickActions-button foundation-collection-action"
+                   variant="secondary"
+                   data-foundation-collection-action="${collectionAction.json}"
+                   href="#"
+                   title="Edit value"
+                   aria-label="Edit value"
+                   x-cq-linkchecker="skip">
+                    <coral-icon size="S" icon="edit" role="img"></coral-icon>
+                </a>
+            </div>
         </td>
     </sly>
 </tr>

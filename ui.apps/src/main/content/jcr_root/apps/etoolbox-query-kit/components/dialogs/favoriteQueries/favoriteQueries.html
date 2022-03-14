@@ -1,4 +1,4 @@
-<!--
+<!--/*
   Licensed under the Apache License, Version 2.0 (the "License").
   You may not use this file except in compliance with the License.
   You may obtain a copy of the License at
@@ -10,18 +10,18 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
--->
-<coral-dialog class="foundation-toggleable eqk-dialog" closable="on" id="querySavedDialog">
+  */-->
+<coral-dialog class="foundation-toggleable eqk-dialog" closable="on" id="favoriteQueriesDialog">
     <coral-dialog-header>Saved queries</coral-dialog-header>
     <coral-dialog-content>
         <div class="coral-Form coral-Form--vertical foundation-layout-util-maximized-container">
-            <table is="coral-table" id="tableSavedQueries" selectable>
+            <table is="coral-table" id="favoriteQueriesTable" selectable class="no-selection-badge">
                 <tbody is="coral-table-body"></tbody>
             </table>
         </div>
     </coral-dialog-content>
     <coral-dialog-footer>
-        <button class="execute-query-button" type="button" is="coral-button" variant="primary" disabled>Open</button>
+        <button class="open-query-button" type="button" is="coral-button" variant="primary" disabled>Open</button>
         <button type="button" autocomplete="off" is="coral-button" icon="share" variant="secondary" trackingfeature="" trackingelement="" tracking="ON" class="share-query-button coral3-Button coral3-Button--secondary" size="M" disabled>
             <coral-icon class="coral3-Icon coral3-Icon--sizeS coral3-Icon--share" icon="share" size="S" autoarialabel="on" role="img" aria-label="share"></coral-icon>
             <coral-button-label>

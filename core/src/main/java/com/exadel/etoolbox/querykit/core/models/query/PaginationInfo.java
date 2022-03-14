@@ -13,44 +13,28 @@
  */
 package com.exadel.etoolbox.querykit.core.models.query;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 
-import java.util.List;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.stream.IntStream;
 
 /**
  * Contains the metadata used to render pagination controls for the current query in UI
  */
 public class PaginationInfo {
 
-    private final long computedTotal;
-    private final int pageSize;
+    private final static int BUTTON_BLOCK_SIZE = 5;
 
     /**
-     * Gets the number of the current page
+     * Retrieves a list of {@link PageElement} objects representing navigation buttons
      */
     @Getter
+    private final LinkedList<PageElement> elements;
+
     private final int currentPage;
-
-    /**
-     * Gets whether the control for the "starting element" of pagination (like {@code [1]...}) should be rendered
-     */
-    @Getter
-    private boolean startElementNeeded;
-
-    /**
-     * Gets whether the control for the "ending element" of pagination (like {@code ...[100]}) should be rendered
-     */
-    @Getter
-    private boolean endElementNeeded;
-
-    /**
-     * Enumerates numbers to be rendered as the controls for the "middle elements" of pagination (like {@code ...[50]
-     * [51]...})
-     */
-    @Getter
-    private final List<Integer> middleElements;
 
     /**
      * Creates a new {@link PaginationInfo} instance
@@ -58,36 +42,123 @@ public class PaginationInfo {
      * @param offset   Results offset used for the computation
      * @param pageSize UI Page size used for the computation
      */
-    PaginationInfo(long total, int offset, int pageSize) {
-        this.computedTotal = total;
-        this.pageSize = pageSize;
+    PaginationInfo(long total, long offset, int pageSize) {
+        int pageCount = total % pageSize > 0 ? (int) total / pageSize + 1 : (int) total / pageSize;
+        currentPage = (int) offset / pageSize + 1;
 
-        currentPage = pageSize != 0 ? offset / pageSize + 1 : 1;
-
-        if (getPagesCount() <= 5) {
-            middleElements = calculateMiddleElements(1, getPagesCount());
-        } else if (currentPage < 5) {
-            endElementNeeded = true;
-            middleElements = calculateMiddleElements(1, 5);
-        } else if (currentPage > getPagesCount() - 6) {
-            startElementNeeded = true;
-            middleElements = calculateMiddleElements(getPagesCount() - 6, getPagesCount());
+        if (pageCount <= BUTTON_BLOCK_SIZE) {
+            elements = calculatePageRange(1, pageCount, pageSize);
+        } else if (currentPage < BUTTON_BLOCK_SIZE) {
+            elements = calculatePageRange(1, BUTTON_BLOCK_SIZE, pageSize);
+            if (pageCount > BUTTON_BLOCK_SIZE + 1) {
+                elements.add(PageElement.ellipsis());
+            }
+            elements.add(PageElement.button(pageCount, pageSize));
+        } else if (currentPage > pageCount - BUTTON_BLOCK_SIZE + 1) {
+            elements = calculatePageRange(pageCount - BUTTON_BLOCK_SIZE + 1, pageCount, pageSize);
+            if (pageCount > BUTTON_BLOCK_SIZE + 1) {
+                elements.addFirst(PageElement.ellipsis());
+            }
+            elements.addFirst(PageElement.button(1, pageSize));
         } else {
-            startElementNeeded = true;
-            endElementNeeded = true;
-            middleElements = calculateMiddleElements(currentPage - 1, currentPage + 1);
+            elements = calculatePageRange(currentPage - 1, currentPage + 1, pageSize);
+            elements.addFirst(PageElement.ellipsis());
+            elements.addFirst(PageElement.button(1, pageSize));
+            elements.add(PageElement.ellipsis());
+            elements.add(PageElement.button(pageCount, pageSize));
+        }
+        elements.stream().filter(elt -> elt.getNumber() == currentPage).findFirst().ifPresent(PageElement::setCurrent);
+        if (!elements.isEmpty()) {
+            elements.getLast().setMaxEndPosition(total);
         }
     }
 
     /**
-     * Retrieves the total number of pages
-     * @return Int value
+     * Retrieves the currently active navigation button
+     * @return {@link PageElement} object representing a navigation button
      */
-    public int getPagesCount() {
-        return (int) Math.ceil((double) computedTotal / pageSize);
+    public PageElement getCurrent() {
+        return elements.stream().filter(elt -> elt.getNumber() == currentPage).findFirst().orElse(null);
     }
 
-    private List<Integer> calculateMiddleElements(int start, int end) {
-        return Stream.iterate(start, s -> ++s).limit(end - start + 1).collect(Collectors.toList());
+    private static LinkedList<PageElement> calculatePageRange(int startInclusive, int endInclusive, int size) {
+        return IntStream.range(startInclusive, endInclusive + 1)
+                .mapToObj(i -> PageElement.button(i, size))
+                .collect(Collectors.toCollection(LinkedList::new));
+    }
+
+    /**
+     * Represents a page navigation element (a button or an ellipsis sign)
+     */
+    @Getter
+    public static class PageElement {
+        private static final String ELEMENT_TYPE_BUTTON = "button";
+        private static final String ELEMENT_TYPE_ELLIPSIS = "ellipsis";
+
+        private int number;
+        private int size;
+        private boolean current;
+
+        @Setter(AccessLevel.PRIVATE)
+        private long maxEndPosition;
+
+        /**
+         * Retrieves the type of the current element (either a button or an ellipsis sign)
+         * @return String value
+         */
+        public String getType() {
+            return number > 0 && size > 0 ? ELEMENT_TYPE_BUTTON : ELEMENT_TYPE_ELLIPSIS;
+        }
+
+        /**
+         * Retrieves the query offset associated with the current navigation element
+         * @return Int value
+         */
+        public long getOffset() {
+            if (number == 0 || size == 0) {
+                return 0;
+            }
+            return (long) (number - 1) * size;
+        }
+
+        /**
+         * Retrieves the number of the starting query result (row) associated with the current navigation element
+         * @return Int value
+         */
+        public long getStart() {
+            if (number == 0 || size == 0) {
+                return 0;
+            }
+            return getOffset() + 1;
+        }
+
+        /**
+         * Retrieves the number of the ending query result (row; inclusive) associated with the current navigation element
+         * @return Int value
+         */
+        public long getEnd() {
+            if (number == 0 || size == 0) {
+                return 0;
+            }
+            if (maxEndPosition > 0) {
+                return Math.min(getStart() + size - 1, maxEndPosition);
+            }
+            return getStart() + size - 1;
+        }
+
+        private void setCurrent() {
+            current = true;
+        }
+
+        private static PageElement ellipsis() {
+            return new PageElement();
+        }
+
+        private static PageElement button(int number, int size) {
+            PageElement result = new PageElement();
+            result.number = number;
+            result.size = size;
+            return result;
+        }
     }
 }

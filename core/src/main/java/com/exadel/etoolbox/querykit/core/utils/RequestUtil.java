@@ -41,15 +41,15 @@ public class RequestUtil {
 
     /**
      * Tries to extract the numeric value from the provided string. Returns the provided default on failure
-     * @param rawValue     String representation of a value
+     * @param rawValue     An object, usually a request parameter or an attribute
      * @param defaultValue Default number
      * @return Long value
      */
-    public static long getNumericValue(String rawValue, int defaultValue) {
-        if (!StringUtils.isNumeric(rawValue)) {
+    public static long getNumericValue(Object rawValue, int defaultValue) {
+        if (rawValue == null || StringUtils.isBlank(rawValue.toString()) || !StringUtils.isNumeric(rawValue.toString())) {
             return defaultValue;
         }
-        return Long.parseLong(rawValue);
+        return Long.parseLong(rawValue.toString());
     }
 
     /**
