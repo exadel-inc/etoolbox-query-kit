@@ -59,11 +59,11 @@ public class FindPageConverterFactory implements SearchItemConverterFactory {
                 return searchItem;
             }
             Resource contentResource = page.getContentResource();
-            return SearchItem.newInstance(
-                    request,
-                    page.getPath(),
-                    contentResource.getValueMap(),
-                    contentResource.getPath());
+            SearchItem newItem = SearchItem.newInstance(request, page.getPath());
+            contentResource.getValueMap().forEach((name, value) -> {
+                newItem.putProperty(name, value, contentResource.getPath());
+            });
+            return newItem;
         }
     }
 }

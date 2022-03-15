@@ -120,13 +120,16 @@ public class SearchResult implements JsonExportable {
     }
 
     /**
-     * Retrieves a {@code Builder} instance used to build a new {@link SearchResult} object
+     * Retrieves a {@code Builder} instance that is used to compose a new {@link SearchResult} object
      * @return {@link Builder} object
      */
     public static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * Composes a new {@link SearchResult} object
+     */
     public static class Builder {
 
         private SearchRequest request;

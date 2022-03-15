@@ -18,6 +18,7 @@ import com.day.crx.JcrConstants;
 import com.exadel.etoolbox.querykit.core.models.qom.columns.ColumnAdapter;
 import com.exadel.etoolbox.querykit.core.models.qom.columns.ColumnCollection;
 import com.exadel.etoolbox.querykit.core.utils.Constants;
+import com.exadel.etoolbox.querykit.core.utils.ValueUtil;
 import com.exadel.etoolbox.querykit.core.utils.serialization.JsonExportableWithContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
@@ -82,7 +83,17 @@ public interface SearchItem extends JsonExportableWithContext<ColumnCollection> 
      * @param value Property value
      */
     default void putProperty(String name, Object value) {
-        putProperty(name, value, null, 0, false);
+        putProperty(name, value, null);
+    }
+
+    /**
+     * Stores a named property into the current entry
+     * @param name  Property name
+     * @param value Property value
+     * @param path  Particular path of the property
+     */
+    default void putProperty(String name, Object value, String path) {
+        putProperty(name, value, path, ValueUtil.detectType(value), ValueUtil.detectMultivalue(value));
     }
 
     /**
@@ -206,25 +217,7 @@ public interface SearchItem extends JsonExportableWithContext<ColumnCollection> 
      */
     static SearchItem newInstance(SearchRequest request, String path, Map<String, Object> properties) {
         return request.isStoreDetails()
-                ? new TypeAwareSearchItem(path, properties)
+                ? new TypeAwareSearchItem(path)
                 : new SimpleSearchItem(path, properties);
     }
-
-    /**
-     * Creates a new search item out of the given request, arbitrary properties, and also root path and properties path.
-     * The difference between the paths is that the first refers to the exact position of the result in JCR (e.g., the
-     * path to a {@code Page}) while the second provides then {@code path} metadata value associated with the particular
-     * properties (for a page, this is a path to the child {@code jcr:content} node)
-     * @param request        {@link SearchRequest} instance
-     * @param rootPath       JCR path associated with the search item in a whole
-     * @param properties     Properties that the search item will report
-     * @param propertiesPath JCR path associated with the particular properties of the item
-     * @return {@code SearchItem} object
-     */
-    static SearchItem newInstance(SearchRequest request, String rootPath, Map<String, Object> properties, String propertiesPath) {
-        return request.isStoreDetails()
-                ? new TypeAwareSearchItem(rootPath, properties, propertiesPath)
-                : new SimpleSearchItem(rootPath, properties);
-    }
-
 }

@@ -23,7 +23,9 @@ import com.exadel.etoolbox.querykit.core.utils.serialization.JsonExportable;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
@@ -47,7 +49,10 @@ import java.util.Set;
 /**
  * A {@link SearchItem} implementation for an item that can be rendered or modified in UI
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 class TypeAwareSearchItem implements SearchItem {
+
+    private static final PropertyDefinition EMPTY_DEFINITION = new PropertyDefinition(StringUtils.EMPTY, StringUtils.EMPTY, 0, false);
 
     /**
      * Accesses the path associated with the current entry
@@ -72,17 +77,7 @@ class TypeAwareSearchItem implements SearchItem {
      * @param properties Properties which the current entry will report
      */
     public TypeAwareSearchItem(String path, Map<String, Object> properties) {
-        this(path, properties, path);
-    }
-
-    /**
-     * Creates a new {@link TypeAwareSearchItem} instance
-     * @param rootPath       JCR path associated with the search item in a whole
-     * @param properties     Properties which the current entry will report
-     * @param propertiesPath JCR path associated with the particular properties of the item
-     */
-    public TypeAwareSearchItem(String rootPath, Map<String, Object> properties, String propertiesPath) {
-        this.path = rootPath;
+        this.path = path;
         if (MapUtils.isEmpty(properties)) {
             return;
         }
@@ -90,8 +85,9 @@ class TypeAwareSearchItem implements SearchItem {
         properties.forEach((name, value) -> putProperty(
                 name,
                 value,
-                propertiesPath,
-                ValueUtil.detectType(value), ValueUtil.detectMultivalue(value)));
+                path,
+                ValueUtil.detectType(value),
+                ValueUtil.detectMultivalue(value)));
     }
 
     /* ------------------------
@@ -140,14 +136,6 @@ class TypeAwareSearchItem implements SearchItem {
      * {@inheritDoc}
      */
     @Override
-    public void putProperty(String name, Object value) {
-        putProperty(name, value, null, 0, false);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void putProperty(String name, Object value, String path, int type, boolean multiple) {
         if (properties == null) {
             properties = new HashMap<>();
@@ -185,10 +173,10 @@ class TypeAwareSearchItem implements SearchItem {
                     : column.getPropertyName();
             String propPath = StringUtils.endsWith(propName, Constants.PROPERTY_JCR_PATH) || MapUtils.isEmpty(properties)
                     ? StringUtils.EMPTY
-                    : StringUtils.defaultString(properties.get(propName).getPath(), getPath());
+                    : StringUtils.defaultString(properties.getOrDefault(propName, EMPTY_DEFINITION).getPath(), getPath());
             String propType = StringUtils.endsWith(propName, Constants.PROPERTY_JCR_PATH) || MapUtils.isEmpty(properties)
                     ? PropertyType.nameFromValue(PropertyType.STRING)
-                    : PropertyType.nameFromValue(properties.get(propName).getType());
+                    : PropertyType.nameFromValue(properties.getOrDefault(propName, EMPTY_DEFINITION).getType());
 
             if (StringUtils.isNotEmpty(propPath)) {
                 serviceProperties.put(propName + Constants.DOUBLE_AT + Constants.PROPERTY_PATH, propPath);
