@@ -22,7 +22,8 @@
             data-path="${cell.path}"
             data-type="${cell.type}">
 
-            ${cell.value}
+            <sly data-sly-test="${cell.type != 'Date'}">${cell.value}</sly>
+            <sly data-sly-test="${cell.type == 'Date'}">${'yyyy-MM-dd HH:mm:ss.SSSXXX' @ format=cell.value, type='date'}</sly>
 
             <div class="actions"
                  data-sly-test="${isMainPath}"
@@ -35,7 +36,7 @@
                    title="Navigate to path"
                    aria-label="Navigate to path"
                    x-cq-linkchecker="skip">
-                    <coral-icon size="S" icon="linkOut" role="img"></coral-icon>
+                    <coral-icon size="S" icon="globe" role="img"></coral-icon>
                 </a>
                 <a is="coral-anchorbutton"
                    class="coral3-Button coral3-Button--secondary coral3-QuickActions-button"
@@ -45,7 +46,7 @@
                    title="Open in CRX/DE"
                    aria-label="Open in CRX/DE"
                    x-cq-linkchecker="skip">
-                    <coral-icon size="S" icon="pageShare" role="img"></coral-icon>
+                    <coral-icon size="S" icon="globeGrid" role="img"></coral-icon>
                 </a>
             </div>
             <div class="actions"

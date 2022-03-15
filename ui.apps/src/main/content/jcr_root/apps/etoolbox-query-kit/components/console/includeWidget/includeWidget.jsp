@@ -47,7 +47,7 @@
     ValueMap valueMap = new ValueMapDecorator(ImmutableMap.<String, Object>of(
             "sling:resourceType", effectiveResourceType,
             "name", name,
-            "fieldLabel", "Edit [" + name + "]"));
+            "fieldLabel", "Edit value of [" + name + "]"));
     Resource widgetResource = new ValueMapResource(resourceResolver, "", "nt:unstructured", valueMap);
     cmp.include(widgetResource, effectiveResourceType, cmp.getOptions());
 %>
