@@ -24,6 +24,18 @@
                 <directory>${basedir}/src/main/content/jcr_root</directory>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <groupId>com.day.jcr.vault</groupId>
+                <artifactId>content-package-maven-plugin</artifactId>
+                <version>0.5.1</version>
+                <executions>
+                    <execution>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
     <profiles>
