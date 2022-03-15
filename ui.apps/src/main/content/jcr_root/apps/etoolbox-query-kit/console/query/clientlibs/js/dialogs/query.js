@@ -89,6 +89,7 @@
         }
         const queryParams = collectQueryParams($dialog);
         queryParams['-query'] = queryString;
+        queryParams['-preserveOptions'] = true;
 
         return new Promise((resolve, reject) => {
             $.ajax({

@@ -105,6 +105,6 @@
         </items>
         <!-- Main query -->
         <granite:data jcr:primaryType="nt:unstructured"
-                      query="SELECT page.* FROM [cq:PageContent] AS page INNER JOIN [nt:unstructured] AS parentComp ON ISDESCENDANTNODE(parentComp, page) INNER JOIN [nt:unstructured] as childComp ON ISDESCENDANTNODE(childComp, parentComp) WHERE parentComp.[sling:resourceType] = '$parent' AND childComp.[sling:resourceType] = '$child' AND ISDESCENDANTNODE(page, '$contentPath')"/>
+                      query="SELECT * FROM [nt:unstructured] AS parentComp INNER JOIN [nt:unstructured] as childComp ON ISDESCENDANTNODE(childComp, parentComp) WHERE parentComp.[sling:resourceType] = '$parent' AND childComp.[sling:resourceType] = '$child' AND ISDESCENDANTNODE(parentComp, '$contentPath') EQK-OPTIONS converters=find-page"/>
     </content>
 </jcr:root>

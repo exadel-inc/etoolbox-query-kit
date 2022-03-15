@@ -15,10 +15,10 @@ package com.exadel.etoolbox.querykit.core.utils;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.request.RequestParameter;
-import org.apache.sling.api.resource.Resource;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -40,33 +41,20 @@ public class RequestUtil {
     private static final Pattern SPLITTER = Pattern.compile(Constants.COMMA);
 
     /**
-     * Tries to extract the numeric value from the provided string. Returns the provided default on failure
-     * @param rawValue     An object, usually a request parameter or an attribute
-     * @param defaultValue Default number
-     * @return Long value
-     */
-    public static long getNumericValue(Object rawValue, int defaultValue) {
-        if (rawValue == null || StringUtils.isBlank(rawValue.toString()) || !StringUtils.isNumeric(rawValue.toString())) {
-            return defaultValue;
-        }
-        return Long.parseLong(rawValue.toString());
-    }
-
-    /**
      * Retrieves the string value of a named parameter from the given {@code SlingHttpServletRequest}. If missing in
-     * request, tries to retrieve it from the provided fallback resource
+     * request, tries to retrieve it from the provided fallback map of values
      * @param request  {@code SlingHttpServletRequest} instance
-     * @param resource {Sling {@code Resource}} object
+     * @param valueMap {@code Map} of named arbitrary values
      * @param name     Name of the parameter
      * @return String value; might be an empty string
      */
-    public static String getParameter(SlingHttpServletRequest request, Resource resource, String name) {
-        String result = request.getParameter(name);
+    public static String getParameter(SlingHttpServletRequest request, Map<String, Object> valueMap, String name) {
+        String result = request.getParameter(PARAMETER_PREFIX + name);
         if (StringUtils.isNotEmpty(result)) {
             return RequestUtil.decode(result, request);
         }
-        if (resource != null) {
-            return resource.getValueMap().get(name.substring(PARAMETER_PREFIX.length()), StringUtils.EMPTY);
+        if (MapUtils.isNotEmpty(valueMap)) {
+            return valueMap.getOrDefault(name, StringUtils.EMPTY).toString();
         }
         return StringUtils.EMPTY;
     }
@@ -75,13 +63,13 @@ public class RequestUtil {
      * Retrieves the list of strings as the value of a named parameter from the given {@code SlingHttpServletRequest}
      * object. If missing in request, tries to retrieve it from the provided fallback resource
      * @param request  {@code SlingHttpServletRequest} instance
-     * @param resource {Sling {@code Resource}} object
+     * @param valueMap {@code Map} of named arbitrary values
      * @param name     Name of the parameter
      * @return {@code List} object; might be an empty list
      */
-    public static List<String> getStringCollection(SlingHttpServletRequest request, Resource resource, String name) {
+    public static List<String> getStringCollection(SlingHttpServletRequest request, Map<String, Object> valueMap, String name) {
         List<String> parameterStrings = new ArrayList<>();
-        RequestParameter[] matchingRequestParameters = request.getRequestParameters(name);
+        RequestParameter[] matchingRequestParameters = request.getRequestParameters(PARAMETER_PREFIX + name);
         if (matchingRequestParameters != null) {
             parameterStrings.addAll(Arrays
                     .stream(matchingRequestParameters)
@@ -89,8 +77,8 @@ public class RequestUtil {
                     .map(str -> decode(str, request))
                     .collect(Collectors.toList()));
         }
-        if (resource != null) {
-            parameterStrings.add(resource.getValueMap().get(name, String.class));
+        if (MapUtils.isNotEmpty(valueMap)) {
+            parameterStrings.add(valueMap.getOrDefault(name, StringUtils.EMPTY).toString());
         }
         return parameterStrings
                 .stream()
@@ -99,6 +87,37 @@ public class RequestUtil {
                 .filter(StringUtils::isNotBlank)
                 .map(String::trim)
                 .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    /**
+     * Retrieves the numeric representation of a named parameter from the given {@code SlingHttpServletRequest}.I
+     * @param request      {@code SlingHttpServletRequest} instance
+     * @param valueMap     {@code Map} of named arbitrary values
+     * @param name         Name of the parameter
+     * @param defaultValue Default numeric result
+     * @return Long value
+     * @see RequestUtil#getParameter(SlingHttpServletRequest, Map, String)
+     */
+    public static long getNumericParameter(
+            SlingHttpServletRequest request,
+            Map<String, Object> valueMap,
+            String name,
+            long defaultValue) {
+        String result = getParameter(request, valueMap, name);
+        return getNumericValue(result, defaultValue);
+    }
+
+    /**
+     * Retrieves the boolean representation of a named parameter from the given {@code SlingHttpServletRequest}.I
+     * @param request  {@code SlingHttpServletRequest} instance
+     * @param valueMap {@code Map} of named arbitrary values
+     * @param name     Name of the parameter
+     * @return Boolean value
+     * @see RequestUtil#getParameter(SlingHttpServletRequest, Map, String)
+     */
+    public static boolean getBooleanParameter(SlingHttpServletRequest request, Map<String, Object> valueMap, String name) {
+        String result = getParameter(request, valueMap, name);
+        return Boolean.parseBoolean(result);
     }
 
     /**
@@ -122,6 +141,19 @@ public class RequestUtil {
                     .toArray(String[]::new);
         }
         return null;
+    }
+
+    /**
+     * Tries to extract the numeric value from the provided string. Returns the provided default on failure
+     * @param rawValue     An object, usually a request parameter or an attribute
+     * @param defaultValue Default numeric result
+     * @return Long value
+     */
+    public static long getNumericValue(Object rawValue, long defaultValue) {
+        if (rawValue == null || StringUtils.isBlank(rawValue.toString()) || !StringUtils.isNumeric(rawValue.toString())) {
+            return defaultValue;
+        }
+        return Long.parseLong(rawValue.toString());
     }
 
     private static Object getValue(String rawValue) {

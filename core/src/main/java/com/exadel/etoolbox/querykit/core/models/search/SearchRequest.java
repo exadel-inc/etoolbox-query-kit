@@ -13,6 +13,7 @@
  */
 package com.exadel.etoolbox.querykit.core.models.search;
 
+import com.exadel.etoolbox.querykit.core.utils.Constants;
 import com.exadel.etoolbox.querykit.core.utils.RequestUtil;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -45,15 +46,15 @@ import static com.exadel.etoolbox.querykit.core.utils.RequestUtil.PARAMETER_PREF
 @Slf4j
 public class SearchRequest {
 
-    private static final String PARAMETER_ALL = PARAMETER_PREFIX + "allprops";
-    private static final String PARAMETER_ITEM_FILTERS = PARAMETER_PREFIX + "filters";
-    private static final String PARAMETER_ITEM_CONVERTERS = PARAMETER_PREFIX + "converters";
-    private static final String PARAMETER_OFFSET = PARAMETER_PREFIX + "offset";
-    private static final String PARAMETER_LIMIT = PARAMETER_PREFIX + "pageSize";
-    private static final String PARAMETER_QUERY = PARAMETER_PREFIX + "query";
-    private static final String PARAMETER_TOTAL = PARAMETER_PREFIX + "total";
-    private static final String PARAMETER_TYPE_AWARE = PARAMETER_PREFIX + "typeaware";
-    private static final String PARAMETER_TRAVERSE = PARAMETER_PREFIX + "traverse";
+    private static final String PARAMETER_ALL = "allprops";
+    private static final String PARAMETER_ITEM_FILTERS = "filters";
+    private static final String PARAMETER_ITEM_CONVERTERS = "converters";
+    private static final String PARAMETER_OFFSET = "offset";
+    private static final String PARAMETER_LIMIT = "pageSize";
+    private static final String PARAMETER_QUERY = "query";
+    private static final String PARAMETER_TOTAL = "total";
+    private static final String PARAMETER_TYPE_AWARE = "typeaware";
+    private static final String PARAMETER_TRAVERSE = "traverse";
 
     private static final int DEFAULT_OFFSET = 0;
     public static final int DEFAULT_LIMIT = Integer.MAX_VALUE;
@@ -218,24 +219,48 @@ public class SearchRequest {
      * @return New {@code SearchRequest} instance
      */
     public static SearchRequest from(SlingHttpServletRequest request, Resource resource) {
+        Map<String, Object> valueMap = new HashMap<>();
+        if (resource != null) {
+            valueMap.putAll(resource.getValueMap());
+        }
+        String statement = RequestUtil.getParameter(request, valueMap, PARAMETER_QUERY);
+        int indexOfInlineOptionsSeparator = StringUtils.indexOfIgnoreCase(statement, Constants.OPERATOR_OPTIONS);
+        if (indexOfInlineOptionsSeparator > 0) {
+            valueMap.putAll(parseInlineOptions(statement.substring(indexOfInlineOptionsSeparator + Constants.OPERATOR_OPTIONS.length())));
+            statement = statement.substring(0, indexOfInlineOptionsSeparator).trim();
+        }
         return SearchRequest
                 .builder()
                 .resourceResolver(request.getResourceResolver())
-                .statement(RequestUtil.getParameter(request, resource, PARAMETER_QUERY))
+                .statement(statement)
                 .userParameters(collectUserParameters(request))
 
-                .itemFilters(RequestUtil.getStringCollection(request, resource, PARAMETER_ITEM_FILTERS))
+                .itemFilters(RequestUtil.getStringCollection(request, valueMap, PARAMETER_ITEM_FILTERS))
                 .resultFormat(SearchResultFormat.from(request.getRequestPathInfo().getExtension()))
-                .iterating(PARAM_VALUE_ITERATING.equals(RequestUtil.getParameter(request, resource, PARAMETER_TOTAL)))
-                .limit(RequestUtil.getNumericValue(RequestUtil.getParameter(request, resource, PARAMETER_LIMIT), DEFAULT_LIMIT))
-                .itemConverters(RequestUtil.getStringCollection(request, resource, PARAMETER_ITEM_CONVERTERS))
-                .offset(RequestUtil.getNumericValue(RequestUtil.getParameter(request, resource, PARAMETER_OFFSET), DEFAULT_OFFSET))
-                .predefinedTotal(preparePredefinedTotal(request, resource))
-                .showAllProperties(Boolean.parseBoolean(RequestUtil.getParameter(request, resource, PARAMETER_ALL)))
-                .storeDetails(Boolean.parseBoolean(RequestUtil.getParameter(request, resource, PARAMETER_TYPE_AWARE)))
-                .traverse(Boolean.parseBoolean(RequestUtil.getParameter(request, resource, PARAMETER_TRAVERSE)))
+                .iterating(PARAM_VALUE_ITERATING.equals(RequestUtil.getParameter(request, valueMap, PARAMETER_TOTAL)))
+                .limit(RequestUtil.getNumericParameter(request, valueMap, PARAMETER_LIMIT, DEFAULT_LIMIT))
+                .itemConverters(RequestUtil.getStringCollection(request, valueMap, PARAMETER_ITEM_CONVERTERS))
+                .offset(RequestUtil.getNumericParameter(request, valueMap, PARAMETER_OFFSET, DEFAULT_OFFSET))
+                .predefinedTotal(preparePredefinedTotal(request, valueMap))
+                .showAllProperties(RequestUtil.getBooleanParameter(request, valueMap, PARAMETER_ALL))
+                .storeDetails(RequestUtil.getBooleanParameter(request, valueMap, PARAMETER_TYPE_AWARE))
+                .traverse(RequestUtil.getBooleanParameter(request, valueMap, PARAMETER_TRAVERSE))
 
                 .build();
+    }
+
+    private static Map<String, String> parseInlineOptions(String value) {
+        String[] chunks = value.trim().split(Constants.SPACE);
+        Map<String, String> result = new HashMap<>();
+        for (String chunk : chunks) {
+            if (!chunk.contains(Constants.EQUALITY_SIGN)) {
+                continue;
+            }
+            result.put(
+                    StringUtils.substringBefore(chunk, Constants.EQUALITY_SIGN),
+                    StringUtils.substringAfter(chunk, Constants.EQUALITY_SIGN));
+        }
+        return result;
     }
 
     private static Map<String, Object> collectUserParameters(SlingHttpServletRequest request) {
@@ -255,8 +280,8 @@ public class SearchRequest {
         return result;
     }
 
-    private static long preparePredefinedTotal(SlingHttpServletRequest request, Resource resource) {
-        String rawTotal = RequestUtil.getParameter(request, resource, PARAMETER_TOTAL);
+    private static long preparePredefinedTotal(SlingHttpServletRequest request, Map<String, Object> valueMap) {
+        String rawTotal = RequestUtil.getParameter(request, valueMap, PARAMETER_TOTAL);
         if (StringUtils.isNotBlank(rawTotal) && StringUtils.isNumeric(rawTotal)) {
             return Math.max(Long.parseLong(rawTotal), 0L);
         }

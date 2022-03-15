@@ -91,6 +91,6 @@
         </items>
         <!-- Main query -->
         <granite:data jcr:primaryType="nt:unstructured"
-                      query="SELECT page.* FROM [cq:PageContent] AS page INNER JOIN [nt:unstructured] AS comp ON ISDESCENDANTNODE(comp, page) WHERE comp.[sling:resourceType] = '$resType' AND ISDESCENDANTNODE(page, '$contentPath')"/>
+                      query="SELECT node.[jcr:title] AS Title FROM [nt:unstructured] AS node WHERE node.[sling:resourceType] = '$resType' AND ISDESCENDANTNODE(node, '$contentPath') EQK-OPTIONS converters=find-page"/>
     </content>
 </jcr:root>

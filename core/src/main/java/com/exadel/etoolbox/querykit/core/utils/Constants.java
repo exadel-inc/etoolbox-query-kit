@@ -46,6 +46,7 @@ public class Constants {
 
     public static final String OPERATOR_IN = "in";
     public static final String OPERATOR_UNION = "union";
+    public static final String OPERATOR_OPTIONS = "EQK-OPTIONS";
 
     public static final String PROPERTY_JCR_PATH = "jcr:path";
     public static final String PROPERTY_JCR_TITLE = "jcr:title";

@@ -16,8 +16,11 @@ package com.exadel.etoolbox.querykit.core.servlets;
 import com.exadel.etoolbox.querykit.core.models.search.QueryRenderingFormat;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.services.query.QueryParserService;
+import com.exadel.etoolbox.querykit.core.utils.Constants;
+import com.exadel.etoolbox.querykit.core.utils.RequestUtil;
 import com.exadel.etoolbox.querykit.core.utils.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
@@ -41,6 +44,8 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
         })
 @Slf4j
 public class QueryParsingServlet extends SlingAllMethodsServlet {
+
+    private static final String PARAMETER_PRESERVE_OPTIONS = "preserveOptions";
 
     @Reference
     private QueryParserService parserService;
@@ -70,10 +75,17 @@ public class QueryParsingServlet extends SlingAllMethodsServlet {
             return;
         }
 
+        boolean preserveModifiers = RequestUtil.getBooleanParameter(request, null, PARAMETER_PRESERVE_OPTIONS);
+
         try {
             String result = parserService.parse(searchRequest);
             if (searchRequest.getRenderingFormat() == QueryRenderingFormat.JSON) {
                 ResponseUtil.sendJson(response, result);
+
+            } else if (preserveModifiers
+                    && (CollectionUtils.isNotEmpty(searchRequest.getItemFilters()) || CollectionUtils.isNotEmpty(searchRequest.getItemConverters()))) {
+
+                ResponseUtil.sendString(response, addOptions(result, searchRequest));
             } else {
                 ResponseUtil.sendString(response, result);
             }
@@ -89,5 +101,21 @@ public class QueryParsingServlet extends SlingAllMethodsServlet {
         } else {
             ResponseUtil.sendStringError(response, value);
         }
+    }
+
+    private static String addOptions(String statement, SearchRequest request) {
+        StringBuilder builder = new StringBuilder(statement);
+        builder.append(Constants.SPACE).append(Constants.OPERATOR_OPTIONS).append(Constants.SPACE);
+        if (CollectionUtils.isNotEmpty(request.getItemFilters())) {
+            builder.append("filters=")
+                    .append(String.join(Constants.COMMA, request.getItemFilters()))
+                    .append(Constants.SPACE);
+        }
+        if (CollectionUtils.isNotEmpty(request.getItemConverters())) {
+            builder.append("converters=")
+                    .append(String.join(Constants.COMMA, request.getItemConverters()))
+                    .append(Constants.SPACE);
+        }
+        return builder.toString().trim();
     }
 }
