@@ -13,16 +13,20 @@
  */
 package com.exadel.etoolbox.querykit.core.services.modifiers;
 
-import com.exadel.etoolbox.querykit.core.models.qom.columns.ColumnCollection;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 
-import javax.jcr.query.Row;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 
 /**
  * Provides search item filters
  */
-public interface SearchItemFilterFactory {
+public interface SearchItemFilter extends BiPredicate<SearchRequest, Object> {
+
+    /**
+     * Retrieves the {@code Class} of the entities this filter manages
+     * @return {@code Class} reference
+     */
+    Class<?> getTargetClass();
 
     /**
      * Retrieves the name associated with the current implementation
@@ -31,10 +35,8 @@ public interface SearchItemFilterFactory {
     String getName();
 
     /**
-     * Retrieves a filter instance
-     * @param request {@link SearchRequest} object
-     * @param columns {@link ColumnCollection} object
-     * @return A {@code Predicate} instance used to filter query result entries
+     * Clears the filter state if necessary
      */
-    Predicate<Row> getFilter(SearchRequest request, ColumnCollection columns);
+    default void reset() {
+    }
 }

@@ -91,6 +91,6 @@
         </items>
         <!-- Main query -->
         <granite:data jcr:primaryType="nt:unstructured"
-                      query="SELECT node.[jcr:title] AS Title FROM [nt:unstructured] AS node WHERE node.[sling:resourceType] = '$resType' AND ISDESCENDANTNODE(node, '$contentPath') EQK-OPTIONS converters=find-page"/>
+                      query="SELECT node.[jcr:title] AS Title FROM [nt:unstructured] AS node WHERE node.[sling:resourceType] = '$resType' AND ISDESCENDANTNODE(node, '$contentPath') EQK-OPTIONS converters=find-page filters=no-duplicates"/>
     </content>
 </jcr:root>

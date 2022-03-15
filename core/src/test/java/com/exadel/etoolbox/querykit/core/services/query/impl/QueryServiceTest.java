@@ -17,10 +17,10 @@ import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.models.search.SearchResult;
 import com.exadel.etoolbox.querykit.core.services.executors.impl.QomExecutor;
 import com.exadel.etoolbox.querykit.core.services.executors.impl.SqlExecutor;
-import com.exadel.etoolbox.querykit.core.services.filters.SkipByRankingFilterFactory;
-import com.exadel.etoolbox.querykit.core.services.filters.SkipByTitleFilterFactory;
-import com.exadel.etoolbox.querykit.core.services.modifiers.impl.UnDuplicatingFilterFactory;
-import com.exadel.etoolbox.querykit.core.services.modifiers.impl.FindPageConverterFactory;
+import com.exadel.etoolbox.querykit.core.services.filters.SkipByRankingFilter;
+import com.exadel.etoolbox.querykit.core.services.filters.SkipByTitleFilter;
+import com.exadel.etoolbox.querykit.core.services.modifiers.impl.UnDuplicatingFilter;
+import com.exadel.etoolbox.querykit.core.services.modifiers.impl.FindPageConverter;
 import com.exadel.etoolbox.querykit.core.services.query.QueryService;
 import com.exadel.etoolbox.querykit.core.services.converters.impl.SqlToQomConverter;
 import io.wcm.testing.mock.aem.junit.AemContext;
@@ -41,10 +41,10 @@ public class QueryServiceTest {
     public void init() {
         aemContext.load().json("/com/exadel/etoolbox/querykit/content/content.json", "/content");
 
-        aemContext.registerInjectActivateService(new SkipByTitleFilterFactory());
-        aemContext.registerInjectActivateService(new SkipByRankingFilterFactory());
-        aemContext.registerInjectActivateService(new UnDuplicatingFilterFactory());
-        aemContext.registerInjectActivateService(new FindPageConverterFactory());
+        aemContext.registerInjectActivateService(new SkipByTitleFilter());
+        aemContext.registerInjectActivateService(new SkipByRankingFilter());
+        aemContext.registerInjectActivateService(new UnDuplicatingFilter());
+        aemContext.registerInjectActivateService(new FindPageConverter());
 
         aemContext.registerInjectActivateService(new SqlToQomConverter());
         aemContext.registerInjectActivateService(new QomExecutor());
@@ -208,7 +208,7 @@ public class QueryServiceTest {
                 "-query",
                 "SELECT * FROM [nt:unstructured] AS e WHERE ISDESCENDANTNODE(e, '/content/site') " +
                         "AND e.[sling:resourceType] LIKE '%type'");
-        aemContext.request().addRequestParameter("-filters", "no-duplicate-pages");
+        aemContext.request().addRequestParameter("-filters", "no-duplicates");
         aemContext.request().addRequestParameter("-total", "true");
         aemContext.request().setMethod("POST");
 
@@ -220,7 +220,7 @@ public class QueryServiceTest {
     }
 
     @Test
-    public void shouldApplyModifiers() {
+    public void shouldApplyConverters() {
         aemContext.request().addRequestParameter(
                 "-query",
                 "SELECT * FROM [nt:unstructured] AS e WHERE ISDESCENDANTNODE(e, '/content/site') " +

@@ -23,8 +23,8 @@ import com.exadel.etoolbox.querykit.core.models.qom.constraints.helpers.Interpol
 import com.exadel.etoolbox.querykit.core.models.query.ParsedQueryInfo;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.services.executors.ExecutorType;
-import com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemConverterFactory;
-import com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemFilterFactory;
+import com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemConverter;
+import com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemFilter;
 import com.exadel.etoolbox.querykit.core.services.executors.Executor;
 import com.exadel.etoolbox.querykit.core.services.converters.QueryConverter;
 import com.exadel.etoolbox.querykit.core.utils.ConverterException;
@@ -40,6 +40,7 @@ import javax.jcr.query.qom.QueryObjectModel;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 /**
  * Implements {@link Executor} for running queries based on query object models
@@ -55,14 +56,22 @@ public class QomExecutor extends QueryBasedExecutor {
      */
     @Getter(AccessLevel.PACKAGE)
     @Reference
-    private List<SearchItemFilterFactory> itemFilters;
+    private List<SearchItemConverter> converters;
 
     /**
      * {@inheritDoc}
      */
     @Getter(AccessLevel.PACKAGE)
     @Reference
-    private List<SearchItemConverterFactory> itemConverters;
+    private List<SearchItemFilter> filters;
+
+    @Override
+    List<SearchItemFilter> getFilters(Class<?> target) {
+        if (filters == null) {
+            return null;
+        }
+        return filters.stream().filter(current -> current.getTargetClass().equals(target)).collect(Collectors.toList());
+    }
 
     /**
      * {@inheritDoc}

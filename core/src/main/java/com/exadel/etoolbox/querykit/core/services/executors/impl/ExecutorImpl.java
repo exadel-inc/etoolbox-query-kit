@@ -19,8 +19,8 @@ import com.exadel.etoolbox.querykit.core.models.search.SearchItem;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.models.search.SearchResult;
 import com.exadel.etoolbox.querykit.core.services.executors.Executor;
-import com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemFilterFactory;
-import com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemConverterFactory;
+import com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemFilter;
+import com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemConverter;
 import com.exadel.etoolbox.querykit.core.utils.ConverterException;
 import com.exadel.etoolbox.querykit.core.utils.ValueUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -37,29 +37,43 @@ import javax.jcr.query.RowIterator;
 import javax.jcr.query.qom.Column;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 /**
  * Provides the basic functionality for services implementing {@link Executor}
  */
 abstract class ExecutorImpl implements Executor {
 
-    private static final Predicate<Row> DEFAULT_FILTER = row -> true;
-    private static final UnaryOperator<SearchItem> DEFAULT_MODIFIER = item -> item;
+    private static final BiPredicate<SearchRequest, Object> DEFAULT_FILTER = (r,o) -> true;
 
     /**
-     * Retrieves the list of requested item filter factories
+     * Retrieves the list of requested item converters
      * @return A nullable {@code List} value
      */
-    abstract List<SearchItemFilterFactory> getItemFilters();
+    abstract List<SearchItemConverter> getConverters();
 
     /**
-     * Retrieves the list of requested item converter factories
+     * Retrieves the list of requested item filters
      * @return A nullable {@code List} value
      */
-    abstract List<SearchItemConverterFactory> getItemConverters();
+    abstract List<SearchItemFilter> getFilters();
+
+    /**
+     * Retrieves the list of requested item filters that are specific for the particular search entry
+     * @param target The type of entities the filters must manage
+     * @return A nullable {@code List} value
+     */
+    List<SearchItemFilter> getFilters(Class<?> target) {
+        List<SearchItemFilter> allFilters = getFilters();
+        if (allFilters == null) {
+            return null;
+        }
+        return allFilters.stream().filter(current -> current.getTargetClass().equals(target)).collect(Collectors.toList());
+    }
 
     /**
      * Retrieves the {@link ColumnCollection} per the current search request and {@link Query} object
@@ -85,7 +99,7 @@ abstract class ExecutorImpl implements Executor {
             SearchRequest request,
             ColumnCollection columns) throws RepositoryException {
 
-        Function<SearchItem, SearchItem> modifier = getAggregateModifier(request);
+        BiFunction<SearchRequest, SearchItem, SearchItem> modifier = getAggregateConverter(request);
 
         RowIterator rowIterator = queryResult.getRows();
         while (rowIterator.hasNext()) {
@@ -93,7 +107,7 @@ abstract class ExecutorImpl implements Executor {
             String path = getDefaultNode(row, columns).getPath();
             SearchItem searchItem = SearchItem.newInstance(request, path);
             populateItemProperties(searchItem, row, columns);
-            searchResultBuilder.item(modifier.apply(searchItem));
+            searchResultBuilder.item(modifier != null ? modifier.apply(request, searchItem) : searchItem);
         }
         searchResultBuilder.markExecutionEnd().total(request.getPredefinedTotal());
     }
@@ -116,23 +130,39 @@ abstract class ExecutorImpl implements Executor {
         long total = 0;
         int outputCount = 0;
 
-        Predicate<Row> filter = getAggregateFilter(request, columns);
-        Function<SearchItem, SearchItem> modifier = getAggregateModifier(request);
+        BiPredicate<SearchRequest, Object> rowFilter = getAggregateFilter(request, Row.class);
+        BiPredicate<SearchRequest, Object> searchItemFilter = getAggregateFilter(request, SearchItem.class);
+        BiFunction<SearchRequest, SearchItem, SearchItem> converter = getAggregateConverter(request);
 
         RowIterator rowIterator = queryResult.getRows();
         while (rowIterator.hasNext()) {
             Row row = rowIterator.nextRow();
-            if (!filter.test(row)) {
+            if (rowFilter != null && !rowFilter.test(request, row)) {
                 continue;
             }
+            SearchItem searchItem = null;
+            if (searchItemFilter != null) {
+                searchItem = initializeIfNull(null, request, row, columns);
+                if (!searchItemFilter.test(request, searchItem)) {
+                    continue;
+                }
+            }
             if (total++ >= request.getOffset() && outputCount++ < request.getLimit()) {
-                String path = getDefaultNode(row, columns).getPath();
-                SearchItem searchItem = SearchItem.newInstance(request, path);
+                searchItem = initializeIfNull(searchItem, request, row, columns);
                 populateItemProperties(searchItem, row, columns);
-                searchResultBuilder.item(modifier.apply(searchItem));
+                searchResultBuilder.item(converter != null ? converter.apply(request, searchItem) : searchItem);
             }
         }
         searchResultBuilder.markExecutionEnd().total(total);
+        CollectionUtils.emptyIfNull(getFilters()).forEach(SearchItemFilter::reset);
+    }
+
+    private SearchItem initializeIfNull(SearchItem original, SearchRequest request, Row row, ColumnCollection columns) throws RepositoryException {
+        if (original != null) {
+            return original;
+        }
+        String path = getDefaultNode(row, columns).getPath();
+        return SearchItem.newInstance(request, path);
     }
 
     private void populateItemProperties(
@@ -166,31 +196,40 @@ abstract class ExecutorImpl implements Executor {
         }
     }
 
-    private Function<SearchItem, SearchItem> getAggregateModifier(SearchRequest request) {
-        if (CollectionUtils.isEmpty(getItemConverters()) || CollectionUtils.isEmpty(request.getItemConverters())) {
-            return DEFAULT_MODIFIER;
+    private BiPredicate<SearchRequest, Object> getAggregateFilter(SearchRequest request, Class<?> target) {
+        if (CollectionUtils.isEmpty(getFilters(target)) || CollectionUtils.isEmpty(request.getItemFilters())) {
+            return null;
         }
-        return request.getItemConverters()
+        List<BiPredicate<SearchRequest, Object>> matchingFilters = request.getItemFilters()
                 .stream()
-                .map(modifierName -> getItemConverters().stream().filter(modifier -> modifierName.equals(modifier.getName())).findFirst().orElse(null))
+                .map(filterName -> getFilters(target).stream().filter(filter -> filterName.equals(filter.getName())).findFirst().orElse(null))
                 .filter(Objects::nonNull)
                 .distinct()
-                .map(modifierFactory -> modifierFactory.getModifier(request))
-                .map(modifier -> (Function<SearchItem, SearchItem>) modifier)
-                .reduce(DEFAULT_MODIFIER, Function::andThen);
+                .map(filter -> (BiPredicate<SearchRequest, Object>) filter)
+                .collect(Collectors.toList());
+        if (matchingFilters.isEmpty()) {
+            return null;
+        }
+        return matchingFilters.stream().reduce(DEFAULT_FILTER, BiPredicate::and);
     }
 
-    private Predicate<Row> getAggregateFilter(SearchRequest request, ColumnCollection columns) {
-        if (CollectionUtils.isEmpty(getItemFilters()) || CollectionUtils.isEmpty(request.getItemFilters())) {
-            return DEFAULT_FILTER;
+    private BiFunction<SearchRequest, SearchItem, SearchItem> getAggregateConverter(SearchRequest request) {
+        if (CollectionUtils.isEmpty(getConverters()) || CollectionUtils.isEmpty(request.getItemConverters())) {
+            return null;
         }
-        return request.getItemFilters()
+        List<SearchItemConverter> converters = request.getItemConverters()
                 .stream()
-                .map(filterName -> getItemFilters().stream().filter(filter -> filterName.equals(filter.getName())).findFirst().orElse(null))
+                .map(modifierName -> getConverters().stream().filter(modifier -> modifierName.equals(modifier.getName())).findFirst().orElse(null))
                 .filter(Objects::nonNull)
                 .distinct()
-                .map(filterFactory -> filterFactory.getFilter(request, columns))
-                .reduce(DEFAULT_FILTER, Predicate::and);
+                .collect(Collectors.toList());
+        return (req, item) -> {
+            SearchItem result = item;
+            for (SearchItemConverter converter : converters) {
+                result = converter.apply(req, result);
+            }
+            return result;
+        };
     }
 
     private static Node getDefaultNode(Row row, ColumnCollection columns) throws RepositoryException {

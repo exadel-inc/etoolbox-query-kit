@@ -21,8 +21,8 @@ import com.exadel.etoolbox.querykit.core.models.query.ParsedQueryInfo;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.models.syntax.WordModel;
 import com.exadel.etoolbox.querykit.core.services.executors.ExecutorType;
-import com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemConverterFactory;
-import com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemFilterFactory;
+import com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemConverter;
+import com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemFilter;
 import com.exadel.etoolbox.querykit.core.services.executors.Executor;
 import com.exadel.etoolbox.querykit.core.services.converters.QueryConverter;
 import com.exadel.etoolbox.querykit.core.utils.Constants;
@@ -58,14 +58,22 @@ public class SqlExecutor extends QueryBasedExecutor  {
      */
     @Getter(AccessLevel.PACKAGE)
     @Reference
-    private List<SearchItemFilterFactory> itemFilters;
+    private List<SearchItemConverter> converters;
+
+    @Getter(AccessLevel.PACKAGE)
+    @Reference
+    private List<SearchItemFilter> filters;
 
     /**
      * {@inheritDoc}
      */
-    @Getter(AccessLevel.PACKAGE)
-    @Reference
-    private List<SearchItemConverterFactory> itemConverters;
+    @Override
+    List<SearchItemFilter> getFilters(Class<?> target) {
+        if (filters == null) {
+            return null;
+        }
+        return filters.stream().filter(current -> current.getTargetClass().equals(target)).collect(Collectors.toList());
+    }
 
     /**
      * {@inheritDoc}

@@ -2,7 +2,7 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0"
                name="com.exadel.etoolbox.querykit.core.services.filters.SkippingByRankingFilterFactory">
   <service>
-    <provide interface="com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemFilterFactory"/>
+    <provide interface="com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemFilter"/>
   </service>
-  <implementation class="com.exadel.etoolbox.querykit.core.services.filters.SkipByRankingFilterFactory"/>
+  <implementation class="com.exadel.etoolbox.querykit.core.services.filters.SkipByRankingFilter"/>
 </scr:component>

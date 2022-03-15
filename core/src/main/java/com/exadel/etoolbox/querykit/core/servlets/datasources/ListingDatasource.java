@@ -18,7 +18,7 @@ import com.adobe.granite.ui.components.ds.SimpleDataSource;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.models.search.SearchResult;
 import com.exadel.etoolbox.querykit.core.models.search.SearchResultFormat;
-import com.exadel.etoolbox.querykit.core.services.modifiers.impl.ListItemConverterFactory;
+import com.exadel.etoolbox.querykit.core.services.modifiers.impl.ListItemConverter;
 import com.exadel.etoolbox.querykit.core.services.query.QueryService;
 import com.exadel.etoolbox.querykit.core.utils.Constants;
 import com.exadel.etoolbox.querykit.core.utils.ResponseUtil;
@@ -64,7 +64,7 @@ public class ListingDatasource extends SlingSafeMethodsServlet {
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
         SearchRequest searchRequest = SearchRequest.from(request, request.getResource().getChild(Constants.NODE_DATASOURCE));
-        searchRequest.getItemConverters().add(ListItemConverterFactory.NAME);
+        searchRequest.getItemConverters().add(ListItemConverter.NAME);
 
         if (!searchRequest.isValid()) {
             if (searchRequest.getResultFormat() == SearchResultFormat.JSON) {

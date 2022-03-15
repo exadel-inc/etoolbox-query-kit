@@ -13,28 +13,21 @@
  */
 package com.exadel.etoolbox.querykit.core.services.modifiers;
 
-import com.exadel.etoolbox.querykit.core.models.qom.columns.ColumnCollection;
 import com.exadel.etoolbox.querykit.core.models.search.SearchItem;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
-import org.apache.sling.api.resource.ResourceResolver;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /**
  * Provides search item converters
  */
-public interface SearchItemConverterFactory {
+public interface SearchItemConverter extends BiFunction<SearchRequest, SearchItem, SearchItem> {
 
     /**
      * Retrieves the name associated with the current implementation
      * @return String value, non-blank
      */
     String getName();
-
-    /**
-     * Retrieves a modifier instance
-     * @param request {@link SearchRequest} object
-     * @return A {@code UnaryOperator} instance used to process {@link SearchItem} objects
-     */
-    UnaryOperator<SearchItem> getModifier(SearchRequest request);
 }

@@ -13,15 +13,13 @@
  */
 package com.exadel.etoolbox.querykit.core.services.filters;
 
-import com.exadel.etoolbox.querykit.core.models.qom.columns.ColumnCollection;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
-import com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemFilterFactory;
+import com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemFilter;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Row;
-import java.util.function.Predicate;
 
-public class SkipByRankingFilterFactory implements SearchItemFilterFactory {
+public class SkipByRankingFilter implements SearchItemFilter {
 
     @Override
     public String getName() {
@@ -29,14 +27,17 @@ public class SkipByRankingFilterFactory implements SearchItemFilterFactory {
     }
 
     @Override
-    public Predicate<Row> getFilter(SearchRequest request, ColumnCollection columns) {
-        return row -> {
-            try {
-                long ranking = row.getNode("content").getProperty("ranking").getLong();
-                return ranking != 42;
-            } catch (RepositoryException e) {
-                return true;
-            }
-        };
+    public Class<?> getTargetClass() {
+        return Row.class;
+    }
+
+    @Override
+    public boolean test(SearchRequest request, Object row) {
+        try {
+            long ranking = ((Row) row).getNode("content").getProperty("ranking").getLong();
+            return ranking != 42;
+        } catch (RepositoryException e) {
+            return true;
+        }
     }
 }
