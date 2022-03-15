@@ -14,7 +14,6 @@
 package com.exadel.etoolbox.querykit.core.services.executors.impl;
 
 import com.exadel.etoolbox.querykit.core.models.qom.columns.ModifiableColumnCollection;
-import com.exadel.etoolbox.querykit.core.models.query.MeasuredQueryResult;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.models.search.SearchResult;
 import com.exadel.etoolbox.querykit.core.utils.ValueUtil;
@@ -27,10 +26,12 @@ import java.util.Map;
 
 abstract class QueryBasedExecutor extends ExecutorImpl {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SearchResult execute(SearchRequest request) throws Exception {
         Query query = compileAndSetUp(request);
-        ModifiableColumnCollection columnCollection = (ModifiableColumnCollection) getColumnCollection(request, query);
 
         SearchResult.Builder resultBuilder = SearchResult
                 .builder()
@@ -38,26 +39,39 @@ abstract class QueryBasedExecutor extends ExecutorImpl {
                 .metadata("Via " + getClass().getSimpleName())
                 .markExecutionStart();
 
-        QueryResult queryResult = request.shouldIterate()
-                ? query.execute()
-                : executeMeasured(request, query);
-
-        if (request.isShowAllProperties()) {
-            columnCollection.injectNamesForWildcards(queryResult.getColumnNames());
+        if (request.shouldIterate() || !request.shouldCalculateTotal()) {
+            completeExecution(resultBuilder, request, query, query.execute());
+            return resultBuilder.build();
         }
 
-        resultBuilder.columns(columnCollection);
+        long total = MeasuredExecutorHelper.execute(
+                request,
+                query,
+                result -> completeExecution(resultBuilder, request, query, result));
 
-        if (request.shouldIterate()) {
-            populateAndMeasure(resultBuilder, queryResult, request, columnCollection);
-        } else {
-            populate(resultBuilder, queryResult, request, columnCollection);
-            resultBuilder.total(((MeasuredQueryResult) queryResult).getTotal());
-        }
-
-        return resultBuilder.build();
+        return resultBuilder
+                .total(total)
+                .build();
     }
 
+    private void completeExecution(SearchResult.Builder resultBuilder, SearchRequest request, Query query, QueryResult queryResult) throws Exception {
+        ModifiableColumnCollection columns = (ModifiableColumnCollection) getColumnCollection(request, query);
+        if (request.isShowAllProperties()) {
+            columns.injectNamesForWildcards(queryResult.getColumnNames());
+        }
+
+        resultBuilder.columns(columns);
+
+        if (request.shouldIterate()) {
+            populateAndMeasure(resultBuilder, queryResult, request, columns);
+        } else {
+            populate(resultBuilder, queryResult, request, columns);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SearchResult dryRun(SearchRequest request) throws Exception {
         Query query = compileAndSetUp(request);
@@ -70,6 +84,12 @@ abstract class QueryBasedExecutor extends ExecutorImpl {
                 .build();
     }
 
+    /**
+     * Parses and transforms the statement string together with the supplementary parameters to provide an executable {@link Query}
+     * @param request {@code SearchRequest} object that contains the data for parsing
+     * @return {@code Query} object
+     * @throws Exception In the parsing and/or transformation failed
+     */
     abstract Query compile(SearchRequest request) throws Exception;
 
     private Query compileAndSetUp(SearchRequest request) throws Exception {
@@ -87,12 +107,5 @@ abstract class QueryBasedExecutor extends ExecutorImpl {
             }
         }
         return query;
-    }
-
-    private QueryResult executeMeasured(SearchRequest request, Query query) throws Exception {
-        if (!request.shouldCalculateTotal()) {
-            return new MeasuredQueryResult(query.execute(), Math.max(request.getPredefinedTotal(), 0));
-        }
-        return MeasuredExecutorHelper.execute(request, query);
     }
 }

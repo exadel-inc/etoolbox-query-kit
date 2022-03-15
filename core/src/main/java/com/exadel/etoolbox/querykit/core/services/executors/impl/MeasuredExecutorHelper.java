@@ -15,6 +15,7 @@ package com.exadel.etoolbox.querykit.core.services.executors.impl;
 
 import com.exadel.etoolbox.querykit.core.models.query.MeasuredQueryResult;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
+import com.exadel.etoolbox.querykit.core.utils.TryConsumer;
 import com.exadel.etoolbox.querykit.core.utils.ValueUtil;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,14 +43,16 @@ class MeasuredExecutorHelper {
 
     /**
      * Implements parallel queries for retrieving results and measuring the total number of results
-     * @param request {@link SearchRequest} instance
-     * @param query   {@link Query} instance
-     * @return {@link MeasuredQueryResult} object, non-null
-     * @throws Exception In case query running failed
+     * @param request        {@link SearchRequest} instance
+     * @param query          {@link Query} instance
+     * @param resultConsumer A routine called within the "main" query thread to process the raw query results (e.g., to
+     *                       convert them into data models)
+     * @return Total number of results
+     * @throws Exception In case either the "main" query thread or the measurement query failed
      */
-    public static MeasuredQueryResult execute(SearchRequest request, Query query) throws Exception {
+    public static long execute(SearchRequest request, Query query, TryConsumer<QueryResult> resultConsumer) throws Exception {
         CompletableFuture<ValueOrException<QueryResult>> resultSupplier =
-                CompletableFuture.supplyAsync(() -> executeMainQuery(query));
+                CompletableFuture.supplyAsync(() -> executeMainQuery(query, resultConsumer));
         CompletableFuture<ValueOrException<Long>> totalSupplier =
                 CompletableFuture.supplyAsync(() -> executeMeasurementQuery(request, query));
 
@@ -61,13 +64,26 @@ class MeasuredExecutorHelper {
         } else if (total.isException()) {
             throw total.getException();
         }
+        return total.getValue();
+    }
 
-        return new MeasuredQueryResult(queryResult.getValue(), total.getValue());
+    private static ValueOrException<QueryResult> executeMainQuery(Query query, TryConsumer<QueryResult> resultConsumer) {
+        ValueOrException<QueryResult> result = executeMainQuery(query);
+        if (result.isException()) {
+            return result;
+        }
+        try {
+            resultConsumer.accept(result.getValue());
+            return result;
+        } catch (Exception e) {
+            return new ValueOrException<>(e);
+        }
     }
 
     private static ValueOrException<QueryResult> executeMainQuery(Query query) {
         try {
-            return new ValueOrException<>(query.execute());
+            QueryResult queryResult = query.execute();
+            return new ValueOrException<>(queryResult);
         } catch (RepositoryException | UnsupportedOperationException e) {
             return new ValueOrException<>(e);
         }
@@ -75,7 +91,7 @@ class MeasuredExecutorHelper {
 
     private static ValueOrException<Long> executeMeasurementQuery(SearchRequest request, Query query) {
         try {
-            Query measurementQuery = getMeasurementQuery(request, query);
+            Query measurementQuery = composeMeasurementQuery(request, query);
             QueryResult queryResult = measurementQuery.execute();
             RowIterator rowIterator = queryResult.getRows();
             while (rowIterator.hasNext()) {
@@ -93,7 +109,7 @@ class MeasuredExecutorHelper {
         }
     }
 
-    private static Query getMeasurementQuery(SearchRequest request, Query query) throws RepositoryException {
+    private static Query composeMeasurementQuery(SearchRequest request, Query query) throws RepositoryException {
         Query measurementQuery = request
                 .getQueryManager()
                 .createQuery("MEASURE " + query.getStatement(), Query.JCR_SQL2);

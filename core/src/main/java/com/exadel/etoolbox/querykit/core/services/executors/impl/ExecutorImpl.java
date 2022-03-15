@@ -95,7 +95,7 @@ abstract class ExecutorImpl implements Executor {
             populateItemProperties(searchItem, row, columns);
             searchResultBuilder.item(modifier.apply(searchItem));
         }
-        searchResultBuilder.markExecutionEnd();
+        searchResultBuilder.markExecutionEnd().total(request.getPredefinedTotal());
     }
 
     /**
@@ -115,6 +115,7 @@ abstract class ExecutorImpl implements Executor {
 
         long total = 0;
         int outputCount = 0;
+
         Predicate<Row> filter = getAggregateFilter(request, columns);
         Function<SearchItem, SearchItem> modifier = getAggregateModifier(request);
 

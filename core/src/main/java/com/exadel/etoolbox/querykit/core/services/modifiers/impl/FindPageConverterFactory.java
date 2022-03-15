@@ -13,8 +13,7 @@
  */
 package com.exadel.etoolbox.querykit.core.services.modifiers.impl;
 
-import com.day.cq.wcm.api.Page;
-import com.day.cq.wcm.api.PageManager;
+import com.day.cq.commons.jcr.JcrConstants;
 import com.exadel.etoolbox.querykit.core.models.search.SearchItem;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.services.modifiers.SearchItemConverterFactory;
@@ -44,26 +43,37 @@ public class FindPageConverterFactory implements SearchItemConverterFactory {
      */
     @Override
     public UnaryOperator<SearchItem> getModifier(SearchRequest request) {
-        return new Modifier(request, request.getResourceResolver().adaptTo(PageManager.class));
+        return new Modifier(request);
     }
 
     @RequiredArgsConstructor
     private static class Modifier implements UnaryOperator<SearchItem> {
         private final SearchRequest request;
-        private final PageManager pageManager;
 
         @Override
         public SearchItem apply(SearchItem searchItem) {
-            Page page = pageManager != null ? pageManager.getContainingPage(searchItem.getPath()) : null;
-            if (page == null) {
+            Resource pageResource = getPageResource(request.getResourceResolver().getResource(searchItem.getPath()));
+            Resource pageContentResource = pageResource != null ? pageResource.getChild(JcrConstants.JCR_CONTENT) : null;
+            if (pageContentResource == null) {
                 return searchItem;
             }
-            Resource contentResource = page.getContentResource();
-            SearchItem newItem = SearchItem.newInstance(request, page.getPath());
-            contentResource.getValueMap().forEach((name, value) -> {
-                newItem.putProperty(name, value, contentResource.getPath());
-            });
+            SearchItem newItem = SearchItem.newInstance(request, pageResource.getPath());
+            pageContentResource
+                    .getValueMap()
+                    .forEach((name, value) -> newItem.putProperty(name, value, pageContentResource.getPath()));
             return newItem;
+        }
+
+        private static Resource getPageResource(Resource original) {
+            if (original == null) {
+                return null;
+            }
+            for (Resource current = original;  current != null; current = current.getParent()) {
+                if (current.isResourceType("cq:Page")) {
+                    return current;
+                }
+            }
+            return null;
         }
     }
 }
