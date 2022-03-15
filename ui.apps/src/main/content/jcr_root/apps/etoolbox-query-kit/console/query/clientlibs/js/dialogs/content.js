@@ -40,10 +40,8 @@
                 ns.runAction('eqk.query.replay', this);
             },
             error: function (e) {
-                foundationUi.alert('EToolbox Query Console', 'Could not save changes' + (e.responseText ? ': ' + e.responseText : ''), 'error');
-            },
-            complete: function () {
                 foundationUi.clearWait();
+                foundationUi.alert('EToolbox Query Console', 'Could not save changes' + (e.responseText ? ': ' + e.responseText : ''), 'error');
             }
         });
     }
