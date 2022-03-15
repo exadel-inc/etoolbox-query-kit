@@ -60,7 +60,7 @@ class CsvOutputHelper {
         if (value == null) {
             return StringUtils.EMPTY;
         }
-        String result = value.toString().replaceAll("[\\r\\n]+", " ").trim();
+        String result = value.toString().replaceAll("[\\r\\n]+", Constants.SPACE).trim();
         if (StringUtils.containsAny(value.toString(), Constants.SEMICOLON, Constants.QUOTE)) {
             result = Constants.QUOTE + result.replace(Constants.QUOTE, "\"\"") + Constants.QUOTE;
         }
