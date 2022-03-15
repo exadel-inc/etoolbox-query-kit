@@ -16,7 +16,7 @@
             lineWrapping: true
         });
 
-        editor.setValue(getEditorText());
+        editor.setValue(getQueryText());
 
         editor.on('keyup', function (cm, event) {
             if (!cm.state.completionActive && event.key !== KEY_ENTER) {
@@ -25,7 +25,7 @@
         });
 
         /** Retrieves editor text from either the page URL or local storage */
-        function getEditorText() {
+        function getQueryText() {
             const storedValue = ns.DataStore.getLatestQueries().length ? ns.DataStore.getLatestQueries()[0] : '';
             const urlParams = new URLSearchParams(window.location.search);
             const queryParamValue = decodeURIComponent(urlParams.get('-query'));
