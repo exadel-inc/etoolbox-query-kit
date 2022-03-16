@@ -60,7 +60,7 @@
         }
 
         static getFavoriteQueries() {
-            return DataStore.getValue(this.FAVORITE_QUERIES, [], result => JSON.parse(result));
+            return DataStore.getValue(this.FAVORITE_QUERIES, '[]', result => JSON.parse(result));
         }
 
         static setFavoriteQueries(value) {
@@ -68,7 +68,7 @@
         }
 
         static getLatestQueries() {
-            return DataStore.getValue(this.LATEST_QUERIES, [], result => JSON.parse(result));
+            return DataStore.getValue(this.LATEST_QUERIES, '[]', result => JSON.parse(result));
         }
 
         static setLatestQueries(value) {
