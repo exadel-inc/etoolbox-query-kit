@@ -8,9 +8,6 @@ addon/hint/show-hint.js
 editor-init.js
 sql2-init.js
 
-#base=js
-profiles.js
-
 #base=js/actions
 actions-init.js
 execute.js
@@ -26,3 +23,7 @@ content.js
 #base=js/utils
 datastore.js
 noop-adapter.js
+
+#base=js
+profiles.js
+startup.js

@@ -16,21 +16,12 @@
             lineWrapping: true
         });
 
-        editor.setValue(getQueryText());
 
         editor.on('keyup', function (cm, event) {
             if (!cm.state.completionActive && event.key !== KEY_ENTER) {
                 CodeMirror.commands.autocomplete(cm, null, { completeSingle: false });
             }
         });
-
-        /** Retrieves editor text from either the page URL or local storage */
-        function getQueryText() {
-            const storedValue = ns.DataStore.getLatestQueries().length ? ns.DataStore.getLatestQueries()[0] : '';
-            const urlParams = new URLSearchParams(window.location.search);
-            const queryParamValue = decodeURIComponent(urlParams.get('-query'));
-            return queryParamValue && queryParamValue !== 'null' ? queryParamValue : storedValue;
-        }
 
         /** Gets query string from the editor */
         ns.getEditorValue = function () {
