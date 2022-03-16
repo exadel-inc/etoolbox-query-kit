@@ -39,8 +39,7 @@ class CsvOutputHelper {
         if (CollectionUtils.isEmpty(value.getItems())) {
             return StringUtils.EMPTY;
         }
-        SearchItem firstItem = value.getItems().get(0);
-        String headers = Stream.concat(Stream.of(Constants.TITLE_PATH), firstItem.getPropertyNames().stream())
+        String headers = Stream.concat(Stream.of(Constants.TITLE_PATH), value.getColumns().getPropertyNames().stream())
                 .map(CsvOutputHelper::escapeSpecialCharacters)
                 .collect(Collectors.joining(Constants.SEMICOLON));
         StringBuilder builder = new StringBuilder(headers).append("\n");

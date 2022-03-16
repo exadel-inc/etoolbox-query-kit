@@ -65,11 +65,13 @@ public class QueryColumnsDatasource extends SlingSafeMethodsServlet {
             return;
         }
 
-        List<Resource> resources = searchResult
+        List<Resource> allColumns = searchResult
                 .getColumns()
                 .getColumnNames()
                 .stream()
-                .map(name -> ImmutableMap.<String, Object>of(Constants.PROPERTY_JCR_TITLE, name))
+                .map(name -> ImmutableMap.<String, Object>of(
+                        Constants.PROPERTY_JCR_TITLE, name,
+                        "fixedWidth", Boolean.TRUE.toString()))
                 .map(ValueMapDecorator::new)
                 .map(valueMap -> new ValueMapResource(request.getResourceResolver(), StringUtils.EMPTY, StringUtils.EMPTY, valueMap))
                 .collect(Collectors.toList());
@@ -78,9 +80,9 @@ public class QueryColumnsDatasource extends SlingSafeMethodsServlet {
                 request.getResourceResolver(),
                 StringUtils.EMPTY,
                 StringUtils.EMPTY,
-                new ValueMapDecorator(ImmutableMap.of(Constants.PROPERTY_JCR_TITLE, "#")));
-        resources.add(0, numberColumn);
+                new ValueMapDecorator(ImmutableMap.of(Constants.PROPERTY_JCR_TITLE, "#", "fixedWidth", Boolean.TRUE.toString())));
+        allColumns.add(0, numberColumn);
 
-        request.setAttribute(DataSource.class.getName(), new SimpleDataSource(resources.iterator()));
+        request.setAttribute(DataSource.class.getName(), new SimpleDataSource(allColumns.iterator()));
     }
 }
