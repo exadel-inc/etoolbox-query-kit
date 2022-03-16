@@ -30,7 +30,8 @@
         // Locally stored data - Generic
 
         static getValue(key, defaultValue, postproc) {
-            let result = localStorage.getItem(key) || defaultValue;
+            let result = localStorage.getItem(key);
+            if (!result) return defaultValue;
             if (postproc instanceof Function && result) {
                 result = postproc(result);
             }
