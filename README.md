@@ -49,7 +49,7 @@ You can change `aem.host` and `aem.port` values as needed in the main POM file's
 
 In your _Adobe Experience Manager_ console, navigate to the *Tools* section and choose *EToolbox* from the left menu rail. Click *"EToolbox Query Kit"* icon in the right section.
 
-*EToolbox Query Console* opens. Use the editor window to the left to compose a query in *JCR-SQL2* / *XPath* / *QueryBuilder* formats (autocompletion works for the *JCR-SQL2* format); then press the *Execute* button below so that the query is run, and the results are displayed as a table in the right part of the screen. 
+*EToolbox Query Kit Console* opens. Use the editor window to the left to compose a query in *JCR-SQL2* / *XPath* / *QueryBuilder* formats (autocompletion works for the *JCR-SQL2* format); then press the *Execute* button below so that the query is run, and the results are displayed as a table in the right part of the screen. 
 
 Beside the *"Execute"* button, there are buttons for storing a query and sharing it via clipboard.
 
