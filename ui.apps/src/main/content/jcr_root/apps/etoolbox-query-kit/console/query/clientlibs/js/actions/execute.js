@@ -44,7 +44,7 @@
                     $('#resultsColumn').empty().prepend($result.html());
                     $(document).trigger('eqk-success-response', args);
                 } else {
-                    ns.alert('Could not retrieve results',  $errorMessage.text());
+                    ns.alert('Could not retrieve results', $errorMessage.text());
                     $errorMessage.remove();
                     $('#resultsColumn').empty().prepend($result.html());
                 }

@@ -14,8 +14,6 @@
 (function (window, $, ns) {
     'use strict';
 
-    const foundationUi = $(window).adaptTo('foundation-ui');
-
     function fillSettingsDialog(e) {
         const $dialog = $(e.target);
         $dialog.find('.coral-Form-field[name]').each(function (index, input) {

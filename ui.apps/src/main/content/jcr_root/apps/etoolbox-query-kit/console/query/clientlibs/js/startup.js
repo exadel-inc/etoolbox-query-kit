@@ -15,5 +15,4 @@
             return queryParamValue && queryParamValue !== 'null' ? queryParamValue : storedValue;
         }
     });
-
 })(Granite.$, Granite.Eqk = (Granite.Eqk || {}));

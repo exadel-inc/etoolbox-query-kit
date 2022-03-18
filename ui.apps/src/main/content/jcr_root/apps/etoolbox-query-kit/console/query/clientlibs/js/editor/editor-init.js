@@ -16,7 +16,6 @@
             lineWrapping: true
         });
 
-
         editor.on('keyup', function (cm, event) {
             if (!cm.state.completionActive && event.key !== KEY_ENTER) {
                 CodeMirror.commands.autocomplete(cm, null, { completeSingle: false });

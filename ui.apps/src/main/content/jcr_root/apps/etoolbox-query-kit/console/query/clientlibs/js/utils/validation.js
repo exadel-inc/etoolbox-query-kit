@@ -14,10 +14,9 @@
 (function (window, $) {
     'use strict';
 
-    $(window).adaptTo("foundation-registry").register("foundation.validation.validator", {
-        selector: "[data-autocomplete-restricted]",
-        validate: function(el) {
-
+    $(window).adaptTo('foundation-registry').register('foundation.validation.validator', {
+        selector: '[data-autocomplete-restricted]',
+        validate: function (el) {
             const value = el.value;
             if (!value) {
                 return 'You need to provide a value';

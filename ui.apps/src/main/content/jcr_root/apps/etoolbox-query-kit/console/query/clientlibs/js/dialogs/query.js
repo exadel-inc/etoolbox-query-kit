@@ -82,7 +82,7 @@
     function completeQueryDialog(name, el) {
         const $dialog = $(el).closest('coral-dialog');
         if ($dialog.find(':invalid,.is-invalid').length) {
-            return ;
+            return;
         }
 
         const queryString = $dialog.find('[data-query]').data('query');
@@ -116,8 +116,7 @@
                     foundationUi.clearWait();
                 }
             });
-
-        })
+        });
     }
 
     $(document).on('coral-overlay:open', '#queryDialog', function (e) {

@@ -52,13 +52,13 @@
         $.ajax({
             url: QUERY_EXPORT_ENDPOINT + '.' + format,
             type: 'GET',
-            data: {'-query': query, '-total': true},
+            data: { '-query': query, '-total': true },
             traditional: true,
             beforeSend: function () {
                 foundationUi.wait();
             },
             success: function (data) {
-                const blob = new Blob([prepareData(data, format)], {type: mimeType});
+                const blob = new Blob([prepareData(data, format)], { type: mimeType });
                 const blobUrl = URL.createObjectURL(blob);
                 $(`<a href="${blobUrl}" download="query-result.${format}"></a>`)[0].click();
             },

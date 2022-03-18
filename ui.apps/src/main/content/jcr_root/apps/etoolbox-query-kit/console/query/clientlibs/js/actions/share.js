@@ -2,7 +2,6 @@
     'use strict';
 
     const registry = $(window).adaptTo('foundation-registry');
-    const foundationUi = $(window).adaptTo('foundation-ui');
 
     registry.register('foundation.collection.action.action', {
         name: 'eqk.query.share',
