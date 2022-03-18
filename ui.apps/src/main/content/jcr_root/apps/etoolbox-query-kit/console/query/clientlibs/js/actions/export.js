@@ -28,10 +28,31 @@
         }
         const format = config.data.format || DEFAULT_FORMAT;
         const mimeType = getMimeType(format);
+        if (format !== 'xlsx') {
+            downloadString(query, format, mimeType);
+        } else {
+            downloadBlob(query, format);
+        }
+    }
+
+    function getMimeType(format) {
+        if (format === 'json') {
+            return 'application/json';
+        }
+        if (format === 'csv') {
+            return 'text/csv';
+        }
+        if (format === 'xlsx') {
+            return 'application/octet-stream';
+        }
+        return 'text/html';
+    }
+
+    function downloadString(query, format, mimeType) {
         $.ajax({
             url: QUERY_EXPORT_ENDPOINT + '.' + format,
             type: 'GET',
-            data: { '-query': query, '-total': true },
+            data: {'-query': query, '-total': true},
             traditional: true,
             beforeSend: function () {
                 foundationUi.wait();
@@ -42,7 +63,7 @@
                 $(`<a href="${blobUrl}" download="query-result.${format}"></a>`)[0].click();
             },
             error: function (error) {
-                foundationUi.alert('EToolbox Query Console', 'Could not export results' + (error.responseText ? ': ' + error.responseText : ''), 'error');
+                ns.alert('Could not export results', error.responseText);
             },
             complete: function () {
                 foundationUi.clearWait();
@@ -51,20 +72,28 @@
     }
 
     function prepareData(data, format) {
-        if (format === 'json') {
-            return JSON.stringify(data, null, 2);
-        }
-        return data;
+        return format === 'json' ? JSON.stringify(data, null, 2) : data;
     }
 
-    function getMimeType(format) {
-        if (format === 'json') {
-            return 'application/json';
-        }
-        if (format === 'csv') {
-            return 'text/csv';
-        }
-        return 'text/html';
+    function downloadBlob(query, format) {
+        // Not using jQuery here because of the "Uncaught DOMException: Failed to read the 'responseText' property from
+        // 'XMLHttpRequest'" known issue
+        foundationUi.wait();
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', `${QUERY_EXPORT_ENDPOINT}.${format}?-query=${encodeURIComponent(query)}&-total=true`);
+        xhr.responseType = 'blob';
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    const blobUrl = window.URL.createObjectURL(this.response);
+                    $(`<a href="${blobUrl}" download="query-result.${format}"></a>`)[0].click();
+                } else {
+                    ns.alert('Could not export results', xhr.statusText);
+                }
+                foundationUi.clearWait();
+            }
+        };
+        xhr.send();
     }
 
     /* --------------------

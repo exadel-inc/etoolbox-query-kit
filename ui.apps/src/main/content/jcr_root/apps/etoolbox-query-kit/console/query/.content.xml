@@ -126,6 +126,15 @@
                             <data jcr:primaryType="nt:unstructured"
                                   format="csv"/>
                         </exportCsv>
+                        <exportXlsx
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
+                                granite:id="xlsxExportButton"
+                                action="eqk.query.export"
+                                text="XLSX">
+                            <data jcr:primaryType="nt:unstructured"
+                                  format="xlsx"/>
+                        </exportXlsx>
                         <exportJson
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
