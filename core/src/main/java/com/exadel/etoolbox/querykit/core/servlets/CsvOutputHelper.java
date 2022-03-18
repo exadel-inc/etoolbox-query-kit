@@ -17,6 +17,7 @@ import com.exadel.etoolbox.querykit.core.models.qom.columns.ColumnCollection;
 import com.exadel.etoolbox.querykit.core.models.search.SearchItem;
 import com.exadel.etoolbox.querykit.core.models.search.SearchResult;
 import com.exadel.etoolbox.querykit.core.utils.Constants;
+import com.exadel.etoolbox.querykit.core.utils.ValueUtil;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -59,7 +60,7 @@ class CsvOutputHelper {
         if (value == null) {
             return StringUtils.EMPTY;
         }
-        String result = value.toString().replaceAll("[\\r\\n]+", Constants.SPACE).trim();
+        String result = ValueUtil.getString(value).replaceAll("[\\r\\n]+", Constants.SPACE).trim();
         if (StringUtils.containsAny(value.toString(), Constants.SEMICOLON, Constants.QUOTE)) {
             result = Constants.QUOTE + result.replace(Constants.QUOTE, "\"\"") + Constants.QUOTE;
         }

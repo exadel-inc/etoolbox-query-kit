@@ -16,6 +16,7 @@ package com.exadel.etoolbox.querykit.core.servlets;
 import com.exadel.etoolbox.querykit.core.models.qom.columns.ColumnCollection;
 import com.exadel.etoolbox.querykit.core.models.search.SearchItem;
 import com.exadel.etoolbox.querykit.core.models.search.SearchResult;
+import com.exadel.etoolbox.querykit.core.utils.ValueUtil;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -69,7 +70,7 @@ class HtmlOutputHelper {
                 .append("<td>").append(item.getPath()).append("</td>");
 
         for (String prop : columns.getPropertyNames()) {
-            builder.append("<td>").append(item.getProperty(prop)).append("</td>");
+            builder.append("<td>").append(ValueUtil.getString(item.getProperty(prop))).append("</td>");
         }
         builder.append("</tr>");
     }
