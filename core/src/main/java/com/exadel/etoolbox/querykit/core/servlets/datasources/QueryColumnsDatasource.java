@@ -69,9 +69,7 @@ public class QueryColumnsDatasource extends SlingSafeMethodsServlet {
                 .getColumns()
                 .getColumnNames()
                 .stream()
-                .map(name -> ImmutableMap.<String, Object>of(
-                        Constants.PROPERTY_JCR_TITLE, name,
-                        "fixedWidth", Boolean.TRUE.toString()))
+                .map(name -> ImmutableMap.<String, Object>of(Constants.PROPERTY_JCR_TITLE, name))
                 .map(ValueMapDecorator::new)
                 .map(valueMap -> new ValueMapResource(request.getResourceResolver(), StringUtils.EMPTY, StringUtils.EMPTY, valueMap))
                 .collect(Collectors.toList());
