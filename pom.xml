@@ -155,7 +155,7 @@
                         <exportScr>true</exportScr>
                         <instructions>
                             <Import-Package>*;resolution:=optional</Import-Package>
-                            <Embed-Dependency>*;scope=compile</Embed-Dependency>
+                            <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
                             <exportScr>true</exportScr>
                             <_dsannotations>*</_dsannotations>
                             <_metatypeannotations>*</_metatypeannotations>
