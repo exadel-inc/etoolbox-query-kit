@@ -34,15 +34,14 @@
         <items jcr:primaryType="nt:unstructured">
             <template
                     jcr:primaryType="nt:unstructured"
-                    sling:resourceType="granite/ui/components/coral/foundation/form/select"
-                    granite:class="eqk-dynamic-datasource"
+                    sling:resourceType="etoolbox-query-kit/components/console/queryAutocomplete"
                     name="template"
-                    fieldLabel="Select template">
-                <items jcr:primaryType="nt:unstructured">
-                    <placeholder jcr:primaryType="nt:unstructured" text="Loading..." value=""/>
-                </items>
+                    fieldLabel="Select template"
+                    emptyText="Type or pick from the dropdown"
+                    required="true">
                 <granite:data jcr:primaryType="nt:unstructured"
-                              datasource-query="SELECT comp.[jcr:title] FROM [cq:Template] AS comp WHERE ISDESCENDANTNODE(comp,'$templatesPath') ORDER BY comp.[jcr:title]"/>
+                              datasource-query="SELECT comp.[jcr:title] FROM [cq:Template] AS comp WHERE ISDESCENDANTNODE(comp,'$templatesPath') ORDER BY comp.[jcr:title] EQK-OPTIONS converters=list-item-root"
+                              autocomplete-restricted="true"/>
             </template>
             <headingOptionalParams
                     jcr:primaryType="nt:unstructured"
@@ -93,6 +92,6 @@
         </items>
         <!-- Main query -->
         <granite:data jcr:primaryType="nt:unstructured"
-                      query="SELECT node.[jcr:title] AS 'Title' FROM [nt:unstructured] AS node WHERE node.[cq:template] = '$template' AND ISDESCENDANTNODE(node, '$contentPath') EQK-OPTIONS converters=find-page"/>
+                      query="SELECT node.[jcr:title] AS 'Title' FROM [cq:PageContent] AS node WHERE node.[cq:template] = '$template' AND ISDESCENDANTNODE(node, '$contentPath') EQK-OPTIONS converters=find-page"/>
     </content>
 </jcr:root>
