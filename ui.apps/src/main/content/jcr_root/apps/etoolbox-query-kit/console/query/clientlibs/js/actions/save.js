@@ -15,7 +15,7 @@
                 favoriteQueries.push(query);
                 ns.DataStore.setFavoriteQueries(favoriteQueries);
             }
-            foundationUi.notify('Query saved');
+            ns.notify('Query saved');
         }
     }
 
@@ -41,7 +41,7 @@
 
     function shareQuery() {
         const query = $selectedQuery.find('td')[0].innerText;
-        foundationUi.notify('URL copied to clipboard');
+        ns.notify('URL copied to clipboard');
         const urlWithoutParams = window.location.origin + window.location.pathname;
         navigator.clipboard.writeText(urlWithoutParams + '?-query=' + encodeURIComponent(query));
     }

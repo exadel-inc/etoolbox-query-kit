@@ -109,7 +109,7 @@
                     resolve();
                 },
                 error: function (e) {
-                    foundationUi.alert('EToolbox Query Console', 'Could not parse query' + (e.responseText ? ': ' + e.responseText : ''), 'error');
+                    ns.alert('Could not parse query', e.responseText);
                     reject(e);
                 },
                 complete: function () {

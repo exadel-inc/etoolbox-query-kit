@@ -11,7 +11,7 @@
             if (query) {
                 const urlWithoutParams = window.location.origin + window.location.pathname;
                 navigator.clipboard.writeText(urlWithoutParams + '?-query=' + encodeURIComponent(query));
-                foundationUi.notify('Query URL copied to clipboard');
+                ns.notify('Query URL copied to clipboard');
             }
         }
     });
