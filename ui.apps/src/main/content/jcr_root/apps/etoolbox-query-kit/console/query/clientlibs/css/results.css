@@ -80,3 +80,7 @@
     padding: 0.3125rem;
     margin: 0 0.3125rem 0 0;
 }
+
+#resultsTable table thead tr th:first-child {
+    text-align: center;
+}
