@@ -20,32 +20,31 @@ import com.exadel.etoolbox.querykit.core.utils.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Component;
 
-import java.util.function.UnaryOperator;
-
 /**
- * Implements {@link SearchItemConverter} to transform the search results into items that conform to Granite Select's
- * datasource entries. Unlike {@link ListItemNoRootConverter}, does not remove the leading {@code /apps/} part from item
- * values
+ * Implements {@link SearchItemConverter} to transform the search results into items that conform to Granite
+ * Select's datasource entries. Removes the leading {@code /apps/} part from item values
  */
 @Component
-public class ListItemConverter implements SearchItemConverter {
+public class ListItemNoRootConverter implements SearchItemConverter {
 
-    static final String FALLBACK_TITLE_FORMAT = "[%s]";
+    public static final String NAME = "list-item-no-root";
+
+    private static final String PREFIX_APPS = "/apps/";
 
     /**
      * {@inheritDoc}
      */
     @Override
     public String getName() {
-        return "list-item-root";
+        return NAME;
     }
 
     @Override
     public SearchItem apply(SearchRequest request, SearchItem searchItem) {
-        String value = searchItem.getPath();
+        String value = StringUtils.removeStart(searchItem.getPath(), PREFIX_APPS);
         String text = StringUtils.defaultString(
                 searchItem.getProperty(Constants.PROPERTY_JCR_TITLE, String.class),
-                String.format(FALLBACK_TITLE_FORMAT, value));
+                String.format(ListItemConverter.FALLBACK_TITLE_FORMAT, value));
         searchItem.clearProperties();
         searchItem.putProperty(Constants.PROPERTY_TEXT, text);
         searchItem.putProperty(Constants.PROPERTY_VALUE, value);

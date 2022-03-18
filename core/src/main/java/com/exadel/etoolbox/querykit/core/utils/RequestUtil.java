@@ -144,7 +144,7 @@ public class RequestUtil {
     }
 
     /**
-     * Tries to extract the numeric value from the provided string. Returns the provided default on failure
+     * Tries to extract the numeric value from the provided object. Returns the provided default on failure
      * @param rawValue     An object, usually a request parameter or an attribute
      * @param defaultValue Default numeric result
      * @return Long value
@@ -154,6 +154,18 @@ public class RequestUtil {
             return defaultValue;
         }
         return Long.parseLong(rawValue.toString());
+    }
+
+    /**
+     * Tries to extract the boolean value from the provided string. Returns {@code false} as the default
+     * @param rawValue     An object, usually a request parameter or an attribute
+     * @return Boolean value
+     */
+    public static boolean getBooleanValue(Object rawValue) {
+        if (rawValue == null || StringUtils.isBlank(rawValue.toString())) {
+            return false;
+        }
+        return Boolean.parseBoolean(rawValue.toString());
     }
 
     private static Object getValue(String rawValue) {

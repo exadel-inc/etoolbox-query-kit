@@ -18,12 +18,13 @@ import com.adobe.granite.ui.components.ds.SimpleDataSource;
 import com.exadel.etoolbox.querykit.core.models.search.SearchRequest;
 import com.exadel.etoolbox.querykit.core.models.search.SearchResult;
 import com.exadel.etoolbox.querykit.core.models.search.SearchResultFormat;
-import com.exadel.etoolbox.querykit.core.services.modifiers.impl.ListItemConverter;
+import com.exadel.etoolbox.querykit.core.services.modifiers.impl.ListItemNoRootConverter;
 import com.exadel.etoolbox.querykit.core.services.query.QueryService;
 import com.exadel.etoolbox.querykit.core.utils.Constants;
 import com.exadel.etoolbox.querykit.core.utils.ResponseUtil;
 import com.google.gson.stream.JsonWriter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
@@ -64,7 +65,9 @@ public class ListingDatasource extends SlingSafeMethodsServlet {
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
         SearchRequest searchRequest = SearchRequest.from(request, request.getResource().getChild(Constants.NODE_DATASOURCE));
-        searchRequest.getItemConverters().add(ListItemConverter.NAME);
+        if (CollectionUtils.isEmpty(searchRequest.getItemConverters())) {
+            searchRequest.getItemConverters().add(ListItemNoRootConverter.NAME);
+        }
 
         if (!searchRequest.isValid()) {
             if (searchRequest.getResultFormat() == SearchResultFormat.JSON) {
