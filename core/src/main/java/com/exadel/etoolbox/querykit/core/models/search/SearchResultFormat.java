@@ -19,7 +19,7 @@ import org.apache.commons.lang3.EnumUtils;
  * Enumerates possible formats of search results
  */
 public enum SearchResultFormat {
-    UNDEFINED, JSON, HTML, CSV;
+    UNDEFINED, JSON, HTML, XLSX, CSV;
 
     /**
      * Retrieves a {@link SearchResultFormat} value out of the provided string

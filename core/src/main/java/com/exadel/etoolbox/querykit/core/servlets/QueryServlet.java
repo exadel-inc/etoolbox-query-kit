@@ -72,8 +72,13 @@ public class QueryServlet extends SlingAllMethodsServlet {
         switch (searchRequest.getResultFormat()) {
             case HTML:
                 ResponseUtil.sendString(response, HtmlOutputHelper.output(searchResult));
+                break;
             case CSV:
                 ResponseUtil.sendCsv(response, CsvOutputHelper.output(searchResult));
+                break;
+            case XLSX:
+                XlsxOutputHelper.output(response, searchResult);
+                break;
             default:
                 ResponseUtil.sendJson(response, JsonExportUtil.export(searchResult));
         }
