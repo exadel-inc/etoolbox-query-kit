@@ -36,12 +36,12 @@
                 foundationUi.wait();
             },
             success: function () {
-                foundationUi.notify('Changes saved');
+                ns.notify('Changes saved');
                 ns.runAction('eqk.query.replay', this);
             },
             error: function (e) {
                 foundationUi.clearWait();
-                foundationUi.alert('EToolbox Query Console', 'Could not save changes' + (e.responseText ? ': ' + e.responseText : ''), 'error');
+                ns.alert('Could not save changes', e.responseText);
             }
         });
     }

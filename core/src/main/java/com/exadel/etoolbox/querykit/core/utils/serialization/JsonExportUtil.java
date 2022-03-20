@@ -14,6 +14,7 @@
 package com.exadel.etoolbox.querykit.core.utils.serialization;
 
 import com.exadel.etoolbox.querykit.core.utils.ResponseUtil;
+import com.exadel.etoolbox.querykit.core.utils.ValueUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -26,9 +27,7 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Calendar;
 
 /**
  * Contains utility methods for facilitating serialization of entities to JSON strings
@@ -37,8 +36,6 @@ import java.util.Calendar;
 public class JsonExportUtil {
 
     private static final Gson GSON;
-
-    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     static {
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -91,22 +88,14 @@ public class JsonExportUtil {
         if (value != null && value.getClass().isArray()) {
             target.add(name, getArray(value));
         } else if (value != null) {
-            target.addProperty(name, getString(value));
+            target.addProperty(name, ValueUtil.getString(value));
         }
     }
 
     private JsonArray getArray(Object value) {
         Object[] array = (Object[]) value;
         JsonArray result = new JsonArray();
-        Arrays.stream(array).map(JsonExportUtil::getString).filter(StringUtils::isNotEmpty).forEach(result::add);
+        Arrays.stream(array).map(ValueUtil::getString).filter(StringUtils::isNotEmpty).forEach(result::add);
         return result;
     }
-
-    private String getString(Object value) {
-        if (value instanceof Calendar) {
-            return DATE_FORMATTER.format(((Calendar) value).getTime());
-        }
-        return String.valueOf(value);
-    }
-
 }

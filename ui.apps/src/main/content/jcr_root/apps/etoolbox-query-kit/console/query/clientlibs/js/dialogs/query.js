@@ -82,7 +82,7 @@
     function completeQueryDialog(name, el) {
         const $dialog = $(el).closest('coral-dialog');
         if ($dialog.find(':invalid,.is-invalid').length) {
-            return ;
+            return;
         }
 
         const queryString = $dialog.find('[data-query]').data('query');
@@ -109,15 +109,14 @@
                     resolve();
                 },
                 error: function (e) {
-                    foundationUi.alert('EToolbox Query Console', 'Could not parse query' + (e.responseText ? ': ' + e.responseText : ''), 'error');
+                    ns.alert('Could not parse query', e.responseText);
                     reject(e);
                 },
                 complete: function () {
                     foundationUi.clearWait();
                 }
             });
-
-        })
+        });
     }
 
     $(document).on('coral-overlay:open', '#queryDialog', function (e) {

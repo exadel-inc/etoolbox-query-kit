@@ -2,7 +2,6 @@
     'use strict';
 
     const registry = $(window).adaptTo('foundation-registry');
-    const foundationUi = $(window).adaptTo('foundation-ui');
 
     registry.register('foundation.collection.action.action', {
         name: 'eqk.query.share',
@@ -11,7 +10,7 @@
             if (query) {
                 const urlWithoutParams = window.location.origin + window.location.pathname;
                 navigator.clipboard.writeText(urlWithoutParams + '?-query=' + encodeURIComponent(query));
-                foundationUi.notify('Query URL copied to clipboard');
+                ns.notify('Query URL copied to clipboard');
             }
         }
     });

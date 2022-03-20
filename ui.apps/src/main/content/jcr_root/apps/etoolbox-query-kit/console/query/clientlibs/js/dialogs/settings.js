@@ -14,8 +14,6 @@
 (function (window, $, ns) {
     'use strict';
 
-    const foundationUi = $(window).adaptTo('foundation-ui');
-
     function fillSettingsDialog(e) {
         const $dialog = $(e.target);
         $dialog.find('.coral-Form-field[name]').each(function (index, input) {
@@ -36,7 +34,7 @@
             ns.DataStore.setValue($input.attr('name'), $input.adaptTo('foundation-field').getValue());
         });
         $dialog.closest('coral-dialog').remove();
-        foundationUi.notify('User settings saved');
+        ns.notify('User settings saved');
         ns.runAction('eqk.query.execute', this);
     }
 

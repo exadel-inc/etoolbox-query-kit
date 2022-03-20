@@ -23,6 +23,7 @@ content.js
 #base=js/utils
 datastore.js
 noop-adapter.js
+notification.js
 validation.js
 
 #base=js

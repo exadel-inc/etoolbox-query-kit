@@ -169,4 +169,20 @@ public class ValueUtil {
         }
         return valueFactory.createValue(source.toString());
     }
+
+    /**
+     * Retrieves the string representation of an arbitrary objects
+     * @param value Arbitrary object
+     * @return String value; might be an empty string
+     */
+    public static String getString(Object value) {
+        if (value == null) {
+            return StringUtils.EMPTY;
+        }
+        int valueType = detectType(value);
+        if (valueType == PropertyType.DATE) {
+            return Constants.DATE_FORMATTER.format(((Calendar) value).getTime());
+        }
+        return String.valueOf(value);
+    }
 }

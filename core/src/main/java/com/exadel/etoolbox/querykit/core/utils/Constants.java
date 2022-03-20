@@ -15,6 +15,8 @@ package com.exadel.etoolbox.querykit.core.utils;
 
 import lombok.experimental.UtilityClass;
 
+import java.text.SimpleDateFormat;
+
 /**
  * Contains literal values used across the application
  */
@@ -58,4 +60,6 @@ public class Constants {
     public static final String PROPERTY_ORDINAL = DOUBLE_AT + "ordinal";
 
     public static final String TITLE_PATH = "Path";
+
+    public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 }

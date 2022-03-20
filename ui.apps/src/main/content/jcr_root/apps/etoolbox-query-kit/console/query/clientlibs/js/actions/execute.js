@@ -44,13 +44,13 @@
                     $('#resultsColumn').empty().prepend($result.html());
                     $(document).trigger('eqk-success-response', args);
                 } else {
-                    foundationUi.alert('EToolbox Query Console', 'Could not retrieve results: ' + $errorMessage.text(), 'error');
+                    ns.alert('Could not retrieve results', $errorMessage.text());
                     $errorMessage.remove();
                     $('#resultsColumn').empty().prepend($result.html());
                 }
             },
-            error: function (error) {
-                foundationUi.alert('EToolbox Query Console', 'Could not retrieve results' + (error.responseText ? ': ' + error.responseText : ''), 'error');
+            error: function (e) {
+                ns.alert('Could not retrieve results', e.responseText);
             },
             complete: function () {
                 foundationUi.clearWait();
