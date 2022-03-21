@@ -22,7 +22,7 @@
     function saveLatestQueries() {
         const query = ns.getEditorValue();
         const latestQueries = ns.DataStore.getLatestQueries();
-        if (latestQueries[0] !== query) {
+        if (!latestQueries || latestQueries[0] === query) {
             return;
         }
         latestQueries.unshift(query);
