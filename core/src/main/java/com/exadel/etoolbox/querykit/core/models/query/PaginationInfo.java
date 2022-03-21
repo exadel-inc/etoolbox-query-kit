@@ -18,6 +18,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -37,6 +39,12 @@ public class PaginationInfo {
     private final int currentPage;
 
     /**
+     * Retrieves the pages numbers
+     */
+    @Getter
+    private final Map<Integer, Integer> pageNumberToOffset;
+
+    /**
      * Creates a new {@link PaginationInfo} instance
      * @param total    Total number of results used for the computation
      * @param offset   Results offset used for the computation
@@ -44,6 +52,9 @@ public class PaginationInfo {
      */
     PaginationInfo(long total, long offset, int pageSize) {
         int pageCount = total % pageSize > 0 ? (int) total / pageSize + 1 : (int) total / pageSize;
+        pageNumberToOffset = IntStream.rangeClosed(1, pageCount)
+                .boxed()
+                .collect(Collectors.toMap(page -> page, page -> (page - 1) * pageSize));
         currentPage = (int) offset / pageSize + 1;
 
         if (pageCount <= BUTTON_BLOCK_SIZE) {

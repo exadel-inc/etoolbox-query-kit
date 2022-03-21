@@ -24,12 +24,20 @@
                   class="ellipsis">
                 ...
             </span>
-            <button data-sly-test="${page.type == 'button'}"
+            <button data-sly-test="${page.type == 'button' && !page.current}"
                     class="nav-button coral3-Button coral3-Button--${page.current ? 'primary' : 'secondary'} ${page.current ? 'current' : ''}"
                     data-query-offset="${page.offset}"
                     data-query-size="${page.size}">
                 ${page.number}
             </button>
+            <coral-select class="select-current-page-pagination"
+                          data-sly-test="${page.type == 'button' && page.current}"
+                          data-query-size="${page.size}"
+                          data-sly-list.number="${info.pagination.pageNumberToOffset}">
+                <coral-select-item data-sly-attribute.selected="${page.number == number}">
+                    ${number}
+                </coral-select-item>
+            </coral-select>
         </sly>
     </div>
     <div>
