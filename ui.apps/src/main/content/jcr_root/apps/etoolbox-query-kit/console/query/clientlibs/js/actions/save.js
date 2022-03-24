@@ -22,8 +22,9 @@
     function saveLatestQueries() {
         const query = ns.getEditorValue();
         const latestQueries = ns.DataStore.getLatestQueries();
-        if (!latestQueries || latestQueries[0] === query) {
-            return;
+        let duplicateIndex = latestQueries.indexOf(query);
+        if (duplicateIndex !== -1) {
+            latestQueries.splice(duplicateIndex, 1);
         }
         latestQueries.unshift(query);
         if (latestQueries.length > 10) {
