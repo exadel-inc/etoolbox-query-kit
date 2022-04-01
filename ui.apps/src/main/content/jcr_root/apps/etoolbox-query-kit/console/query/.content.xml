@@ -89,13 +89,19 @@
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
                                 granite:id="openSettingsButton'"
-                                action="foundation.dialog"
-                                target=".eqk-ui"
+                                action="foundation.link"
+                                href="/mnt/overlay/commerce/gui/content/v2/catalogs/createcatalogwizard.html${requestPathInfo.suffix}"
                                 text="Settings...">
                             <data jcr:primaryType="nt:unstructured"
                                   nesting="hide"
                                   src.url="/mnt/overlay/etoolbox-query-kit/console/dialogs/settings.html"/>
                         </settings>
+                        <statistic
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
+                                action="foundation.link"
+                                href="/etoolbox-query-kit/oak-query-index-usage.html"
+                                text="Query Statistic"/>
                     </items>
                 </tools>
             </primary>

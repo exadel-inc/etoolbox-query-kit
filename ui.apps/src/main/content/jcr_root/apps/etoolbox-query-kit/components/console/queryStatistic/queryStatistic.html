@@ -1,0 +1,95 @@
+<sly data-sly-use.queryStatisticModel="com.exadel.etoolbox.querykit.core.models.query.QueryStatisticModel"></sly>
+<div class="query-statistic-headlines">
+    <a id="by-usage"><h1>Indexes by usage</h1></a>
+    <span class="nav"><a href="#all">All queries</a></span>
+    <span class="nav"><a href="#by-index">Queries by index</a></span>
+</div>
+<br/>
+<sly data-sly-list.index="${queryStatisticModel.indexesByUsage}">
+    <a data-sly-test="${queryStatisticModel.indexesByUsage[index] != 0}" href="#${index}" class="quantity">
+        ${index}
+    </a>
+    <sly data-sly-test="${queryStatisticModel.indexesByUsage[index] == 0}">${index}</sly>
+    ${queryStatisticModel.indexesByUsage[index]}&nbsp;&nbsp;&nbsp;
+</sly>
+
+<!--/*<ul data-sly-list.index="${queryStatisticModel.indexesByUsage}">*/-->
+<!--/*    <li>*/-->
+<!--/*        <a data-sly-test="${queryStatisticModel.indexesByUsage[index] != 0}" href="#${index}" class="quantity">*/-->
+<!--/*            ${index}*/-->
+<!--/*        </a>*/-->
+<!--/*        <sly data-sly-test="${queryStatisticModel.indexesByUsage[index] == 0}">${index}</sly>*/-->
+<!--/*        ${queryStatisticModel.indexesByUsage[index]}*/-->
+<!--/*    </li>*/-->
+<!--/*</ul>*/-->
+
+<div class="query-statistic-headlines">
+    <a id="by-index"><h1>Queries by index</h1></a>
+    <span class="nav"><a href="#all">All queries</a></span>
+    <span class="nav"><a href="#by-usage">Indexes by usage</a></span>
+</div>
+
+<sly data-sly-list.queryByIndex="${queryStatisticModel.queriesByIndexSorted}">
+    <a id="${queryByIndex}">
+        <h4>${queryByIndex} <span class="quantity">${queryStatisticModel.queriesByIndexSorted[queryByIndex].size}</span></h4>
+    </a>
+    <sly data-sly-set.calcHeight="${'height:calc(37px + 44px * {0})' @format=queryStatisticModel.queriesByIndexSorted[queryByIndex]}"></sly>
+    <table is="coral-table" style="${queryStatisticModel.queriesByIndexSorted[queryByIndex].size > 7 ? 'height:345px' : calcHeight @ context='styleString'}">
+        <thead is="coral-table-head" sticky>
+        <tr is="coral-table-row">
+            <th is="coral-table-headercell">#</th>
+            <th is="coral-table-headercell">Count</th>
+            <th is="coral-table-headercell">Language</th>
+            <th is="coral-table-headercell">Statement</th>
+        </tr>
+        </thead>
+        <tbody is="coral-table-body" data-sly-list.queryInfo="${queryStatisticModel.queriesByIndexSorted[queryByIndex]}">
+        <tr is="coral-table-row">
+            <td is="coral-table-cell">${queryInfoList.count}</td>
+            <td is="coral-table-cell">${queryInfo.executeCount}</td>
+            <td is="coral-table-cell">${queryInfo.language.toUpperCase}</td>
+            <td is="coral-table-cell">
+                ${queryInfo.statement}<br/>
+                <span class="thread">${queryInfo.threadName} at ${queryInfo.lastExecuted}</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</sly>
+
+<div class="query-statistic-headlines">
+    <a id="all"><h1>All queries</h1></a>
+    <span class="nav"><a href="#by-index">Queries by index</a></span>
+    <span class="nav"><a href="#by-usage">Indexes by usage</a></span>
+</div>
+
+<sly data-sly-set.calcHeight="${'height:calc(37px + 44px * {0})' @format=queryStatisticModel.allQueries.size}"></sly>
+<table is="coral-table" style="${queryStatisticModel.allQueries.size > 7 ? 'height:345px' : calcHeight @context='styleString'}">
+    <thead is="coral-table-head" sticky>
+    <tr is="coral-table-row">
+        <th is="coral-table-headercell">#</th>
+        <th is="coral-table-headercell">Count</th>
+        <th is="coral-table-headercell">Language</th>
+        <th is="coral-table-headercell">Statement</th>
+        <th is="coral-table-headercell">Indexes</th>
+    </tr>
+    </thead>
+    <tbody is="coral-table-body" data-sly-list.queryInfo="${queryStatisticModel.allQueries}">
+        <tr is="coral-table-row">
+            <td is="coral-table-cell">${queryInfoList.count}</td>
+            <td is="coral-table-cell">${queryInfo.executeCount}</td>
+            <td is="coral-table-cell">${queryInfo.language.toUpperCase}</td>
+            <td is="coral-table-cell">
+                ${queryInfo.statement}<br/>
+                <span class="thread">${queryInfo.threadName} at ${queryInfo.lastExecuted}</span>
+            </td>
+            <td is="coral-table-cell" data-sly-list.index="${queryInfo.indexes}">
+                <a href="#${index}">
+                    ${index}
+                </a><br>
+            </td>
+            <td is="coral-table-cell" data-sly-test="${queryInfo.indexes.empty}">
+            </td>
+        </tr>
+    </tbody>
+</table>
