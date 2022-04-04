@@ -80,3 +80,27 @@
     padding: 0.3125rem;
     margin: 0 0.3125rem 0 0;
 }
+
+#resultsTable th:not(:first-child):not(:last-child) .resizer {
+    display: block;
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    content: '';
+    background-color: #ececec;
+    width: 5px;
+    cursor: ew-resize;
+    z-index: 10;
+}
+
+#resultsTable table {
+    table-layout: fixed;
+}
+
+#resultsTable .results-table-cell:first-of-type, #resultsTable .coral-Table-headerCell:first-of-type {
+    width: 40px;
+}
+#resultsTable .coral-Table-wrapper-container {
+    overflow-y: hidden;
+}

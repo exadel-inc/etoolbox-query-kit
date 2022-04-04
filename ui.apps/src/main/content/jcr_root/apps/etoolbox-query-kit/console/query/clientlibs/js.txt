@@ -27,3 +27,5 @@ noop-adapter.js
 #base=js
 profiles.js
 startup.js
+
+results/table.js
