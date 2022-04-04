@@ -96,7 +96,7 @@
                                   nesting="hide"
                                   src.url="/mnt/overlay/etoolbox-query-kit/console/dialogs/settings.html"/>
                         </settings>
-                        <statistic
+                        <statistics
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
                                 action="foundation.link"

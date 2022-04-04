@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
@@ -32,7 +33,8 @@ import java.util.stream.StreamSupport;
 
 @Model(adaptables = SlingHttpServletRequest.class)
 @Getter
-public class QueryStatisticModel {
+@Slf4j
+public class QueryStatisticsModel {
 
     private static final Pattern PROPERTY_INDEX_PATTERN = Pattern.compile("/\\*\\sproperty\\s([^\\s=]+)[=\\s]");
     private static final Pattern LUCENE_INDEX_PATTERN = Pattern.compile("/\\*\\slucene:([^\\s*]+)[\\s*]");
@@ -43,20 +45,20 @@ public class QueryStatisticModel {
     @SlingObject
     private ResourceResolver resourceResolver;
 
-    private List<QueryStatisticModel.QueryInfo> allQueries;
+    private List<QueryStatisticsModel.QueryInfo> allQueries;
     private Map<String, Integer> indexesByUsage = new LinkedHashMap<>();
-    private Map<String, List<QueryStatisticModel.QueryInfo>> queriesByIndex = new HashMap<>();
-    private LinkedHashMap<String, List<QueryStatisticModel.QueryInfo>> queriesByIndexSorted = new LinkedHashMap<>();
+    private Map<String, List<QueryStatisticsModel.QueryInfo>> queriesByIndex = new HashMap<>();
+    private LinkedHashMap<String, List<QueryStatisticsModel.QueryInfo>> queriesByIndexSorted = new LinkedHashMap<>();
 
     @PostConstruct
-    protected void init() throws IOException {
+    private void init() throws IOException {
 
         QueryManager queryManager = getQueryManager(resourceResolver);
         MBeanServerConnection server = ManagementFactory.getPlatformMBeanServer();
 
         allQueries = getQueryInfo(server, queryManager);
 
-        for (QueryStatisticModel.QueryInfo queryInfo : allQueries) {
+        for (QueryStatisticsModel.QueryInfo queryInfo : allQueries) {
             if (queryInfo.getIndexes().isEmpty()) {
                 continue;
             }
@@ -90,13 +92,13 @@ public class QueryStatisticModel {
         }
     }
 
-    private List<QueryStatisticModel.QueryInfo> getQueryInfo(MBeanServerConnection server, QueryManager queryManager) {
+    private List<QueryStatisticsModel.QueryInfo> getQueryInfo(MBeanServerConnection server, QueryManager queryManager) {
         ObjectName queryStatMbean = getQueryStatMBean(server);
         if (queryStatMbean == null || queryManager == null) {
             return Collections.emptyList();
         }
         String jsonRaw;
-        List<QueryStatisticModel.QueryInfo> result = new ArrayList<>();
+        List<QueryStatisticsModel.QueryInfo> result = new ArrayList<>();
 
         try {
             jsonRaw = server.invoke(queryStatMbean, "asJson", null, null).toString();
@@ -119,7 +121,7 @@ public class QueryStatisticModel {
             String lastExecuted = getAsString(jsonObject, "lastExecutedMillis");
             int executeCount = getAsInt(jsonObject, "executeCount");
 
-            QueryStatisticModel.QueryInfo queryInfo = new QueryStatisticModel.QueryInfo(queryManager);
+            QueryStatisticsModel.QueryInfo queryInfo = new QueryStatisticsModel.QueryInfo(queryManager);
             queryInfo.setLanguage(language);
             queryInfo.setStatement(statement);
             queryInfo.setTheadName(thread);
@@ -136,6 +138,7 @@ public class QueryStatisticModel {
             Set<ObjectName> names = server.queryNames(new ObjectName("org.apache.jackrabbit.oak:type=QueryStats,*"), null);
             return names.iterator().next();
         } catch (IOException | MalformedObjectNameException | NoSuchElementException e) {
+
             return null;
         }
     }
