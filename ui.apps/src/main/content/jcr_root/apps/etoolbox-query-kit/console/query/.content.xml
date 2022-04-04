@@ -89,8 +89,8 @@
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
                                 granite:id="openSettingsButton'"
-                                action="foundation.link"
-                                href="/mnt/overlay/commerce/gui/content/v2/catalogs/createcatalogwizard.html${requestPathInfo.suffix}"
+                                action="foundation.dialog"
+                                target=".eqk-ui"
                                 text="Settings...">
                             <data jcr:primaryType="nt:unstructured"
                                   nesting="hide"
