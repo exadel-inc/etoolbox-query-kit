@@ -66,6 +66,17 @@
         executeAndUpdateUi(getQueryArgs($button));
     });
 
+    $(document).on('change', '.select-current-page-pagination', function (e) {
+        let $selectedPage = $(e.target);
+        if ($selectedPage.is('.is-selected')) {
+            return;
+        }
+        let limit = $selectedPage.closest('coral-select').data('query-size')
+        $selectedPage.data('query-size', limit);
+        $selectedPage.data('query-offset', ($selectedPage[0].value - 1) * limit);
+        executeAndUpdateUi(getQueryArgs($selectedPage));
+    });
+
     function getQueryArgs($navButton) {
         if (!$navButton.length) {
             return {};

@@ -84,3 +84,7 @@
 #resultsTable table thead tr th:first-child {
     text-align: center;
 }
+
+.select-current-page-pagination {
+    width: 4.5rem;
+}
