@@ -8,7 +8,10 @@
     $(`<style id="${COL_STYLES_ID}">`).prependTo(document.head);
     const $savedColStyles = $(`#${COL_STYLES_ID}`);
 
-    ns.initResizableCols = () => {
+    ns.initResizableCols = (saveColStyles) => {
+        if (!saveColStyles) {
+            $savedColStyles.text('');
+        }
         $(`${TABLE_RESULTS_ID} table colgroup`).remove();
 
         $(`${TABLE_RESULTS_ID} coral-table-headercell-content`).each((i, coralCell) => {
@@ -24,11 +27,6 @@
         let nextColWidth = 0;
 
         const $nextCol = $col.next();
-
-        const curColMinWidth = parseFloat($col.css('min-width')) || Number.POSITIVE_INFINITY;
-        const nextColMinWith = parseFloat($nextCol.css('min-width')) || Number.POSITIVE_INFINITY;
-        const curColPadding = getPadding($col);
-        const nextColPadding = getPadding($nextCol);
 
         const mouseDownHandler = function (e) {
             x = e.clientX;
@@ -46,6 +44,11 @@
             $savedColStyles.text('');
 
             const dx = e.clientX - x;
+
+            const curColMinWidth = parseFloat($col.css('min-width')) || Number.POSITIVE_INFINITY;
+            const nextColMinWith = parseFloat($nextCol.css('min-width')) || Number.POSITIVE_INFINITY;
+            const curColPadding = getPadding($col);
+            const nextColPadding = getPadding($nextCol);
 
             if (curColWidth + dx + curColPadding < curColMinWidth) return;
             if ($nextCol.length && nextColWidth - dx + nextColPadding < nextColMinWith) return;

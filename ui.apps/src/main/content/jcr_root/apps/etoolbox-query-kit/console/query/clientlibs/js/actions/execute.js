@@ -19,7 +19,7 @@
     const registry = $(window).adaptTo('foundation-registry');
     const foundationUi = $(window).adaptTo('foundation-ui');
 
-    function executeAndUpdateUi(args) {
+    function executeAndUpdateUi(args, saveColStyles = false) {
         if (!args || !args.query) {
             return;
         }
@@ -43,7 +43,7 @@
                 if (!isBackendException) {
                     $('#resultsColumn').empty().prepend($result.html());
                     const table = $result.find('#resultsTable')[0];
-                    Coral.commons.ready(table, ns.initResizableCols);
+                    Coral.commons.ready(table, ns.initResizableCols.bind(null, saveColStyles));
                 } else {
                     foundationUi.alert('EToolbox Query Console', 'Could not retrieve results: ' + $errorMessage.text(), 'error');
                     $errorMessage.remove();
@@ -64,7 +64,7 @@
         if ($button.is('.coral3-Button--primary')) {
             return;
         }
-        executeAndUpdateUi(getQueryArgs($button));
+        executeAndUpdateUi(getQueryArgs($button), true);
     });
 
     function getQueryArgs($navButton) {
@@ -109,7 +109,7 @@
                 return;
             }
             const args = getQueryArgs($button);
-            executeAndUpdateUi(args);
+            executeAndUpdateUi(args, true);
         }
     });
 })(document, Granite.$, Granite.Eqk = (Granite.Eqk || {}));

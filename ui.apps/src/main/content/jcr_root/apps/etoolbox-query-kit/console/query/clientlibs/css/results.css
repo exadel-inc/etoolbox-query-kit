@@ -59,6 +59,7 @@
 
 .results-table-cell {
     position: relative;
+    word-break: break-word;
 }
 
 .results-table-cell .actions {
