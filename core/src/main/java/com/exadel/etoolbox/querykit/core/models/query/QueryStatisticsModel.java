@@ -1,5 +1,6 @@
 package com.exadel.etoolbox.querykit.core.models.query;
 
+import com.exadel.etoolbox.querykit.core.utils.Constants;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -32,7 +33,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Model(adaptables = SlingHttpServletRequest.class)
-@Getter
 @Slf4j
 public class QueryStatisticsModel {
 
@@ -45,10 +45,14 @@ public class QueryStatisticsModel {
     @SlingObject
     private ResourceResolver resourceResolver;
 
-    private List<QueryStatisticsModel.QueryInfo> allQueries;
+    @Getter
+    private List<QueryInfo> allQueries;
+    @Getter
     private Map<String, Integer> indexesByUsage = new LinkedHashMap<>();
-    private Map<String, List<QueryStatisticsModel.QueryInfo>> queriesByIndex = new HashMap<>();
-    private LinkedHashMap<String, List<QueryStatisticsModel.QueryInfo>> queriesByIndexSorted = new LinkedHashMap<>();
+    @Getter
+    private Map<String, List<QueryInfo>> queriesByIndex = new HashMap<>();
+    @Getter
+    private LinkedHashMap<String, List<QueryInfo>> queriesByIndexSorted = new LinkedHashMap<>();
 
     @PostConstruct
     private void init() throws IOException {
@@ -58,7 +62,7 @@ public class QueryStatisticsModel {
 
         allQueries = getQueryInfo(server, queryManager);
 
-        for (QueryStatisticsModel.QueryInfo queryInfo : allQueries) {
+        for (QueryInfo queryInfo : allQueries) {
             if (queryInfo.getIndexes().isEmpty()) {
                 continue;
             }
@@ -74,7 +78,7 @@ public class QueryStatisticsModel {
                 queriesByIndex.entrySet().stream()
                         .filter(entry -> {
                             String indexId = getIndexId(index);
-                            return entry.getKey().equals(indexId) || entry.getKey().endsWith(indexId + ")");
+                            return entry.getKey().equals(indexId) || entry.getKey().endsWith(indexId + Constants.CLOSING_BRACKET);
                         })
                         .map(entry -> entry.getValue().size())
                         .findFirst().orElse(0)));
@@ -88,17 +92,18 @@ public class QueryStatisticsModel {
         try {
             return session.getWorkspace().getQueryManager();
         } catch (RepositoryException e) {
+            log.error("Can't get QueryManager from the session", e);
             return null;
         }
     }
 
-    private List<QueryStatisticsModel.QueryInfo> getQueryInfo(MBeanServerConnection server, QueryManager queryManager) {
+    private List<QueryInfo> getQueryInfo(MBeanServerConnection server, QueryManager queryManager) {
         ObjectName queryStatMbean = getQueryStatMBean(server);
         if (queryStatMbean == null || queryManager == null) {
             return Collections.emptyList();
         }
         String jsonRaw;
-        List<QueryStatisticsModel.QueryInfo> result = new ArrayList<>();
+        List<QueryInfo> result = new ArrayList<>();
 
         try {
             jsonRaw = server.invoke(queryStatMbean, "asJson", null, null).toString();
@@ -121,10 +126,10 @@ public class QueryStatisticsModel {
             String lastExecuted = getAsString(jsonObject, "lastExecutedMillis");
             int executeCount = getAsInt(jsonObject, "executeCount");
 
-            QueryStatisticsModel.QueryInfo queryInfo = new QueryStatisticsModel.QueryInfo(queryManager);
+            QueryInfo queryInfo = new QueryInfo(queryManager);
             queryInfo.setLanguage(language);
             queryInfo.setStatement(statement);
-            queryInfo.setTheadName(thread);
+            queryInfo.setThreadName(thread);
             queryInfo.setExecuteCount(executeCount);
             queryInfo.setLastExecuted(lastExecuted);
             result.add(queryInfo);
@@ -138,7 +143,7 @@ public class QueryStatisticsModel {
             Set<ObjectName> names = server.queryNames(new ObjectName("org.apache.jackrabbit.oak:type=QueryStats,*"), null);
             return names.iterator().next();
         } catch (IOException | MalformedObjectNameException | NoSuchElementException e) {
-
+            log.warn("Can't get 'org.apache.jackrabbit.oak:type=QueryStats,*'", e);
             return null;
         }
     }
@@ -155,8 +160,8 @@ public class QueryStatisticsModel {
     }
 
     private String getIndexId(String value) {
-        if (value.contains("(") && value.contains(")")) {
-            return StringUtils.substringBefore(value, "(").trim();
+        if (value.contains(Constants.OPENING_BRACKET) && value.contains(Constants.CLOSING_BRACKET)) {
+            return StringUtils.substringBefore(value, Constants.OPENING_BRACKET).trim();
         } else if (StringUtils.containsIgnoreCase(value, OAK_INDEX_PREFIX)) {
             return StringUtils.strip(StringUtils.substringAfter(value, OAK_INDEX_PREFIX), STRIP_CHARS);
         }
@@ -176,78 +181,6 @@ public class QueryStatisticsModel {
             return object.get(property).getAsInt();
         } catch (UnsupportedOperationException e) {
             return 0;
-        }
-    }
-
-    public static class QueryInfo {
-        private QueryManager queryManager;
-        private String statement;
-        private String language;
-        private String threadName;
-        private String lastExecuted;
-        private int executeCount;
-        private Set<String> indexes;
-
-        private QueryInfo(QueryManager queryManager) {
-            this.queryManager = queryManager;
-        }
-
-        public String getStatement() {
-            return statement;
-        }
-        private void setStatement(String value) {
-            statement = value;
-        }
-
-        public String getLanguage() {
-            return language;
-        }
-        private void setLanguage(String value) {
-            language = value;
-        }
-
-        public String getThreadName() {
-            return threadName;
-        }
-        private void setTheadName(String value) {
-            threadName = value;
-        }
-
-        public String getLastExecuted() {
-            return lastExecuted;
-        }
-        private void setLastExecuted(String value) {
-            lastExecuted = value;
-        }
-
-        public int getExecuteCount() {
-            return executeCount;
-        }
-        private void setExecuteCount(int value) {
-            executeCount = value;
-        }
-
-        public Set<String> getIndexes() throws IOException {
-            if (indexes != null) {
-                return indexes;
-            }
-            try {
-                indexes = new HashSet<>();
-                Query query = queryManager.createQuery("explain " + statement, language);
-                QueryResult queryResult = query.execute();
-                Row row = queryResult.getRows().nextRow();
-                String queryPlan = row.getValue("plan").getString();
-
-                Stream.of(PROPERTY_INDEX_PATTERN, LUCENE_INDEX_PATTERN).forEach(pattern -> {
-                    Matcher matcher = pattern.matcher(queryPlan);
-                    while (matcher.find()) {
-                        indexes.add(matcher.group(1).trim().replaceAll("\\(.+\\)", StringUtils.EMPTY));
-                    }
-                });
-            } catch (Exception e) {
-                indexes = Collections.emptySet();
-            }
-            return indexes;
         }
     }
 

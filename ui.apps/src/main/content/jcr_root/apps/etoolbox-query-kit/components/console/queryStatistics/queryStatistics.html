@@ -5,23 +5,13 @@
     <span class="nav"><a href="#by-index">Queries by index</a></span>
 </div>
 <br/>
-<!--/*<sly data-sly-list.index="${queryStatisticsModel.indexesByUsage}">*/-->
-<!--/*    <a data-sly-test="${queryStatisticsModel.indexesByUsage[index] != 0}" href="#${index}" class="quantity">*/-->
-<!--/*        ${index}*/-->
-<!--/*    </a>*/-->
-<!--/*    <sly data-sly-test="${queryStatisticsModel.indexesByUsage[index] == 0}">${index}</sly>*/-->
-<!--/*    ${queryStatisticsModel.indexesByUsage[index]}&nbsp;&nbsp;&nbsp;*/-->
-<!--/*</sly>*/-->
-
-<ul data-sly-list.index="${queryStatisticsModel.indexesByUsage}">
-    <li>
-        <a data-sly-test="${queryStatisticsModel.indexesByUsage[index] != 0}" href="#${index}" class="quantity">
-            ${index}
-        </a>
-        <sly data-sly-test="${queryStatisticsModel.indexesByUsage[index] == 0}">${index}</sly>
-        ${queryStatisticsModel.indexesByUsage[index]}
-    </li>
-</ul>
+<sly data-sly-list.index="${queryStatisticsModel.indexesByUsage}">
+    <a data-sly-test="${queryStatisticsModel.indexesByUsage[index] != 0}" href="#${index}" class="quantity">
+        ${index}
+    </a>
+    <sly data-sly-test="${queryStatisticsModel.indexesByUsage[index] == 0}">${index}</sly>
+    ${queryStatisticsModel.indexesByUsage[index]}&nbsp;&nbsp;&nbsp;
+</sly>
 
 <div class="query-statistics-headlines">
     <a id="by-index"><h1>Queries by index</h1></a>

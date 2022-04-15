@@ -101,7 +101,7 @@
                                 sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
                                 action="foundation.link"
                                 href="/etoolbox-query-kit/oak-query-index-usage.html"
-                                text="Query Statistic"/>
+                                text="Query Statistics"/>
                     </items>
                 </tools>
             </primary>
