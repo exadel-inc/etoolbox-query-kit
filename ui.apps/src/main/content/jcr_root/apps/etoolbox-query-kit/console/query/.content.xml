@@ -96,6 +96,12 @@
                                   nesting="hide"
                                   src.url="/mnt/overlay/etoolbox-query-kit/console/dialogs/settings.html"/>
                         </settings>
+                        <statistics
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
+                                action="foundation.link"
+                                href="/etoolbox-query-kit/oak-query-index-usage.html"
+                                text="Query Statistics"/>
                     </items>
                 </tools>
             </primary>

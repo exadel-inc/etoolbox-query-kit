@@ -1,0 +1,87 @@
+<sly data-sly-use.queryStatisticsModel="com.exadel.etoolbox.querykit.core.models.query.QueryStatisticsModel"></sly>
+
+<coral-tablist target="#queries-coral-panel" orientation="horizontal">
+    <coral-tab aria-controls="all-queries">All queries</coral-tab>
+    <coral-tab id="tab-queries-by-index" aria-controls="queries-by-index">Queries by index</coral-tab>
+    <coral-tab aria-controls="indexes-by-usage">Indexes by usage</coral-tab>
+</coral-tablist>
+
+<coral-panelstack id="queries-coral-panel">
+    <coral-panel id="all-queries">
+        <div class="query-statistics-headlines">
+            <h1>All queries</h1>
+        </div>
+
+        <table is="coral-table">
+            <thead is="coral-table-head" sticky>
+            <tr is="coral-table-row">
+                <th is="coral-table-headercell">#</th>
+                <th is="coral-table-headercell">Count</th>
+                <th is="coral-table-headercell">Language</th>
+                <th is="coral-table-headercell">Statement</th>
+                <th is="coral-table-headercell">Indexes</th>
+            </tr>
+            </thead>
+            <tbody is="coral-table-body" data-sly-list.queryInfo="${queryStatisticsModel.allQueries}">
+            <tr is="coral-table-row">
+                <td is="coral-table-cell">${queryInfoList.count}</td>
+                <td is="coral-table-cell">${queryInfo.executeCount}</td>
+                <td is="coral-table-cell">${queryInfo.language.toUpperCase}</td>
+                <td is="coral-table-cell">
+                    ${queryInfo.statement}<br/>
+                    <span class="thread">${queryInfo.threadName} at ${queryInfo.lastExecuted}</span>
+                </td>
+                <td is="coral-table-cell" data-sly-list.index="${queryInfo.indexes}">
+                    <button value="${index}" is="coral-button" variant="minimal" iconsize="S" class="active-index">
+                        ${index}
+                    </button><br>
+                </td>
+                <td is="coral-table-cell" data-sly-test="${queryInfo.indexes.empty}">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </coral-panel>
+    <coral-panel id="queries-by-index">
+        <div class="query-statistics-headlines">
+            <h1>Queries by index</h1>
+        </div>
+
+        <sly data-sly-list.queryByIndex="${queryStatisticsModel.queriesByIndexSorted}">
+            <h4 id="${queryByIndex}">${queryByIndex} <span class="quantity">${queryStatisticsModel.queriesByIndexSorted[queryByIndex].size}</span></h4>
+            <sly data-sly-set.calcHeight="${'height:calc(37px + 44px * {0})' @format=queryStatisticsModel.queriesByIndexSorted[queryByIndex]}"></sly>
+            <table is="coral-table" style="${queryStatisticsModel.queriesByIndexSorted[queryByIndex].size > 7 ? 'height:345px' : calcHeight @ context='styleString'}">
+                <thead is="coral-table-head" sticky>
+                <tr is="coral-table-row">
+                    <th is="coral-table-headercell" style="width: 14px">#</th>
+                    <th is="coral-table-headercell" style="width: 14px">Count</th>
+                    <th is="coral-table-headercell" style="width: 35px">Language</th>
+                    <th is="coral-table-headercell">Statement</th>
+                </tr>
+                </thead>
+                <tbody is="coral-table-body" data-sly-list.queryInfo="${queryStatisticsModel.queriesByIndexSorted[queryByIndex]}">
+                <tr is="coral-table-row">
+                    <td is="coral-table-cell">${queryInfoList.count}</td>
+                    <td is="coral-table-cell">${queryInfo.executeCount}</td>
+                    <td is="coral-table-cell">${queryInfo.language.toUpperCase}</td>
+                    <td is="coral-table-cell">
+                        ${queryInfo.statement}<br/>
+                        <span class="thread">${queryInfo.threadName} at ${queryInfo.lastExecuted}</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </sly>
+    </coral-panel>
+    <coral-panel id="indexes-by-usage">
+        <div class="query-statistics-headlines">
+            <h1>Indexes by usage</h1>
+        </div>
+        <br/>
+        <sly data-sly-list.index="${queryStatisticsModel.indexesByUsage}">
+            <button value="${index}" data-sly-attribute.disabled="${queryStatisticsModel.indexesByUsage[index] == 0}" is="coral-button" variant="minimal" iconsize="S" class="quantity active-index">
+                ${index}&nbsp;${queryStatisticsModel.indexesByUsage[index]}&nbsp;&nbsp;&nbsp;
+            </button>
+        </sly>
+    </coral-panel>
+</coral-panelstack>
