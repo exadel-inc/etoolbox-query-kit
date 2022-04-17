@@ -57,4 +57,14 @@ public class TableCellInfo {
     public int getValueHash() {
         return Objects.hashCode(value);
     }
+
+    /**
+     * Gets the {@code type} attribute of the cell
+     */
+    public String getType() {
+        if ("String".equals(type) && value != null && value.toString().length() > 76) {
+            return "longString";
+        }
+        return type;
+    }
 }
