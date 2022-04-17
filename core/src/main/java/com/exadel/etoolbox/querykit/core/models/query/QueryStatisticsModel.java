@@ -117,25 +117,31 @@ public class QueryStatisticsModel {
 
         for(int i = 0; i < queries.size(); i++) {
             JsonObject jsonObject = queries.get(i).getAsJsonObject();
-            String statement = getAsString(jsonObject, "query");
-            if (StringUtils.contains(statement, "oak-internal") || StringUtils.startsWithIgnoreCase(statement, "explain ")) {
-                continue;
+            QueryInfo queryInfo = getQueryInfo(queryManager, jsonObject);
+            if (queryInfo != null) {
+                result.add(queryInfo);
             }
-            String language = getAsString(jsonObject, "language");
-            String thread = getAsString(jsonObject, "lastThreadName");
-            String lastExecuted = getAsString(jsonObject, "lastExecutedMillis");
-            int executeCount = getAsInt(jsonObject, "executeCount");
-
-            QueryInfo queryInfo = new QueryInfo(queryManager);
-            queryInfo.setLanguage(language);
-            queryInfo.setStatement(statement);
-            queryInfo.setThreadName(thread);
-            queryInfo.setExecuteCount(executeCount);
-            queryInfo.setLastExecuted(lastExecuted);
-            result.add(queryInfo);
         }
         result.sort((a, b) -> Integer.compare(a.getExecuteCount(), b.getExecuteCount()) * -1);
         return result;
+    }
+
+    private QueryInfo getQueryInfo(QueryManager queryManager, JsonObject jsonObject) {
+        String statement = getAsString(jsonObject, "query");
+        if (StringUtils.contains(statement, "oak-internal") || StringUtils.startsWithIgnoreCase(statement, "explain ")) {
+            return null;
+        }
+        String language = getAsString(jsonObject, "language");
+        String thread = getAsString(jsonObject, "lastThreadName");
+        String lastExecuted = getAsString(jsonObject, "lastExecutedMillis");
+        int executeCount = getAsInt(jsonObject, "executeCount");
+        QueryInfo queryInfo = new QueryInfo(queryManager);
+        queryInfo.setLanguage(language);
+        queryInfo.setStatement(statement);
+        queryInfo.setThreadName(thread);
+        queryInfo.setExecuteCount(executeCount);
+        queryInfo.setLastExecuted(lastExecuted);
+        return queryInfo;
     }
 
     private ObjectName getQueryStatMBean(MBeanServerConnection server) {
