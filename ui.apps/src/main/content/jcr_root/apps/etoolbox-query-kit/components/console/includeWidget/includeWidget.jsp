@@ -19,7 +19,8 @@
          org.apache.sling.api.resource.ValueMap,
          org.apache.sling.api.wrappers.ValueMapDecorator,
          com.adobe.granite.ui.components.ds.ValueMapResource,
-         com.google.common.collect.ImmutableMap" %>
+         com.google.common.collect.ImmutableMap,
+         com.exadel.etoolbox.querykit.core.models.query.helpers.TableCellTypesHelper" %>
 
 <%!
     private String getParameter(SlingHttpServletRequest request, String name) {
@@ -31,7 +32,7 @@
     }
 
     private String getResourceType(String type) {
-        return "granite/ui/components/coral/foundation/form/textfield";
+        return TableCellTypesHelper.getTypeToResourceType().get(type);
     }
 %>
 <%
@@ -44,10 +45,26 @@
 
     String effectiveResourceType = getResourceType(type);
 
-    ValueMap valueMap = new ValueMapDecorator(ImmutableMap.<String, Object>of(
-            "sling:resourceType", effectiveResourceType,
-            "name", name,
-            "fieldLabel", "Edit value of [" + name + "]"));
+    ValueMap valueMap = new ValueMapDecorator(ImmutableMap.<String, Object>builder()
+            .put("sling:resourceType", effectiveResourceType)
+            .put("name", name)
+            .put("fieldLabel", "Edit value of [" + name + "]")
+            .put("type", "datetime")
+            .put("value", "true")
+            .put("uncheckedValue", "false")
+            .put("text", name)
+            .build());
     Resource widgetResource = new ValueMapResource(resourceResolver, "", "nt:unstructured", valueMap);
     cmp.include(widgetResource, effectiveResourceType, cmp.getOptions());
+
+    if (type.equals("Boolean")) {
+        ValueMap valueMapTypeHint = new ValueMapDecorator(ImmutableMap.<String, Object>builder()
+                .put("sling:resourceType", "granite/ui/components/foundation/form/hidden")
+                .put("ignoreData", "true")
+                .put("name", name + "@TypeHint")
+                .put("value", type)
+                .build());
+        Resource typeHintResource = new ValueMapResource(resourceResolver, "", "nt:unstructured", valueMapTypeHint);
+        cmp.include(typeHintResource, "granite/ui/components/foundation/form/hidden", cmp.getOptions());
+    }
 %>
