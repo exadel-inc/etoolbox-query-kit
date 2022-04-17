@@ -1,0 +1,2 @@
+#base=js
+query-statistics.js
