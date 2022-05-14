@@ -42,7 +42,7 @@
                 const isBackendException = $errorMessage.length;
                 if (!isBackendException) {
                     $('#resultsColumn').empty().prepend($result.html());
-                    const table = $result.find('#resultsTable')[0];
+                    const table = document.getElementById('resultsTable');
                     Coral.commons.ready(table, ns.initResizableCols.bind(null, saveColStyles));
                 } else {
                     foundationUi.alert('EToolbox Query Console', 'Could not retrieve results: ' + $errorMessage.text(), 'error');

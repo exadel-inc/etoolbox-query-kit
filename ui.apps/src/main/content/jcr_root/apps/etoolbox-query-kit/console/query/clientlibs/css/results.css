@@ -45,6 +45,7 @@
 .results-table-cell {
     position: relative;
     vertical-align: top;
+    word-break: break-word;
 }
 
 .results-table-cell.ordinal {
@@ -55,11 +56,6 @@
 
 .results-table-cell:nth-child(2) {
     padding: 0 0.625rem 0 0.3125rem;
-}
-
-.results-table-cell {
-    position: relative;
-    word-break: break-word;
 }
 
 .results-table-cell .actions {
@@ -82,6 +78,19 @@
     margin: 0 0.3125rem 0 0;
 }
 
+#resultsTable table {
+    table-layout: fixed;
+}
+
+#resultsTable coral-table-headercell-content {
+    overflow: hidden;
+}
+
+#resultsTable .results-table-cell:first-of-type,
+#resultsTable .coral-Table-headerCell:first-of-type {
+    width: 40px;
+}
+
 #resultsTable th:not(:first-child):not(:last-child) .resizer {
     display: block;
     position: absolute;
@@ -93,15 +102,4 @@
     width: 5px;
     cursor: ew-resize;
     z-index: 10;
-}
-
-#resultsTable table {
-    table-layout: fixed;
-}
-
-#resultsTable .results-table-cell:first-of-type, #resultsTable .coral-Table-headerCell:first-of-type {
-    width: 40px;
-}
-#resultsTable .coral-Table-wrapper-container {
-    overflow-y: hidden;
 }

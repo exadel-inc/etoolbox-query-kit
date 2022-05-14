@@ -11,9 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.foundation-layout-panel-content {
-    overflow: hidden;
-}
 
 .foundation-layout-util-vmargin {
     margin: 0.625rem 0;

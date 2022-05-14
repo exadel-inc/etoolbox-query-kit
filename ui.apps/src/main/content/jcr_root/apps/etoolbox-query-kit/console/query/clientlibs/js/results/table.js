@@ -8,13 +8,17 @@
     $(`<style id="${COL_STYLES_ID}">`).prependTo(document.head);
     const $savedColStyles = $(`#${COL_STYLES_ID}`);
 
-    ns.initResizableCols = (saveColStyles) => {
+    ns.initResizableCols = (saveColStyles, table) => {
+        // Hack for Coral to enable sticky header scrolling with content
+        table._preventLayoutStickyCellOnScroll = false;
+        table._layoutStickyCellOnScroll = true;
+
         if (!saveColStyles) {
             $savedColStyles.text('');
         }
-        $(`${TABLE_RESULTS_ID} table colgroup`).remove();
+        $(table).find('table colgroup').remove();
 
-        $(`${TABLE_RESULTS_ID} coral-table-headercell-content`).each((i, coralCell) => {
+        $(table).find('coral-table-headercell-content').each((i, coralCell) => {
             const $resizer = $(`<div class="${RESIZER_CLASS}">`);
             $resizer.appendTo($(coralCell));
             createResizableColumn($(coralCell), $(coralCell).closest('th'), $resizer);
